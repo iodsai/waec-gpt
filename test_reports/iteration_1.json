@@ -1,0 +1,39 @@
+{
+  "summary": "Full end-to-end test of WAEC Math AI MVP. 19/19 backend pytest cases passed (auth, topics, lessons, questions, attempts, progress, AI tutor via Gemini 3 Flash, history). 8/8 frontend flows passed (landing, register/login, dashboard, lesson with KaTeX, past questions with submission, AI tutor with KaTeX response, logout, protected route redirect). One minor UI polish issue: Dashboard 'Recent attempts' section renders raw $...$ markdown instead of using MathText component.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Dashboard / Recent attempts list", "issue": "Question text displays raw LaTeX delimiters (e.g. 'Solve for $x$: $2x + 7 = 19$.') instead of rendered math. The MathText component should be used here just like on the Past Questions and Lessons pages.", "selector": "Dashboard recent_attempts list items", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Global toast overlay", "issues": ["Success/error toasts (e.g. 'Welcome back!', 'Please select an option') render on top of the navigation bar, partially occluding the 'Dashboard' label. Consider lowering toast position or pushing nav z-index higher / repositioning toast below the header."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_waec_backend.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Render LaTeX in Dashboard 'Recent attempts' question_text via the existing MathText component (low priority polish).",
+    "Adjust toast position so it doesn't overlap the top navigation (low priority polish)."
+  ],
+  "critical_code_review_comments": [
+    "server.py question 'linear-equations 2021' (id seeded from QUESTIONS list) — the solution_steps explicitly note that the chosen answer 'y = 2' is not algebraically correct (true value is 2.8). Recommend replacing this question or fixing the equation so the correct answer is one of the options.",
+    "server.py uses deprecated FastAPI @app.on_event('startup'/'shutdown'). Recommend migrating to lifespan context manager (non-blocking).",
+    "Backend exposes EMERGENT_LLM_KEY error detail directly in the 500 response (`AI tutor unavailable: {str(e)}`) — okay for MVP but consider sanitizing for production."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_waec_backend.py (new)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "student@waec.com / Student@123 (demo) — works; also registered fresh TEST_ users successfully.",
+  "seed_data_creation": "Backend seeds 50 questions + demo user on startup. Tests registered transient TEST_<uuid>@example.com users; no cleanup performed (low volume, prefix is identifiable).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All core MVP flows working end-to-end on https://mathmastery-waec.preview.emergentagent.com. Backend pytest at /app/backend/tests/test_waec_backend.py is the regression suite. Only two cosmetic polish items remain (raw LaTeX in dashboard recent attempts, toast overlap with nav). AI tutor with gemini-3-flash-preview via emergentintegrations is live and returns ~6-15s step-by-step LaTeX responses.",
+  "rca of the issue": "Dashboard recent_attempts shows raw LaTeX because Dashboard.jsx renders the question_text as plain text rather than passing it through MathText (which is used on Lessons.jsx, PastQuestions.jsx, and Tutor.jsx). Single-component swap fix."
+}

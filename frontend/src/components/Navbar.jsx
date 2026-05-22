@@ -1,0 +1,70 @@
+import React from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { LogOut, BookOpen, Sparkles, FileText, LayoutDashboard } from "lucide-react";
+
+const Navbar = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const linkCls = ({ isActive }) =>
+    `px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+      isActive ? "bg-sand text-ink" : "text-muted2 hover:text-ink hover:bg-sand/60"
+    }`;
+
+  return (
+    <header className="bg-paper border-b border-edge sticky top-0 z-40" data-testid="app-navbar">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-16 flex items-center justify-between">
+        <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2" data-testid="nav-logo">
+          <div className="w-9 h-9 rounded-xl bg-terracotta grid place-items-center text-white font-heading font-bold text-lg">
+            W
+          </div>
+          <div className="leading-tight">
+            <div className="font-heading font-bold text-ink">WAEC Math AI</div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted2">Algebra MVP</div>
+          </div>
+        </Link>
+
+        {user ? (
+          <>
+            <nav className="hidden md:flex items-center gap-1">
+              <NavLink to="/dashboard" className={linkCls} data-testid="nav-dashboard">
+                <LayoutDashboard size={16} /> Dashboard
+              </NavLink>
+              <NavLink to="/lessons" className={linkCls} data-testid="nav-lessons">
+                <BookOpen size={16} /> Lessons
+              </NavLink>
+              <NavLink to="/past-questions" className={linkCls} data-testid="nav-past-questions">
+                <FileText size={16} /> Past Questions
+              </NavLink>
+              <NavLink to="/tutor" className={linkCls} data-testid="nav-tutor">
+                <Sparkles size={16} /> AI Tutor
+              </NavLink>
+            </nav>
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex flex-col items-end leading-tight">
+                <span className="text-sm font-medium text-ink">{user.name}</span>
+                <span className="text-xs text-muted2">{user.email}</span>
+              </div>
+              <button
+                onClick={() => { logout(); navigate("/"); }}
+                data-testid="logout-btn"
+                className="p-2 rounded-lg border border-edge text-muted2 hover:text-terracotta hover:border-terracotta/40 transition-colors"
+                aria-label="Log out"
+              >
+                <LogOut size={16} />
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Link to="/login" data-testid="nav-login" className="btn-ghost text-sm">Log in</Link>
+            <Link to="/register" data-testid="nav-register" className="btn-primary text-sm">Get started</Link>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+};
+
+export default Navbar;

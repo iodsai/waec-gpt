@@ -14,7 +14,7 @@ const DIFFICULTIES = [
 
 const PastQuestions = () => {
   const [params, setParams] = useSearchParams();
-  const [topics, setTopics] = useState(null);
+  const [topics, setTopics] = useState([]);
   const [years, setYears] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [active, setActive] = useState(null); // QuestionDetail
@@ -22,14 +22,19 @@ const PastQuestions = () => {
   const [submitting, setSubmitting] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [result, setResult] = useState(null); // { correct, correct_answer, solution_steps }
+  const [similar, setSimilar] = useState(null); // { loading, items }
 
+  const topic = params.get("topic") || "";
   const subtopic = params.get("subtopic") || "";
   const year = params.get("year") || "";
   const difficulty = params.get("difficulty") || "";
 
   useEffect(() => {
     Promise.all([http.get("/topics"), http.get("/years")])
-      .then(([t, y]) => { setTopics(t.data); setYears(y.data); });
+      .then(([t, y]) => {
+        setTopics((t.data.topics || []).filter((x) => x.status === "available"));
+        setYears(y.data);
+      });
   }, []);
 
   useEffect(() => {
@@ -44,11 +49,15 @@ const PastQuestions = () => {
       .finally(() => setLoading(false));
   }, [topic, subtopic, year, difficulty]);
 
-  const updateFilter = (key, val) => {
+  const updateFilters = (updates) => {
     const next = new URLSearchParams(params);
-    if (val) next.set(key, val); else next.delete(key);
+    for (const [key, val] of Object.entries(updates)) {
+      if (val) next.set(key, val); else next.delete(key);
+    }
     setParams(next, { replace: true });
   };
+
+  const updateFilter = (key, val) => updateFilters({ [key]: val });
 
   const openQuestion = async (id) => {
     setSelectedOption(null); setResult(null); setSimilar(null);
@@ -84,9 +93,18 @@ const PastQuestions = () => {
   };
 
   const subtopicLabel = useMemo(() => {
-    if (!subtopic || !topics) return "All subtopics";
-    return topics.subtopics.find((s) => s.id === subtopic)?.name || "All subtopics";
+    if (!subtopic) return "All subtopics";
+    for (const t of topics) {
+      const s = (t.subtopics || []).find((x) => x.id === subtopic);
+      if (s) return s.name;
+    }
+    return subtopic;
   }, [subtopic, topics]);
+
+  const availableSubtopics = useMemo(() => {
+    if (!topic) return topics.flatMap((t) => t.subtopics || []);
+    return topics.find((t) => t.id === topic)?.subtopics || [];
+  }, [topic, topics]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-10" data-testid="past-questions-page">
@@ -100,7 +118,7 @@ const PastQuestions = () => {
           <Filter size={16} /> Filters
         </div>
         <select
-          value={topic} onChange={(e) => { updateFilter("topic", e.target.value); updateFilter("subtopic", ""); }}
+          value={topic} onChange={(e) => updateFilters({ topic: e.target.value, subtopic: "" })}
           data-testid="filter-topic-select"
           className="px-3 py-2 rounded-lg border border-edge bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
         >

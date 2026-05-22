@@ -16,14 +16,15 @@ const Landing = () => {
       <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-14 pb-20 lg:pt-20 lg:pb-32">
         <div className="grid lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7">
-            <span className="overline" data-testid="hero-overline">For WAEC SS1 – SS3 Students</span>
+            <span className="overline" data-testid="hero-overline">For WAEC SS1 – SS3 Students · Further Maths</span>
             <h1 className="font-heading mt-3 text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] text-ink tracking-tight">
-              Master WAEC Algebra,<br className="hidden sm:block" />
+              Master WAEC Elective Maths,<br className="hidden sm:block" />
               <span className="text-terracotta">step by step.</span>
             </h1>
             <p className="mt-6 text-lg text-muted2 max-w-xl leading-relaxed">
-              Self-paced lessons, decades of solved WAEC past questions, and an AI tutor
-              that explains every working — in plain English, like a great teacher would.
+              Calculus, Vectors, Statistics & Probability — taught the WAEC way.
+              Self-paced lessons, real past questions, and an AI tutor that explains
+              every working line by line.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -38,9 +39,9 @@ const Landing = () => {
               </Link>
             </div>
             <div className="mt-8 flex flex-wrap gap-6 text-sm text-muted2">
-              <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-success" /> 50+ solved questions</div>
-              <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-success" /> 8 algebra subtopics</div>
-              <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-success" /> AI step-by-step solver</div>
+              <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-success" /> 150+ solved questions</div>
+              <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-success" /> Stats · Calculus · Vectors</div>
+              <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-success" /> Gemini 3 Flash tutor</div>
             </div>
           </div>
 
@@ -68,12 +69,12 @@ const Landing = () => {
           <div className="md:col-span-3 card-surface p-7" data-testid="feature-lessons">
             <BookOpen className="text-terracotta" size={26} />
             <h3 className="font-heading mt-4 text-2xl font-semibold text-ink">Topic-organised lessons</h3>
-            <p className="mt-2 text-muted2">Linear & quadratic equations, indices, logarithms, variation, sequences, inequalities — with notes and worked examples.</p>
+            <p className="mt-2 text-muted2">Calculus (limits, differentiation, integration), Vectors (2D & 3D, dot product), and Statistics & Probability — with notes and worked examples.</p>
           </div>
           <div className="md:col-span-3 card-surface p-7" data-testid="feature-past-questions">
             <FileText className="text-moss" size={26} />
-            <h3 className="font-heading mt-4 text-2xl font-semibold text-ink">Solved WAEC past questions</h3>
-            <p className="mt-2 text-muted2">Filter by subtopic, year, and difficulty. Each question opens to a clean, step-by-step solution.</p>
+            <h3 className="font-heading mt-4 text-2xl font-semibold text-ink">Real WAEC past papers</h3>
+            <p className="mt-2 text-muted2">Filter by topic, year, and difficulty. Import real WAEC Further Maths papers via the admin pipeline — each question shows a step-by-step solution.</p>
           </div>
           <div className="md:col-span-4 card-surface p-7 relative overflow-hidden" data-testid="feature-ai-tutor">
             <Sparkles className="text-terracotta" size={26} />
@@ -81,9 +82,9 @@ const Landing = () => {
             <p className="mt-2 text-muted2 max-w-lg">Ask any algebra question. The tutor explains in WAEC examiner style, with numbered steps and beautifully rendered formulas.</p>
             <div className="mt-5 bg-sand/70 border border-edge rounded-xl p-4 max-w-md">
               <div className="text-xs text-muted2">You</div>
-              <div className="text-sm text-ink">Solve $2x + 7 = 19$.</div>
+              <div className="text-sm text-ink">Differentiate $y = (2x+1)^3$.</div>
               <div className="text-xs text-muted2 mt-3">AI Tutor</div>
-              <div className="text-sm text-ink"><strong>Step 1:</strong> Subtract 7 → $2x = 12$. <strong>Step 2:</strong> Divide by 2 → $x = 6$.</div>
+              <div className="text-sm text-ink"><strong>Step 1:</strong> Apply chain rule with $u = 2x+1$. <strong>Step 2:</strong> $\frac{dy}{dx} = 3u^2 \cdot 2 = 6(2x+1)^2$.</div>
             </div>
           </div>
           <div className="md:col-span-2 card-surface p-7" data-testid="feature-progress">
@@ -101,7 +102,7 @@ const Landing = () => {
             <img src={STUDENT_IMG} alt="Student on tablet" className="w-full h-[360px] object-cover rounded-3xl border border-edge" />
           </div>
           <div className="lg:col-span-7">
-            <span className="overline">Why WAEC Math AI</span>
+            <span className="overline">Why WAEC Elective Math AI</span>
             <h2 className="font-heading mt-3 text-3xl lg:text-4xl font-semibold text-ink">
               Practice past questions. Learn the working. Get ready.
             </h2>
@@ -128,9 +129,9 @@ const Landing = () => {
 
       <footer className="border-t border-edge bg-paper">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-10 flex flex-col sm:flex-row justify-between gap-4 text-sm text-muted2">
-          <div>© {new Date().getFullYear()} WAEC Math AI · Built for West African scholars.</div>
+          <div>© {new Date().getFullYear()} WAEC Elective Math AI · Built for West African scholars.</div>
           <div className="flex gap-5">
-            <span>Algebra V1</span>
+            <span>Further Maths · V3</span>
             <span>Powered by Gemini 3 Flash</span>
           </div>
         </div>

@@ -1,0 +1,33 @@
+{
+  "summary": "V3 Further Maths pivot verified end-to-end. Backend: 16/17 new pytest in /app/backend/tests/test_waec_v3.py pass and 1 skipped (theory test — no theory question exists in V3 seed, by design). Confirmed: /api/topics returns exactly 8 topics (3 available with question_count=50 each: Statistics, Calculus, Vectors; 5 coming_soon: Sets&Logic, Surds, Sequences, Matrices, Mechanics); /api/questions returns 150 total, all question_type=objective, split 50/50/50 across statistics/calculus/vectors; legacy topics (algebra/trigonometry/geometry) return 0 questions; lessons /limits, /differentiation, /scalar-product return 200; /lessons/linear-equations correctly returns 404; POST /api/exams/start mode=quick returns 10 FM-only questions, mode=mock returns 40, topic=calculus filter returns only calculus questions; POST /api/solver/verify {x^2-5x+6=0, claimed=3} returns ok=true, solutions=['2','3'], matches_claim=true; admin login works with is_admin=true; /api/admin/import/papers returns exactly 29 Further-Maths URL papers (all contain '/further/'). Frontend: Login as student@waec.com works → navbar shows 'WAEC Elective Math AI' with 'FURTHER MATHS' subtitle; Dashboard renders 3 FM topic cards (Statistics 50Q / Calculus 50Q / Vectors 50Q); /topics shows 8 cards with 5 'coming soon' badges; /topics/calculus shows all 5 subtopics (Limits, Differentiation, Apps of Diff, Integration, Apps of Integration); /lessons/integration renders KaTeX formulas; /past-questions topic dropdown lists only ['All topics','Statistics & Probability','Calculus','Vectors'] (no legacy); opening a calculus question, submitting → solution block renders with 66 KaTeX elements; AI Tutor SymPy modal opens (NOT window.prompt), [data-testid=verify-modal/verify-equation-input/verify-answer-input/verify-run-btn/verify-result/verify-close] all present, entering 'x^2-5x+6=0' and '3' shows 'Solutions x = 2, 3' + '✓ Your answer matches a SymPy solution.' + interpreted Eq; close button dismisses modal; /exams dropdown shows 'All topics (mixed)','Statistics & Probability (50)','Calculus (50)','Vectors (50)' with NO React hydration warning in console (previously flagged in iteration_3, now confirmed fixed); Quick Drill Start exam → Q 1/10 timer counting (04:58) with KaTeX-rendered vector question 'If |a|=5, |2a| is:' and 4 options A-D.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_waec_v3.py",
+    "/app/test_reports/pytest/v3_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Theory test was skipped because V3 seed contains zero theory questions (all 150 are objective). The 'theory excluded from progress' code path is therefore not covered by live testing this iteration. If the team intends theory support to remain a first-class flow, consider seeding at least one Further Maths theory item or keeping a small fixture from waeconline. Otherwise the theory branch in /api/attempts and PastQuestions.jsx is dead code on the live DB.",
+    "Old test files /app/backend/tests/test_waec_backend.py, test_waec_v2.py, test_waec_v22.py still reference General Maths topics (algebra/trigonometry) which were dropped — running them now will fail. Recommend either deleting them or adding a pytest skip marker tied to V3 to prevent confusion in regression runs.",
+    "Login response key is `token` (not `access_token`) — already aligned in /app/backend/tests/test_waec_v3.py; main agent should keep this naming consistent across docs/snippets to avoid future test breakages.",
+    "/api/solver/verify requires Authorization (returns 401 without token) — undocumented in the review request; either keep auth and document, or expose publicly if the Tutor page calls it before requiring login. Currently the Tutor route is gated, so behavior is fine, but worth noting."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_waec_v3.py (new — 17 V3 tests)"
+  ],
+  "success_rate": {"backend": "100% (16/17 passed, 1 skipped by design)", "frontend": "100% on all V3 review flows tested"},
+  "test_credentials": "student@waec.com / Student@123 and admin@waec.com / Admin@123 — both verified working.",
+  "seed_data_creation": "None — all reads against live seeded V3 data (150 questions, 8 topics, 29 papers).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "V3 DB state: exactly 150 objective questions (50 Statistics + 50 Calculus + 50 Vectors), 0 theory, 0 legacy (algebra/trig/geometry) questions; 8 topics in /api/topics with 3 available and 5 coming_soon; 29 Further-Maths papers in admin import catalog. Pytest regression entrypoint: `pytest /app/backend/tests/test_waec_v3.py -v` (17 tests, ~2s). Login response uses key `token`. SymPy verify modal testids: verify-modal, verify-equation-input, verify-answer-input, verify-run-btn, verify-result, verify-close. Exams topic select hydration warning is gone — verified via captured console (no warnings emitted). Old tests test_waec_v2*.py reference dropped General Maths content and should NOT be run as regression.",
+  "rca of the issue": "No bugs uncovered. All review_request items pass. Skipped test is expected behavior given V3 seed contains no theory questions."
+}

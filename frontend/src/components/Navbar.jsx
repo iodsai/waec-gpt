@@ -20,8 +20,8 @@ const Navbar = () => {
             W
           </div>
           <div className="leading-tight">
-            <div className="font-heading font-bold text-ink">WAEC Math AI</div>
-            <div className="text-[10px] uppercase tracking-[0.2em] text-muted2">Algebra MVP</div>
+            <div className="font-heading font-bold text-ink">WAEC Elective Math AI</div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted2">Further Maths</div>
           </div>
         </Link>
 

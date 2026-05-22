@@ -71,7 +71,7 @@ const Exams = () => {
             className="mt-1 block w-full sm:w-72 px-4 py-3 rounded-xl border border-edge bg-surface focus:outline-none focus:ring-2 focus:ring-terracotta/30"
           >
             <option value="mixed">All topics (mixed)</option>
-            {topics.map((t) => <option key={t.id} value={t.id}>{t.name} ({t.question_count})</option>)}
+            {topics.map((t) => <option key={t.id} value={t.id}>{`${t.name} (${t.question_count})`}</option>)}
           </select>
         </div>
         <button onClick={start} disabled={starting} className="btn-primary inline-flex items-center gap-2" data-testid="start-exam-btn">

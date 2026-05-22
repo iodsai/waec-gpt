@@ -19,10 +19,11 @@ import jwt as pyjwt
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
-from seed_data import LESSONS as ALGEBRA_LESSONS, QUESTIONS as ALGEBRA_QUESTIONS
-from seed_data_v2 import (
-    TOPICS_V2, SUBTOPICS_BY_TOPIC, LESSONS_V2,
-    QUESTIONS_V2, ALGEBRA_EXTRA_QUESTIONS,
+from seed_data_v3 import (
+    TOPICS_V3 as TOPICS_V2,
+    SUBTOPICS_BY_TOPIC_V3 as SUBTOPICS_BY_TOPIC,
+    LESSONS_V3 as LESSONS_V2,
+    QUESTIONS_V3,
 )
 from sympy_verify import verify as sympy_verify
 from ai_helpers import extract_question_from_image, generate_similar_questions
@@ -211,126 +212,59 @@ async def require_admin(current=Depends(get_current_user)):
     return current
 
 def topic_of(subtopic_id: str) -> str:
-    return SUBTOPIC_TOPIC.get(subtopic_id, "algebra")
+    return SUBTOPIC_TOPIC.get(subtopic_id, "statistics")
 
 # ============ LIFESPAN: SEED ============
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Seed legacy algebra questions (with topic field)
+    # Drop legacy General Maths content + waeconline imports (pivot to Further Maths V3)
+    fm_topics = ["statistics", "calculus", "vectors", "sets-logic", "surds-polynomials",
+                 "sequences-binomial", "matrices", "mechanics"]
+    deleted = await db.questions.delete_many({"topic": {"$nin": fm_topics}})
+    await db.questions.delete_many({"source_url": {"$regex": "/Mathematics/", "$options": "i"}})
+    if deleted.deleted_count:
+        logging.info(f"Dropped {deleted.deleted_count} legacy General Maths questions")
+
+    # Seed Further Maths content if empty
     if await db.questions.count_documents({}) == 0:
-        docs = []
-        for q in ALGEBRA_QUESTIONS:
-            docs.append({
-                "id": str(uuid.uuid4()),
-                "topic": "algebra",
-                "subtopic": q["subtopic"],
-                "year": q["year"], "difficulty": q["difficulty"],
-                "question": q["question"], "options": q["options"],
-                "answer": q["answer"], "solution_steps": q["solution_steps"],
-                "source": "seed",
-                "created_at": datetime.now(timezone.utc).isoformat(),
-            })
-        # Trig + Geometry
-        for q in QUESTIONS_V2:
-            docs.append({
-                "id": str(uuid.uuid4()),
-                "topic": q["topic"], "subtopic": q["subtopic"],
-                "year": q["year"], "difficulty": q["difficulty"],
-                "question": q["question"], "options": q["options"],
-                "answer": q["answer"], "solution_steps": q["solution_steps"],
-                "source": "seed",
-                "created_at": datetime.now(timezone.utc).isoformat(),
-            })
-        # Extra algebra spanning 2010-2024
-        for q in ALGEBRA_EXTRA_QUESTIONS:
-            docs.append({
-                "id": str(uuid.uuid4()),
-                "topic": q["topic"], "subtopic": q["subtopic"],
-                "year": q["year"], "difficulty": q["difficulty"],
-                "question": q["question"], "options": q["options"],
-                "answer": q["answer"], "solution_steps": q["solution_steps"],
-                "source": "seed",
-                "created_at": datetime.now(timezone.utc).isoformat(),
-            })
-        await db.questions.insert_many(docs)
-        logging.info(f"Seeded {len(docs)} questions")
-    else:
-        # Migration: backfill `topic` on existing docs missing it
-        result = await db.questions.update_many(
-            {"topic": {"$exists": False}},
-            [{"$set": {"topic": {"$ifNull": [None, "algebra"]}}}]
-        )
-        if result.modified_count == 0:
-            # try the simple set
-            await db.questions.update_many({"topic": {"$exists": False}}, {"$set": {"topic": "algebra"}})
+        docs = [{
+            "id": str(uuid.uuid4()),
+            "topic": q["topic"], "subtopic": q["subtopic"],
+            "year": q["year"], "difficulty": q["difficulty"],
+            "question": q["question"], "options": q["options"],
+            "answer": q["answer"], "solution_steps": q["solution_steps"],
+            "question_type": "objective", "source": "seed",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        } for q in QUESTIONS_V3]
+        if docs:
+            await db.questions.insert_many(docs)
+            logging.info(f"Seeded {len(docs)} Further Maths questions")
 
-        # Add Trig/Geometry/extra-algebra questions if not yet present
-        existing_total = await db.questions.count_documents({"source": "seed"})
-        expected = len(ALGEBRA_QUESTIONS) + len(QUESTIONS_V2) + len(ALGEBRA_EXTRA_QUESTIONS)
-        if existing_total < expected:
-            # add only the new sets (V2 + algebra extra) if their topics/years missing
-            new_docs = []
-            for q in QUESTIONS_V2:
-                exists = await db.questions.find_one({
-                    "topic": q["topic"], "subtopic": q["subtopic"],
-                    "year": q["year"], "question": q["question"],
-                })
-                if not exists:
-                    new_docs.append({
-                        "id": str(uuid.uuid4()), "topic": q["topic"], "subtopic": q["subtopic"],
-                        "year": q["year"], "difficulty": q["difficulty"],
-                        "question": q["question"], "options": q["options"],
-                        "answer": q["answer"], "solution_steps": q["solution_steps"],
-                        "source": "seed",
-                        "created_at": datetime.now(timezone.utc).isoformat(),
-                    })
-            for q in ALGEBRA_EXTRA_QUESTIONS:
-                exists = await db.questions.find_one({
-                    "topic": q["topic"], "subtopic": q["subtopic"],
-                    "year": q["year"], "question": q["question"],
-                })
-                if not exists:
-                    new_docs.append({
-                        "id": str(uuid.uuid4()), "topic": q["topic"], "subtopic": q["subtopic"],
-                        "year": q["year"], "difficulty": q["difficulty"],
-                        "question": q["question"], "options": q["options"],
-                        "answer": q["answer"], "solution_steps": q["solution_steps"],
-                        "source": "seed",
-                        "created_at": datetime.now(timezone.utc).isoformat(),
-                    })
-            if new_docs:
-                await db.questions.insert_many(new_docs)
-                logging.info(f"Seeded {len(new_docs)} additional questions")
+    # Backfill question_type if missing
+    await db.questions.update_many({"question_type": {"$exists": False}}, {"$set": {"question_type": "objective"}})
 
-    # Seed demo student
+    # Seed demo student + admin
     if not await db.users.find_one({"email": "student@waec.com"}):
         await db.users.insert_one({
             "id": str(uuid.uuid4()), "name": "Demo Student", "email": "student@waec.com",
             "password_hash": hash_password("Student@123"), "is_admin": False,
             "created_at": datetime.now(timezone.utc).isoformat(),
         })
-        logging.info("Seeded demo user student@waec.com / Student@123")
-
-    # Seed admin
     if not await db.users.find_one({"email": "admin@waec.com"}):
         await db.users.insert_one({
             "id": str(uuid.uuid4()), "name": "Admin", "email": "admin@waec.com",
             "password_hash": hash_password("Admin@123"), "is_admin": True,
             "created_at": datetime.now(timezone.utc).isoformat(),
         })
-        logging.info("Seeded admin admin@waec.com / Admin@123")
     else:
-        # Ensure existing admin user has is_admin flag
         await db.users.update_one({"email": "admin@waec.com"}, {"$set": {"is_admin": True}})
-
-    # Backfill is_admin: false for any user missing the flag
     await db.users.update_many({"is_admin": {"$exists": False}}, {"$set": {"is_admin": False}})
 
     yield
     client.close()
 
 
-app = FastAPI(title="WAEC Math AI V2", lifespan=lifespan)
+app = FastAPI(title="WAEC Elective Math AI", lifespan=lifespan)
 api = APIRouter(prefix="/api")
 
 # ============ AUTH ROUTES ============
@@ -375,7 +309,7 @@ async def get_topics():
 
 @api.get("/lessons/{subtopic_id}", response_model=Lesson)
 async def get_lesson(subtopic_id: str):
-    lesson = ALGEBRA_LESSONS.get(subtopic_id) or LESSONS_V2.get(subtopic_id)
+    lesson = LESSONS_V2.get(subtopic_id)
     if not lesson:
         raise HTTPException(status_code=404, detail="Lesson not found")
     return Lesson(

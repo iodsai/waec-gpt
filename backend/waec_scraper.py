@@ -18,37 +18,39 @@ from emergentintegrations.llm.chat import LlmChat, UserMessage, FileContent
 
 logger = logging.getLogger(__name__)
 
-BASE = "https://waeconline.org.ng/e-learning/Mathematics/"
+BASE = "https://waeconline.org.ng/e-learning/Further/"
 
-# Catalog of available papers (label, year, url).
-# Sourced from https://waeconline.org.ng/e-learning/Mathematics/mathsmain.html
+# Catalog of available WAEC Further Mathematics papers (29 papers, 2008–2023).
 WAEC_PAPERS = [
-    {"label": "WASSCE School 2017",          "year": 2017, "url": BASE + "maths226mc.html"},
-    {"label": "WASSCE Private 2017",         "year": 2017, "url": BASE + "maths226nc.html"},
-    {"label": "WASSCE School 2018",          "year": 2018, "url": BASE + "maths227mc.html"},
-    {"label": "WASSCE Private 1st 2018",     "year": 2018, "url": BASE + "maths227jc.html"},
-    {"label": "WASSCE Private 2nd 2018",     "year": 2018, "url": BASE + "maths227ac.html"},
-    {"label": "WASSCE School 2019",          "year": 2019, "url": BASE + "maths228mc.html"},
-    {"label": "WASSCE Private 1st 2019",     "year": 2019, "url": BASE + "maths228jc.html"},
-    {"label": "WASSCE School 2020",          "year": 2020, "url": BASE + "maths231mc.html"},
-    {"label": "WASSCE Private 1st 2020",     "year": 2020, "url": BASE + "maths230jc.html"},
-    {"label": "WASSCE Private 2nd 2020",     "year": 2020, "url": BASE + "maths230ac.html"},
-    {"label": "WASSCE School 2021",          "year": 2021, "url": BASE + "maths233mc.html"},
-    {"label": "WASSCE Private 1st 2021",     "year": 2021, "url": BASE + "maths233jc.html"},
-    {"label": "WASSCE Private 2nd 2021",     "year": 2021, "url": BASE + "maths233ac.html"},
-    {"label": "WASSCE School 2022",          "year": 2022, "url": BASE + "maths235mc.html"},
-    {"label": "WASSCE Private 1st 2022",     "year": 2022, "url": BASE + "maths235jc.html"},
-    {"label": "WASSCE Private 2nd 2022",     "year": 2022, "url": BASE + "maths235ac.html"},
-    {"label": "WASSCE School 2023",          "year": 2023, "url": BASE + "maths240mc.html"},
-    {"label": "WASSCE Private 1st 2023",     "year": 2023, "url": BASE + "maths240jc.html"},
-    {"label": "WASSCE School 2016",          "year": 2016, "url": BASE + "maths225mc.html"},
-    {"label": "WASSCE Private 2016",         "year": 2016, "url": BASE + "maths225nc.html"},
-    {"label": "WASSCE 2015 May/Jun",         "year": 2015, "url": BASE + "maths224mc.html"},
-    {"label": "WASSCE 2014 May/Jun",         "year": 2014, "url": BASE + "maths223mc.html"},
-    {"label": "WASSCE 2013 May/Jun",         "year": 2013, "url": BASE + "maths222mc.html"},
-    {"label": "WASSCE 2012 May/Jun",         "year": 2012, "url": BASE + "maths221mc.html"},
-    {"label": "WASSCE 2011 May/Jun",         "year": 2011, "url": BASE + "maths220mc.html"},
-    {"label": "WASSCE 2010 May/Jun",         "year": 2010, "url": BASE + "maths219mc.html"},
+    {"label": "WASSCE School 2023",          "year": 2023, "url": BASE + "furth240jc.html"},
+    {"label": "WASSCE School 2022",          "year": 2022, "url": BASE + "furth235mc.html"},
+    {"label": "WASSCE Private 1st 2022",     "year": 2022, "url": BASE + "furth235jc.html"},
+    {"label": "WASSCE Private 2nd 2022",     "year": 2022, "url": BASE + "furth235ac.html"},
+    {"label": "WASSCE Private 2nd 2021",     "year": 2021, "url": BASE + "furth230ac.html"},
+    {"label": "WASSCE Private 1st 2020",     "year": 2020, "url": BASE + "furth230ac.html"},
+    {"label": "WASSCE School 2019",          "year": 2019, "url": BASE + "furth228mc.html"},
+    {"label": "WASSCE Private 1st 2019",     "year": 2019, "url": BASE + "furth228jc.html"},
+    {"label": "WASSCE Private 2nd 2019",     "year": 2019, "url": BASE + "furth2019cm.html"},
+    {"label": "WASSCE School 2018",          "year": 2018, "url": BASE + "furth227mc.html"},
+    {"label": "WASSCE Private 1st 2018",     "year": 2018, "url": BASE + "furth227jc.html"},
+    {"label": "WASSCE Private 2nd 2018",     "year": 2018, "url": BASE + "furth227ac.html"},
+    {"label": "WASSCE School 2017",          "year": 2017, "url": BASE + "furth226mc.html"},
+    {"label": "WASSCE Private 2017",         "year": 2017, "url": BASE + "furth226nc.html"},
+    {"label": "WASSCE School 2016",          "year": 2016, "url": BASE + "furth225mc.html"},
+    {"label": "WASSCE Private 2016",         "year": 2016, "url": BASE + "furth225nc.html"},
+    {"label": "WASSCE 2015 May/Jun",         "year": 2015, "url": BASE + "furth224mc.html"},
+    {"label": "WASSCE 2014 Private",         "year": 2014, "url": BASE + "furth223nc.html"},
+    {"label": "WASSCE 2014 May/Jun",         "year": 2014, "url": BASE + "furth223mc.html"},
+    {"label": "WASSCE 2013 May/Jun",         "year": 2013, "url": BASE + "furth222mc.html"},
+    {"label": "WASSCE 2013 Private",         "year": 2013, "url": BASE + "furth222nc.html"},
+    {"label": "WASSCE 2012 Private",         "year": 2012, "url": BASE + "furth221nc.html"},
+    {"label": "WASSCE 2011 Private",         "year": 2011, "url": BASE + "furth220nc.html"},
+    {"label": "WASSCE 2011 May/Jun",         "year": 2011, "url": BASE + "furth220mc.html"},
+    {"label": "WASSCE 2010 Private",         "year": 2010, "url": BASE + "furth219nc.html"},
+    {"label": "WASSCE 2009 May/Jun",         "year": 2009, "url": BASE + "furth218mc.html"},
+    {"label": "WASSCE 2009 Private",         "year": 2009, "url": BASE + "furth218nc.html"},
+    {"label": "WASSCE 2008 May/Jun",         "year": 2008, "url": BASE + "furth217mc.html"},
+    {"label": "WASSCE 2008 Private",         "year": 2008, "url": BASE + "furth217nc.html"},
 ]
 
 
@@ -120,42 +122,40 @@ def _parse_question_page(html: str, base_url: str) -> dict:
     }
 
 
-EXTRACT_TO_MCQ_SYSTEM = """You convert real WAEC mathematics past questions into one of two structured shapes suitable for student practice.
+EXTRACT_TO_MCQ_SYSTEM = """You convert real WAEC FURTHER MATHEMATICS (Elective) past questions into one of two structured shapes suitable for student practice.
 
 You will receive:
-- The original WAEC theory question text (Paper 2)
+- The original WAEC Further Maths theory question text (Paper 2)
 - The chief examiner's observation/solution text
 - Inline math expressions as attached images (read these carefully)
 
 Decide between two shapes:
 
-**A) Multiple-choice ("objective")** — preferred when the question has a single numeric/symbolic answer that can be expressed in one short string:
+**A) Multiple-choice ("objective")** — preferred when the question has a single numeric/symbolic answer:
 {
   "question_type": "objective",
-  "question": "the question (LaTeX in $...$ inline or $$...$$ display)",
+  "question": "the question (LaTeX in $...$)",
   "options": ["A", "B", "C", "D"],
   "answer": "exact match to one option",
   "subtopic_guess": "...",
   "difficulty_guess": "easy|medium|hard",
-  "solution_steps": ["Step 1 ...", "Step 2 ...", "Step 3 ..."]
+  "solution_steps": ["Step 1 ...", "..."]
 }
 
-**B) Theory ("theory")** — when the question has multiple parts, requires construction/diagram, has a list of answers, or is otherwise not reducible to 4 short options:
+**B) Theory ("theory")** — when the question is multi-part / requires construction / produces a list of answers:
 {
   "question_type": "theory",
   "question": "the question (preserve sub-parts (a), (b), (c) with LaTeX)",
-  "answer": "concise summary of the final answer(s), e.g. 'a) x=5, b) area = 24 cm²'",
+  "answer": "concise final answer(s), e.g. 'a) k=3, b) area = 5'",
   "subtopic_guess": "...",
   "difficulty_guess": "easy|medium|hard",
-  "solution_steps": ["Step 1 ...", "Step 2 ...", "..."]
+  "solution_steps": ["Step 1 ...", "..."]
 }
 
 Rules:
-- Reconstruct any maths shown as image into LaTeX using $...$ delimiters.
-- For objective: generate 3 PLAUSIBLE distractors based on common student mistakes (sign errors, wrong formula, off-by-one). The answer must EXACTLY match one option string.
+- subtopic_guess must be one of (FURTHER MATHS subtopics): measures-of-location, measures-of-spread, correlation, probability, perms-combinations, limits, differentiation, applications-differentiation, integration, applications-integration, vector-algebra-2d, vectors-3d, magnitude-direction, scalar-product, vectors-applications.
+- For objective: 3 plausible distractors based on common student errors. The answer field must EXACTLY match one option string.
 - solution_steps: mirror the examiner's working in clear, numbered prose (5-10 short steps).
-- If the question has parts (a)/(b), and part (a) alone yields a single clean answer, prefer "objective" for part (a) only. Otherwise use "theory" and include all parts.
-- subtopic_guess must be one of: linear-equations, quadratic-equations, simultaneous-equations, indices, logarithms, variation, sequences-series, inequalities, trig-ratios, trig-identities, sine-cosine-rules, elevation-depression, bearings, circle-theorems, polygons, area-volume, similarity-congruence, coordinate-geometry.
 - Output a single JSON object only — no commentary, no markdown fences."""
 
 

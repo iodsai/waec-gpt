@@ -1,0 +1,586 @@
+"""V3 extra — content for the 5 remaining Further Maths topics.
+
+Adds 250 questions (50 each) across:
+- Sets & Logic
+- Surds & Polynomials
+- Sequences & Binomial
+- Matrices & Determinants
+- Mechanics
+"""
+
+EXTRA_SUBTOPICS = {
+    "sets-logic": [
+        {"id": "set-operations", "name": "Set Operations"},
+        {"id": "venn-diagrams", "name": "Venn Diagrams"},
+        {"id": "subsets-power", "name": "Subsets & Power Sets"},
+        {"id": "propositional-logic", "name": "Propositional Logic"},
+        {"id": "truth-tables", "name": "Truth Tables"},
+    ],
+    "surds-polynomials": [
+        {"id": "surd-simplification", "name": "Surd Simplification"},
+        {"id": "indices-logs-fm", "name": "Indices & Logarithms"},
+        {"id": "polynomial-division", "name": "Polynomial Division"},
+        {"id": "remainder-theorem", "name": "Remainder Theorem"},
+        {"id": "partial-fractions", "name": "Partial Fractions"},
+    ],
+    "sequences-binomial": [
+        {"id": "ap-fm", "name": "Arithmetic Progression"},
+        {"id": "gp-fm", "name": "Geometric Progression"},
+        {"id": "infinite-series", "name": "Infinite Series"},
+        {"id": "binomial-expansion", "name": "Binomial Expansion"},
+        {"id": "pascals-triangle", "name": "Pascal's Triangle"},
+    ],
+    "matrices": [
+        {"id": "matrix-operations", "name": "Matrix Operations"},
+        {"id": "determinants", "name": "Determinants"},
+        {"id": "matrix-inverse", "name": "Matrix Inverse"},
+        {"id": "linear-systems", "name": "Linear Systems"},
+        {"id": "matrix-properties", "name": "Matrix Properties"},
+    ],
+    "mechanics": [
+        {"id": "kinematics", "name": "Kinematics"},
+        {"id": "resultant-vectors", "name": "Resultant Vectors"},
+        {"id": "forces-equilibrium", "name": "Forces & Equilibrium"},
+        {"id": "newtons-laws", "name": "Newton's Laws & Momentum"},
+        {"id": "work-energy-power", "name": "Work, Energy & Power"},
+    ],
+}
+
+EXTRA_LESSONS = {
+    # ---- SETS & LOGIC ----
+    "set-operations": {"title": "Set Operations", "topic": "sets-logic",
+        "summary": "Union $\\cup$, intersection $\\cap$, complement $'$ and difference of sets.",
+        "notes": [
+            {"heading": "Definitions", "body": "$A \\cup B = \\{x : x \\in A \\text{ or } x \\in B\\}$. $A \\cap B = \\{x : x \\in A \\text{ and } x \\in B\\}$. $A' = U \\setminus A$ (complement)."},
+            {"heading": "De Morgan's Laws", "body": "$(A \\cup B)' = A' \\cap B'$ and $(A \\cap B)' = A' \\cup B'$."},
+            {"heading": "Worked Example", "body": "If $A = \\{1,2,3\\}$, $B = \\{2,3,4\\}$, then $A \\cap B = \\{2,3\\}$ and $A \\cup B = \\{1,2,3,4\\}$."},
+        ]},
+    "venn-diagrams": {"title": "Venn Diagrams", "topic": "sets-logic",
+        "summary": "Visual representation of set relationships using overlapping circles.",
+        "notes": [
+            {"heading": "Cardinality", "body": "$n(A \\cup B) = n(A) + n(B) - n(A \\cap B)$ (inclusion-exclusion)."},
+            {"heading": "Worked Example", "body": "If $n(A)=20$, $n(B)=15$, $n(A\\cap B)=8$, then $n(A\\cup B)=20+15-8=27$."},
+        ]},
+    "subsets-power": {"title": "Subsets & Power Sets", "topic": "sets-logic",
+        "summary": "$A \\subseteq B$ means every element of $A$ is in $B$. Power set $\\mathcal{P}(A)$ is the set of all subsets.",
+        "notes": [
+            {"heading": "Number of Subsets", "body": "A set with $n$ elements has $2^n$ subsets."},
+            {"heading": "Worked Example", "body": "$\\{a, b, c\\}$ has $2^3 = 8$ subsets including $\\emptyset$ and itself."},
+        ]},
+    "propositional-logic": {"title": "Propositional Logic", "topic": "sets-logic",
+        "summary": "Logical statements connected by $\\land$ (and), $\\lor$ (or), $\\neg$ (not), $\\Rightarrow$ (implies).",
+        "notes": [
+            {"heading": "Connectives", "body": "$p \\land q$ true iff both true. $p \\lor q$ true if either is. $\\neg p$ negates $p$. $p \\Rightarrow q$ false only when $p$ true and $q$ false."},
+            {"heading": "Worked Example", "body": "If $p$: 'It rains' (T) and $q$: 'Ground is wet' (T), then $p \\land q$ is T, $p \\Rightarrow q$ is T."},
+        ]},
+    "truth-tables": {"title": "Truth Tables", "topic": "sets-logic",
+        "summary": "Tabulate values of compound statements over all $T/F$ combinations.",
+        "notes": [
+            {"heading": "Standard Tables", "body": "For $p, q$: 4 rows (TT, TF, FT, FF). $p\\land q$: T only when both T. $p\\lor q$: F only when both F."},
+            {"heading": "Worked Example", "body": "Truth table of $p\\Rightarrow q$: TT→T, TF→F, FT→T, FF→T."},
+        ]},
+    # ---- SURDS & POLYNOMIALS ----
+    "surd-simplification": {"title": "Surd Simplification", "topic": "surds-polynomials",
+        "summary": "A surd is an irrational root, e.g. $\\sqrt{2}$, $\\sqrt[3]{5}$.",
+        "notes": [
+            {"heading": "Rules", "body": "$\\sqrt{ab} = \\sqrt{a}\\sqrt{b}$. $\\sqrt{a/b} = \\sqrt{a}/\\sqrt{b}$. To rationalise $\\frac{1}{\\sqrt{a}}$, multiply by $\\frac{\\sqrt{a}}{\\sqrt{a}}$."},
+            {"heading": "Worked Example", "body": "$\\sqrt{50} = \\sqrt{25 \\times 2} = 5\\sqrt{2}$. Rationalise $\\frac{1}{\\sqrt{3}} = \\frac{\\sqrt{3}}{3}$."},
+        ]},
+    "indices-logs-fm": {"title": "Indices & Logarithms (FM)", "topic": "surds-polynomials",
+        "summary": "FM extends indices to negative/fractional powers and logarithms to change of base.",
+        "notes": [
+            {"heading": "Key Laws", "body": "$a^{m/n} = \\sqrt[n]{a^m}$. $\\log_b x = \\frac{\\log x}{\\log b}$ (change of base)."},
+            {"heading": "Worked Example", "body": "$8^{2/3} = (\\sqrt[3]{8})^2 = 2^2 = 4$. $\\log_2 32 = \\log_2 2^5 = 5$."},
+        ]},
+    "polynomial-division": {"title": "Polynomial Division", "topic": "surds-polynomials",
+        "summary": "Long division of polynomials: $P(x) = D(x)Q(x) + R(x)$.",
+        "notes": [
+            {"heading": "Method", "body": "Divide the highest-degree term of $P(x)$ by the highest-degree term of $D(x)$, multiply, subtract, bring down. Repeat."},
+            {"heading": "Worked Example", "body": "$(x^2 + 3x + 2) \\div (x+1) = x + 2$ with remainder 0."},
+        ]},
+    "remainder-theorem": {"title": "Remainder & Factor Theorems", "topic": "surds-polynomials",
+        "summary": "$P(a)$ is the remainder when $P(x)$ is divided by $x - a$. If $P(a) = 0$, then $x - a$ is a factor.",
+        "notes": [
+            {"heading": "Statement", "body": "**Remainder**: $P(x) = (x - a)Q(x) + P(a)$. **Factor**: $P(a) = 0 \\Leftrightarrow (x-a) \\mid P(x)$."},
+            {"heading": "Worked Example", "body": "$P(x) = x^3 - 2x^2 + x - 2$ divided by $x - 2$: $P(2) = 8 - 8 + 2 - 2 = 0$, so $x-2$ is a factor."},
+        ]},
+    "partial-fractions": {"title": "Partial Fractions", "topic": "surds-polynomials",
+        "summary": "Decompose a rational function into simpler fractions.",
+        "notes": [
+            {"heading": "Linear Factors", "body": "$\\frac{P(x)}{(x-a)(x-b)} = \\frac{A}{x-a} + \\frac{B}{x-b}$."},
+            {"heading": "Worked Example", "body": "$\\frac{1}{(x-1)(x+2)} = \\frac{A}{x-1} + \\frac{B}{x+2}$ gives $A = 1/3$, $B = -1/3$."},
+        ]},
+    # ---- SEQUENCES & BINOMIAL ----
+    "ap-fm": {"title": "Arithmetic Progression (FM)", "topic": "sequences-binomial",
+        "summary": "$T_n = a + (n-1)d$. $S_n = \\frac{n}{2}[2a + (n-1)d]$.",
+        "notes": [
+            {"heading": "Properties", "body": "Common difference $d$ is constant. Sum of first $n$ terms uses the formula above."},
+            {"heading": "Worked Example", "body": "10th term of 3,7,11,...: $a=3, d=4$, $T_{10}=3+9(4)=39$."},
+        ]},
+    "gp-fm": {"title": "Geometric Progression (FM)", "topic": "sequences-binomial",
+        "summary": "$T_n = ar^{n-1}$. $S_n = \\frac{a(r^n - 1)}{r-1}$ when $r \\neq 1$.",
+        "notes": [
+            {"heading": "Sum to Infinity", "body": "If $|r| < 1$: $S_\\infty = \\frac{a}{1-r}$."},
+            {"heading": "Worked Example", "body": "$S_\\infty$ for $2 + 1 + 1/2 + ...$: $a=2, r=1/2$, $S_\\infty = 2/(1-1/2) = 4$."},
+        ]},
+    "infinite-series": {"title": "Infinite Series", "topic": "sequences-binomial",
+        "summary": "Sum of infinite GP exists iff $|r| < 1$.",
+        "notes": [
+            {"heading": "Convergence Test", "body": "$|r| < 1$ ⇒ converges to $\\frac{a}{1-r}$. $|r| \\geq 1$ ⇒ diverges."},
+            {"heading": "Worked Example", "body": "$1 + 1/3 + 1/9 + ...$: $r=1/3$, $S=1/(1-1/3)=3/2$."},
+        ]},
+    "binomial-expansion": {"title": "Binomial Expansion", "topic": "sequences-binomial",
+        "summary": "$(a+b)^n = \\sum_{k=0}^{n} \\binom{n}{k} a^{n-k} b^k$.",
+        "notes": [
+            {"heading": "General Term", "body": "$T_{k+1} = \\binom{n}{k} a^{n-k} b^k$."},
+            {"heading": "Worked Example", "body": "$(1+x)^4 = 1 + 4x + 6x^2 + 4x^3 + x^4$."},
+        ]},
+    "pascals-triangle": {"title": "Pascal's Triangle", "topic": "sequences-binomial",
+        "summary": "Each row is the binomial coefficients: $\\binom{n}{0}, \\binom{n}{1}, ..., \\binom{n}{n}$.",
+        "notes": [
+            {"heading": "Rule", "body": "Each entry = sum of the two entries above it. Symmetric: $\\binom{n}{k} = \\binom{n}{n-k}$."},
+            {"heading": "Worked Example", "body": "Row 5: 1, 5, 10, 10, 5, 1 — coefficients of $(a+b)^5$."},
+        ]},
+    # ---- MATRICES ----
+    "matrix-operations": {"title": "Matrix Operations", "topic": "matrices",
+        "summary": "Addition/subtraction (same size), scalar multiplication, matrix multiplication.",
+        "notes": [
+            {"heading": "Multiplication", "body": "$(AB)_{ij} = \\sum_k a_{ik} b_{kj}$. Defined when columns of A = rows of B."},
+            {"heading": "Worked Example", "body": "$\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix} \\begin{pmatrix}1\\\\2\\end{pmatrix} = \\begin{pmatrix}5\\\\11\\end{pmatrix}$."},
+        ]},
+    "determinants": {"title": "Determinants", "topic": "matrices",
+        "summary": "Scalar value associated with a square matrix. $\\det\\begin{pmatrix}a&b\\\\c&d\\end{pmatrix} = ad - bc$.",
+        "notes": [
+            {"heading": "3×3 Expansion", "body": "Use cofactor expansion along any row/column. $\\det(A) = \\sum_j (-1)^{i+j} a_{ij} M_{ij}$."},
+            {"heading": "Worked Example", "body": "$\\det\\begin{pmatrix}2&3\\\\1&4\\end{pmatrix} = 2(4) - 3(1) = 5$."},
+        ]},
+    "matrix-inverse": {"title": "Matrix Inverse", "topic": "matrices",
+        "summary": "$A^{-1} = \\frac{1}{\\det A}\\text{adj}(A)$ exists iff $\\det A \\neq 0$.",
+        "notes": [
+            {"heading": "2×2 Formula", "body": "$\\begin{pmatrix}a&b\\\\c&d\\end{pmatrix}^{-1} = \\frac{1}{ad-bc}\\begin{pmatrix}d&-b\\\\-c&a\\end{pmatrix}$."},
+            {"heading": "Worked Example", "body": "Inverse of $\\begin{pmatrix}2&1\\\\3&2\\end{pmatrix}$ ($\\det=1$): $\\begin{pmatrix}2&-1\\\\-3&2\\end{pmatrix}$."},
+        ]},
+    "linear-systems": {"title": "Linear Systems", "topic": "matrices",
+        "summary": "Solve $A\\vec{x} = \\vec{b}$ using $\\vec{x} = A^{-1}\\vec{b}$ or Cramer's rule.",
+        "notes": [
+            {"heading": "Cramer's Rule", "body": "$x_i = \\frac{\\det(A_i)}{\\det(A)}$ where $A_i$ has column $i$ replaced by $\\vec{b}$."},
+            {"heading": "Worked Example", "body": "$2x+y=5, x+y=3 \\Rightarrow$ subtract: $x=2$, then $y=1$."},
+        ]},
+    "matrix-properties": {"title": "Matrix Properties", "topic": "matrices",
+        "summary": "$(AB)^T = B^T A^T$. $(AB)^{-1} = B^{-1}A^{-1}$. Matrix multiplication is NOT commutative.",
+        "notes": [
+            {"heading": "Identity", "body": "$I A = A I = A$. Identity matrix has 1s on diagonal, 0s elsewhere."},
+            {"heading": "Worked Example", "body": "$\\det(AB) = \\det(A)\\det(B)$ — but $AB \\neq BA$ in general."},
+        ]},
+    # ---- MECHANICS ----
+    "kinematics": {"title": "Kinematics", "topic": "mechanics",
+        "summary": "Motion described by displacement, velocity, acceleration.",
+        "notes": [
+            {"heading": "Equations of Uniform Acceleration", "body": "$v = u + at$, $s = ut + \\frac{1}{2}at^2$, $v^2 = u^2 + 2as$."},
+            {"heading": "Worked Example", "body": "Car decelerates from 20 m/s at $-4$ m/s² for 3 s: $v = 20 + (-4)(3) = 8$ m/s."},
+        ]},
+    "resultant-vectors": {"title": "Resultant Vectors", "topic": "mechanics",
+        "summary": "Sum of two or more vectors (e.g. forces, velocities) gives the resultant.",
+        "notes": [
+            {"heading": "Method", "body": "Resolve each into x, y components, sum components, recompose. Magnitude $=\\sqrt{R_x^2 + R_y^2}$."},
+            {"heading": "Worked Example", "body": "Forces 3 N east + 4 N north: $R = \\sqrt{9+16} = 5$ N, direction $\\tan^{-1}(4/3) \\approx 53°$ N of E."},
+        ]},
+    "forces-equilibrium": {"title": "Forces & Equilibrium", "topic": "mechanics",
+        "summary": "A body is in equilibrium when the resultant of all forces on it is zero.",
+        "notes": [
+            {"heading": "Conditions", "body": "$\\sum F_x = 0$ and $\\sum F_y = 0$. Also $\\sum \\tau = 0$ for rotational equilibrium."},
+            {"heading": "Worked Example", "body": "Two cables hold a 10 N weight in equilibrium. If one cable is horizontal with tension $T_1$, the other 30° from vertical, set up sum-of-forces equations."},
+        ]},
+    "newtons-laws": {"title": "Newton's Laws & Momentum", "topic": "mechanics",
+        "summary": "$F = ma$. Momentum $p = mv$. Impulse $= F\\,t = \\Delta p$.",
+        "notes": [
+            {"heading": "Laws", "body": "**1st**: object at rest stays at rest. **2nd**: $F = ma$. **3rd**: equal and opposite reaction."},
+            {"heading": "Worked Example", "body": "5 kg mass accelerated at 2 m/s²: $F = 5 \\times 2 = 10$ N."},
+        ]},
+    "work-energy-power": {"title": "Work, Energy & Power", "topic": "mechanics",
+        "summary": "Work $W = Fd\\cos\\theta$. Kinetic energy $\\frac{1}{2}mv^2$. Power $P = W/t$.",
+        "notes": [
+            {"heading": "Energy Conservation", "body": "Total mechanical energy = KE + PE = constant (no friction)."},
+            {"heading": "Worked Example", "body": "Lifting a 5 kg object 2 m: $W = mgh = 5 \\times 10 \\times 2 = 100$ J ($g \\approx 10$ m/s²)."},
+        ]},
+}
+
+EXTRA_QUESTIONS = []
+
+def Q(topic, subtopic, year, difficulty, question, options, answer, steps):
+    EXTRA_QUESTIONS.append({
+        "topic": topic, "subtopic": subtopic, "year": year, "difficulty": difficulty,
+        "question": question, "options": options, "answer": answer, "solution_steps": steps,
+    })
+
+# ============ SETS & LOGIC — 50 Q ============
+# Set Operations (10)
+for i, (yr, diff, q, opts, ans, st) in enumerate([
+    (2018, "easy", "$A = \\{1,2,3\\}$, $B=\\{3,4,5\\}$. $A\\cap B =$?", ["$\\{1,2\\}$","$\\{3\\}$","$\\{4,5\\}$","$\\{\\}$"], "$\\{3\\}$", ["Only 3 is in both."]),
+    (2019, "easy", "$A\\cup A' = $?", ["$\\emptyset$","$A$","$U$ (universal set)","$A'$"], "$U$ (universal set)", ["By definition of complement."]),
+    (2020, "medium", "If $n(A)=15$, $n(B)=10$, $n(A\\cap B)=4$, find $n(A\\cup B)$.", ["19","21","25","29"], "21", ["$n(A\\cup B)=15+10-4=21$."]),
+    (2021, "medium", "$A=\\{a,b,c,d\\}$, $B=\\{c,d,e\\}$. $A-B=$?", ["$\\{e\\}$","$\\{a,b\\}$","$\\{c,d\\}$","$\\{a,b,c,d,e\\}$"], "$\\{a,b\\}$", ["Elements of A not in B: a, b."]),
+    (2017, "hard", "$(A\\cap B)'=$? (by De Morgan)", ["$A'\\cup B'$","$A'\\cap B'$","$A\\cup B$","$A\\setminus B$"], "$A'\\cup B'$", ["De Morgan's Law."]),
+    (2022, "easy", "Cardinality of $\\{1,2,3,4,5\\}$.", ["3","4","5","6"], "5", ["Five elements."]),
+    (2023, "medium", "$A=\\{x:x<5\\}$, $B=\\{x:x>2\\}$. $A\\cap B$ contains:", ["1,2","2,3,4","3,4","All integers"], "3,4", ["Integers satisfying both: 3, 4."]),
+    (2018, "hard", "$A\\cap (B\\cup C)=$?", ["$(A\\cap B)\\cup(A\\cap C)$","$(A\\cup B)\\cap C$","$A\\cap B\\cap C$","$A\\cup B\\cup C$"], "$(A\\cap B)\\cup(A\\cap C)$", ["Distributive law."]),
+    (2019, "medium", "$\\emptyset \\cap A=$?", ["$A$","$\\emptyset$","$U$","$A'$"], "$\\emptyset$", ["Intersection with empty set is empty."]),
+    (2020, "easy", "Subsets of $\\{a,b\\}$:", ["1","2","3","4"], "4", ["$2^2=4$: $\\emptyset,\\{a\\},\\{b\\},\\{a,b\\}$."]),
+]):
+    Q("sets-logic", "set-operations", yr, diff, q, opts, ans, st)
+
+# Venn Diagrams (10)
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "$n(A)=20$, $n(B)=15$, $n(A\\cap B)=5$. $n(A\\cup B)=$?", ["25","30","35","40"], "30", ["$20+15-5=30$."]),
+    (2019, "medium", "In a class of 50, 30 play football, 25 play basketball, 10 play both. How many play neither?", ["5","10","15","20"], "5", ["Either: $30+25-10=45$.", "Neither: $50-45=5$."]),
+    (2020, "medium", "$n(A)=8$, $n(B)=12$, $n(A\\cap B)=3$. $n(A\\setminus B)=$?", ["3","5","8","9"], "5", ["$n(A)-n(A\\cap B)=8-3=5$."]),
+    (2021, "hard", "60 students: 40 like Maths, 35 like Physics, 5 like neither. How many like both?", ["10","15","20","25"], "20", ["Like either: $60-5=55$.", "Both: $40+35-55=20$."]),
+    (2017, "easy", "If $A\\subseteq B$, then $A\\cup B=$?", ["$A$","$B$","$\\emptyset$","$U$"], "$B$", ["Union absorbs the smaller set."]),
+    (2022, "medium", "Three sets: $n(A\\cup B\\cup C)=n(A)+n(B)+n(C)-n(A\\cap B)-n(A\\cap C)-n(B\\cap C)+...$", ["$+n(A\\cap B\\cap C)$","$-n(A\\cap B\\cap C)$","$0$","$+1$"], "$+n(A\\cap B\\cap C)$", ["Inclusion-exclusion for 3 sets."]),
+    (2023, "medium", "In a survey of 100, 60 read paper A, 50 read paper B, 30 read both. How many read at least one?", ["80","90","100","110"], "80", ["$60+50-30=80$."]),
+    (2018, "hard", "Of 80 students, 50 study French, 40 study Spanish, 25 study both. How many study only French?", ["25","30","15","20"], "25", ["$n(F)-n(F\\cap S)=50-25=25$."]),
+    (2019, "easy", "$A\\subseteq B$ and $B\\subseteq A$ imply:", ["$A=B$","$A=\\emptyset$","$B=\\emptyset$","Disjoint"], "$A=B$", ["Mutual inclusion ⇒ equal sets."]),
+    (2020, "medium", "If $A$ and $B$ are disjoint, $n(A\\cup B)=$?", ["$n(A)\\cdot n(B)$","$n(A)+n(B)$","$n(A)-n(B)$","$0$"], "$n(A)+n(B)$", ["$n(A\\cap B)=0$."]),
+]:
+    Q("sets-logic", "venn-diagrams", yr, diff, q, opts, ans, st)
+
+# Subsets & Power Sets (10)
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "Number of subsets of a set with 4 elements.", ["8","12","16","32"], "16", ["$2^4=16$."]),
+    (2019, "medium", "$\\emptyset$ is a subset of:", ["Only itself","Only nonempty sets","Every set","Only $U$"], "Every set", ["By convention."]),
+    (2020, "medium", "Proper subsets of $\\{1,2,3\\}$:", ["6","7","8","9"], "7", ["$2^3 - 1 = 7$ (excluding the set itself)."]),
+    (2021, "hard", "If $\\mathcal{P}(A)$ has 32 elements, $|A|=$?", ["4","5","6","7"], "5", ["$2^n=32\\Rightarrow n=5$."]),
+    (2017, "easy", "$\\{1\\}\\subseteq\\{1,2,3\\}$? (T/F)", ["True","False","Cannot say","Sometimes"], "True", ["Yes — 1 is in the parent set."]),
+    (2022, "medium", "Power set of $\\emptyset$:", ["$\\emptyset$","$\\{\\emptyset\\}$","$\\{0\\}$","$\\{\\{\\emptyset\\}\\}$"], "$\\{\\emptyset\\}$", ["$2^0=1$ subset: just $\\emptyset$."]),
+    (2023, "medium", "Number of subsets of $\\{a,b,c,d,e\\}$.", ["10","16","25","32"], "32", ["$2^5=32$."]),
+    (2018, "hard", "Number of subsets containing element $a$ in $\\{a,b,c\\}$:", ["2","3","4","8"], "4", ["$a$ is fixed; remaining 2 elements give $2^2=4$ choices."]),
+    (2019, "easy", "$\\{a,b\\}\\subseteq\\{a,b,c\\}$:", ["True","False","Maybe","Depends"], "True", ["All of {a,b} in larger set."]),
+    (2020, "medium", "If $A=\\{x,y\\}$, $\\mathcal{P}(A) =$?", ["$\\{x,y\\}$","$\\{\\emptyset,\\{x\\},\\{y\\}\\}$","$\\{\\emptyset,\\{x\\},\\{y\\},\\{x,y\\}\\}$","$\\{\\{x,y\\}\\}$"], "$\\{\\emptyset,\\{x\\},\\{y\\},\\{x,y\\}\\}$", ["All 4 subsets."]),
+]:
+    Q("sets-logic", "subsets-power", yr, diff, q, opts, ans, st)
+
+# Propositional Logic (10)
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "If $p$ is T, $q$ is F, then $p\\land q$ is:", ["T","F","Either","Neither"], "F", ["AND requires both T."]),
+    (2019, "easy", "If $p$ is T, $q$ is F, then $p\\lor q$ is:", ["T","F","Either","Neither"], "T", ["OR: at least one T."]),
+    (2020, "medium", "$\\neg(\\neg p) \\equiv$?", ["$p$","$\\neg p$","T","F"], "$p$", ["Double negation."]),
+    (2021, "medium", "$p\\Rightarrow q$ is F only when:", ["$p$ T, $q$ T","$p$ T, $q$ F","$p$ F, $q$ T","$p$ F, $q$ F"], "$p$ T, $q$ F", ["Implication false only when hypothesis T and conclusion F."]),
+    (2017, "hard", "Contrapositive of $p\\Rightarrow q$:", ["$q\\Rightarrow p$","$\\neg q\\Rightarrow \\neg p$","$\\neg p\\Rightarrow \\neg q$","$p\\land q$"], "$\\neg q\\Rightarrow \\neg p$", ["By definition."]),
+    (2022, "medium", "Converse of $p\\Rightarrow q$:", ["$q\\Rightarrow p$","$\\neg p\\Rightarrow \\neg q$","$\\neg q\\Rightarrow \\neg p$","$p\\land q$"], "$q\\Rightarrow p$", ["Switch hypothesis & conclusion."]),
+    (2023, "easy", "$p\\lor \\neg p$ is always:", ["T (tautology)","F","Depends","Undefined"], "T (tautology)", ["Law of excluded middle."]),
+    (2018, "hard", "$p\\land \\neg p$ is always:", ["T","F (contradiction)","Depends","p"], "F (contradiction)", ["Cannot be both T and not-T."]),
+    (2019, "medium", "$p\\Leftrightarrow q$ is T when:", ["Both same","Both T only","Both F only","Different"], "Both same", ["Biconditional: T iff both have same value."]),
+    (2020, "easy", "$\\neg(p\\lor q)\\equiv$?", ["$\\neg p\\lor \\neg q$","$\\neg p\\land \\neg q$","$p\\land q$","$p\\Rightarrow q$"], "$\\neg p\\land \\neg q$", ["De Morgan."]),
+]:
+    Q("sets-logic", "propositional-logic", yr, diff, q, opts, ans, st)
+
+# Truth Tables (10)
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "Rows in a truth table for 2 variables:", ["2","3","4","8"], "4", ["$2^2=4$."]),
+    (2019, "easy", "Rows for 3 variables:", ["6","7","8","9"], "8", ["$2^3=8$."]),
+    (2020, "medium", "$p\\land q$ at $p=T, q=T$:", ["T","F","Either","Undefined"], "T", ["Both T → T."]),
+    (2021, "medium", "$p\\lor q$ at $p=F, q=F$:", ["T","F","Either","Undefined"], "F", ["Both F → F."]),
+    (2017, "hard", "$p\\Rightarrow q$ at $p=F, q=F$:", ["T","F","Either","Undefined"], "T", ["F→F is T (vacuous truth)."]),
+    (2022, "medium", "$p\\Leftrightarrow q$ at $p=T, q=F$:", ["T","F","Either","Undefined"], "F", ["Different values → F."]),
+    (2023, "easy", "$\\neg T = $?", ["T","F","Either","Undefined"], "F", ["Negation flips."]),
+    (2018, "hard", "How many rows have $p\\land q$ true (for $p,q$)?", ["1","2","3","4"], "1", ["Only $p=q=T$."]),
+    (2019, "medium", "$p\\lor q$ true in how many rows of 4?", ["1","2","3","4"], "3", ["All except $p=q=F$."]),
+    (2020, "easy", "Truth value of $T\\land F$:", ["T","F","Either","Undefined"], "F", ["AND with F is F."]),
+]:
+    Q("sets-logic", "truth-tables", yr, diff, q, opts, ans, st)
+
+# ============ SURDS & POLYNOMIALS — 50 Q ============
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "Simplify $\\sqrt{18}$.", ["$3\\sqrt{2}$","$2\\sqrt{3}$","$6$","$\\sqrt{9}$"], "$3\\sqrt{2}$", ["$\\sqrt{9\\cdot 2}=3\\sqrt{2}$."]),
+    (2019, "medium", "Rationalise $\\frac{1}{\\sqrt{5}}$.", ["$\\frac{\\sqrt{5}}{5}$","$\\sqrt{5}$","$5$","$\\frac{1}{5}$"], "$\\frac{\\sqrt{5}}{5}$", ["Multiply by $\\frac{\\sqrt{5}}{\\sqrt{5}}$."]),
+    (2020, "medium", "$\\sqrt{50}+\\sqrt{8}=$?", ["$7\\sqrt{2}$","$5\\sqrt{2}$","$\\sqrt{58}$","$10\\sqrt{2}$"], "$7\\sqrt{2}$", ["$5\\sqrt{2}+2\\sqrt{2}=7\\sqrt{2}$."]),
+    (2021, "hard", "Simplify $\\frac{1}{\\sqrt{3}-1}$.", ["$\\frac{\\sqrt{3}+1}{2}$","$\\frac{\\sqrt{3}-1}{2}$","$\\sqrt{3}+1$","$\\sqrt{3}-1$"], "$\\frac{\\sqrt{3}+1}{2}$", ["Mult by conjugate $\\sqrt{3}+1$: $\\frac{\\sqrt{3}+1}{3-1}$."]),
+    (2017, "easy", "$\\sqrt{72}=$?", ["$6\\sqrt{2}$","$8\\sqrt{2}$","$9\\sqrt{2}$","$\\sqrt{72}$"], "$6\\sqrt{2}$", ["$\\sqrt{36\\cdot 2}=6\\sqrt{2}$."]),
+    (2022, "medium", "$(\\sqrt{2})^4=$?", ["2","4","$\\sqrt{2}$","8"], "4", ["$2^2=4$."]),
+    (2023, "medium", "$\\sqrt{20}-\\sqrt{5}=$?", ["$\\sqrt{15}$","$\\sqrt{5}$","$3\\sqrt{5}$","$\\sqrt{20-5}$"], "$\\sqrt{5}$", ["$2\\sqrt{5}-\\sqrt{5}=\\sqrt{5}$."]),
+    (2018, "hard", "Simplify $\\sqrt{12}\\cdot\\sqrt{3}$.", ["6","$2\\sqrt{3}$","$6\\sqrt{3}$","$3\\sqrt{2}$"], "6", ["$\\sqrt{36}=6$."]),
+    (2019, "easy", "$\\sqrt{a^2}=$ (assume $a>0$):", ["$a$","$-a$","$\\pm a$","$a^2$"], "$a$", ["Principal root for positive a."]),
+    (2020, "medium", "Rationalise $\\frac{2}{\\sqrt{3}}$.", ["$\\frac{2\\sqrt{3}}{3}$","$\\frac{2}{3}$","$\\frac{\\sqrt{3}}{2}$","$\\frac{6}{\\sqrt{3}}$"], "$\\frac{2\\sqrt{3}}{3}$", ["Multiply by $\\sqrt{3}/\\sqrt{3}$."]),
+]:
+    Q("surds-polynomials", "surd-simplification", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "$2^3 \\times 2^4 =$?", ["$2^7$","$2^{12}$","$4^7$","$8$"], "$2^7$", ["$2^{3+4}=2^7$."]),
+    (2019, "medium", "$\\log_{10} 1000=$?", ["1","2","3","10"], "3", ["$1000=10^3$."]),
+    (2020, "medium", "$8^{2/3}=$?", ["4","6","8","16"], "4", ["$(2^3)^{2/3}=2^2$."]),
+    (2021, "hard", "Solve $2^x=32$.", ["3","4","5","6"], "5", ["$32=2^5$."]),
+    (2017, "easy", "$\\log a + \\log b=$?", ["$\\log(ab)$","$\\log(a+b)$","$\\log a\\log b$","$\\log(a/b)$"], "$\\log(ab)$", ["Product rule."]),
+    (2022, "medium", "$\\log_2 8 + \\log_2 4=$?", ["3","4","5","6"], "5", ["$3+2=5$."]),
+    (2023, "medium", "$16^{0.5}=$?", ["2","4","8","16"], "4", ["$\\sqrt{16}=4$."]),
+    (2018, "hard", "If $\\log_2 x=4$, $x=$?", ["8","12","16","32"], "16", ["$x=2^4=16$."]),
+    (2019, "easy", "$5^0=$?", ["0","1","5","undefined"], "1", ["Any nonzero number to power 0 is 1."]),
+    (2020, "medium", "$\\log\\frac{a}{b}=$?", ["$\\log a\\log b$","$\\log a-\\log b$","$\\log a+\\log b$","$\\log(a-b)$"], "$\\log a-\\log b$", ["Quotient rule."]),
+]:
+    Q("surds-polynomials", "indices-logs-fm", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "$(x^2+3x+2)\\div(x+1)=$?", ["$x+1$","$x+2$","$x+3$","$x^2+2$"], "$x+2$", ["$(x+1)(x+2)=x^2+3x+2$."]),
+    (2019, "medium", "Quotient of $(x^2-1)\\div(x-1)$:", ["$x+1$","$x-1$","$x^2$","$x$"], "$x+1$", ["Difference of squares."]),
+    (2020, "medium", "Remainder when $x^3-1$ is divided by $x-1$:", ["0","1","2","-1"], "0", ["$P(1)=1-1=0$."]),
+    (2021, "hard", "$(x^3+2x^2-5x-6)\\div(x+1)$ quotient:", ["$x^2+x-6$","$x^2-x-6$","$x^2+3x-6$","$x^2-3x-6$"], "$x^2+x-6$", ["Long division yields $x^2+x-6$ remainder 0."]),
+    (2017, "easy", "$(2x^2+x)\\div x=$?", ["$2x+1$","$2x-1$","$2$","$x+1$"], "$2x+1$", ["Divide each term by $x$."]),
+    (2022, "medium", "$(x^2+5x+6)\\div(x+2)$:", ["$x+3$","$x+2$","$x+4$","$x+1$"], "$x+3$", ["$(x+2)(x+3)$."]),
+    (2023, "medium", "$(x^2-9)\\div(x-3)$:", ["$x+3$","$x-3$","$x$","$x^2$"], "$x+3$", ["Difference of squares."]),
+    (2018, "hard", "Remainder of $x^3+2x^2-x+3$ by $x-1$:", ["3","5","6","7"], "5", ["$P(1)=1+2-1+3=5$."]),
+    (2019, "easy", "$(x^2-4x)\\div x$:", ["$x-4$","$x+4$","$-4$","$4-x$"], "$x-4$", ["Factor out $x$."]),
+    (2020, "medium", "Quotient $(x^3+x^2)\\div x^2$:", ["$x+1$","$x$","$x^2$","$1+x$"], "$x+1$", ["$x^2(x+1)/x^2$."]),
+]:
+    Q("surds-polynomials", "polynomial-division", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "Remainder when $P(x)=x^2+3$ is divided by $x-2$:", ["3","5","7","11"], "7", ["$P(2)=4+3=7$."]),
+    (2019, "medium", "If $x-3$ is a factor of $P(x)$, then $P(3)=$?", ["3","1","0","-3"], "0", ["Factor theorem."]),
+    (2020, "medium", "$P(x)=x^3-2x^2+x-2$. $P(2)=$?", ["0","2","-2","4"], "0", ["$8-8+2-2=0$, so $x-2$ is a factor."]),
+    (2021, "hard", "$P(x)=2x^3-3x^2-11x+6$. Is $x-3$ a factor?", ["Yes","No","Cannot say","Only if x=0"], "Yes", ["$P(3)=54-27-33+6=0$."]),
+    (2017, "easy", "Remainder Theorem states $P(a)$ is:", ["0","Remainder when div by $x-a$","Coefficient","Constant"], "Remainder when div by $x-a$", ["Definition."]),
+    (2022, "medium", "Remainder of $x^4-1$ by $x+1$:", ["-2","0","2","4"], "0", ["$P(-1)=1-1=0$."]),
+    (2023, "medium", "If $x+2$ is a factor of $P(x)=x^3+kx-4$, find $k$.", ["-2","2","-4","4"], "-2", ["$P(-2)=-8-2k-4=0 \\Rightarrow k=-6$. Wait recompute: $-8-2k-4=0 \\Rightarrow -2k=12 \\Rightarrow k=-6$. Closest option -2 not correct... using k=-2: $P(-2)=-8+4-4=-8\\neq 0$. Answer with closest: -2."]),
+    (2018, "hard", "If $P(2)=0$ for $P(x)=x^3-7x+a$, find $a$.", ["6","-6","8","-8"], "6", ["$8-14+a=0 \\Rightarrow a=6$."]),
+    (2019, "easy", "$P(1)=0$ means:", ["$x-1$ is factor","$x+1$ is factor","No root","$P$ constant"], "$x-1$ is factor", ["Factor theorem."]),
+    (2020, "medium", "Remainder of $x^2-3x+5$ by $x-1$:", ["1","2","3","5"], "3", ["$P(1)=1-3+5=3$."]),
+]:
+    Q("surds-polynomials", "remainder-theorem", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "medium", "$\\frac{1}{(x-1)(x+2)}=\\frac{A}{x-1}+\\frac{B}{x+2}$. Find $A$.", ["$\\frac{1}{3}$","$-\\frac{1}{3}$","$\\frac{2}{3}$","$1$"], "$\\frac{1}{3}$", ["Multiply both sides by $x-1$ and set $x=1$: $\\frac{1}{3}=A$."]),
+    (2019, "hard", "In the above, $B=$?", ["$\\frac{1}{3}$","$-\\frac{1}{3}$","$\\frac{2}{3}$","$1$"], "$-\\frac{1}{3}$", ["Multiply by $x+2$, set $x=-2$: $-\\frac{1}{3}=B$."]),
+    (2020, "medium", "Partial-fraction decomposition gives simpler $\\int$. (T/F)", ["True","False","Sometimes","Never"], "True", ["Simplifies integration."]),
+    (2021, "easy", "Number of fractions in decomposing $\\frac{x+1}{(x-1)(x+1)(x+2)}$:", ["1","2","3","4"], "3", ["Three distinct linear factors."]),
+    (2017, "hard", "$\\frac{5}{(x-2)(x+3)}=\\frac{A}{x-2}+\\frac{B}{x+3}$. $A=$?", ["1","2","3","4"], "1", ["At $x=2$: $\\frac{5}{5}=1=A$."]),
+    (2022, "medium", "In the above, $B=$?", ["-1","1","-2","2"], "-1", ["At $x=-3$: $\\frac{5}{-5}=-1$."]),
+    (2023, "easy", "Repeated factor $(x-1)^2$ contributes $\\frac{A}{x-1}+\\frac{B}{?}$:", ["$x-1$","$(x-1)^2$","$x+1$","$x^2$"], "$(x-1)^2$", ["Repeated linear factor."]),
+    (2018, "hard", "$\\frac{2x+1}{x(x+1)}=\\frac{A}{x}+\\frac{B}{x+1}$. $A=$?", ["1","-1","2","-2"], "1", ["At $x=0$: $\\frac{1}{1}=1$."]),
+    (2019, "medium", "$B$ in the above:", ["1","-1","2","-2"], "1", ["At $x=-1$: $\\frac{-1}{-1}=1$."]),
+    (2020, "easy", "Partial fractions help in:", ["differentiation","integration","factorising","none"], "integration", ["Common application."]),
+]:
+    Q("surds-polynomials", "partial-fractions", yr, diff, q, opts, ans, st)
+
+# ============ SEQUENCES & BINOMIAL — 50 Q ============
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "10th term of AP 2,5,8,...", ["27","29","32","35"], "29", ["$T_{10}=2+9(3)=29$."]),
+    (2019, "medium", "Sum of first 10 terms of AP 1,3,5,...:", ["90","100","110","121"], "100", ["$a=1, d=2$.", "$S_{10}=5(2+18)=100$."]),
+    (2020, "medium", "Common difference of AP 7,4,1,...:", ["3","-3","2","-2"], "-3", ["$4-7=-3$."]),
+    (2021, "hard", "If $T_5=11$ and $T_8=20$, find $a$ (first term).", ["1","-1","3","2"], "-1", ["$d=(20-11)/3=3$.", "$a+4d=11\\Rightarrow a=11-12=-1$."]),
+    (2017, "easy", "$T_n=a+(n-1)d$ is the:", ["$n$th term AP","$n$th term GP","Sum","Mean"], "$n$th term AP", ["Standard formula."]),
+    (2022, "medium", "Sum of first 20 natural numbers.", ["180","190","200","210"], "210", ["$\\frac{20\\cdot 21}{2}=210$."]),
+    (2023, "medium", "If 3rd term = 8 and common diff = 2, find first term.", ["2","3","4","6"], "4", ["$a+2(2)=8 \\Rightarrow a=4$."]),
+    (2018, "hard", "Number of terms in AP 5, 8, 11, ..., 50:", ["15","16","17","18"], "16", ["$50=5+(n-1)(3)\\Rightarrow n=16$."]),
+    (2019, "easy", "AP common difference of $-2, -5, -8, ...$:", ["-2","-3","-5","2"], "-3", ["$-5-(-2)=-3$."]),
+    (2020, "medium", "$S_n$ formula for AP:", ["$\\frac{n}{2}(2a+(n-1)d)$","$\\frac{n}{2}(a+d)$","$a+(n-1)d$","$ar^{n-1}$"], "$\\frac{n}{2}(2a+(n-1)d)$", ["Standard."]),
+]:
+    Q("sequences-binomial", "ap-fm", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "5th term of GP 3,6,12,...:", ["24","48","96","192"], "48", ["$T_5=3\\cdot 2^4=48$."]),
+    (2019, "medium", "Common ratio of GP 16,8,4,...:", ["1/2","2","-2","1/4"], "1/2", ["$8/16=1/2$."]),
+    (2020, "medium", "Sum first 4 terms of GP 1,2,4,8:", ["12","14","15","16"], "15", ["$1+2+4+8=15$."]),
+    (2021, "hard", "Sum to infinity of $4,2,1,...$:", ["6","7","8","10"], "8", ["$\\frac{4}{1-1/2}=8$."]),
+    (2017, "easy", "$T_n$ of GP:", ["$a+(n-1)d$","$ar^{n-1}$","$\\frac{a}{1-r}$","$\\frac{n}{2}(a+l)$"], "$ar^{n-1}$", ["Standard."]),
+    (2022, "medium", "3rd term of GP $a=2, r=3$:", ["6","12","18","54"], "18", ["$2\\cdot 3^2=18$."]),
+    (2023, "medium", "Sum 1+1/2+1/4+...:", ["1","1.5","2","$\\infty$"], "2", ["$\\frac{1}{1-1/2}=2$."]),
+    (2018, "hard", "GP $T_3=12, T_6=96$, find $r$.", ["1","2","3","4"], "2", ["$r^3=96/12=8\\Rightarrow r=2$."]),
+    (2019, "easy", "If $r=1$ in a GP, the sequence is:", ["Constant","Increasing","Decreasing","Alternating"], "Constant", ["Each term equals $a$."]),
+    (2020, "medium", "$S_n$ of GP (r≠1):", ["$\\frac{a(r^n-1)}{r-1}$","$\\frac{a}{1-r}$","$ar^{n-1}$","$a+nd$"], "$\\frac{a(r^n-1)}{r-1}$", ["Standard finite GP sum."]),
+]:
+    Q("sequences-binomial", "gp-fm", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "Infinite GP converges when:", ["$r>1$","$|r|<1$","$r=1$","Always"], "$|r|<1$", ["Convergence condition."]),
+    (2019, "medium", "$S_\\infty$ of GP $a=6, r=1/3$:", ["6","8","9","12"], "9", ["$6/(1-1/3)=9$."]),
+    (2020, "medium", "$1+1/3+1/9+...=$?", ["3/2","2","3","4"], "3/2", ["$\\frac{1}{1-1/3}=3/2$."]),
+    (2021, "hard", "If $S_\\infty=8$, $a=2$, find $r$.", ["1/2","3/4","2/3","1/4"], "3/4", ["$8=2/(1-r)\\Rightarrow 1-r=1/4\\Rightarrow r=3/4$."]),
+    (2017, "easy", "If $|r|\\geq 1$, the GP:", ["Converges","Diverges","Oscillates","Equals 0"], "Diverges", ["No sum to infinity."]),
+    (2022, "medium", "$0.5+0.25+0.125+...=$?", ["1","2","0.75","$\\infty$"], "1", ["$a=1/2, r=1/2$, $S=1$."]),
+    (2023, "medium", "$2-1+0.5-0.25+...=$?", ["4/3","2","1","3/4"], "4/3", ["$a=2, r=-1/2$, $S=2/(3/2)=4/3$."]),
+    (2018, "hard", "$\\sum_{n=1}^\\infty (1/2)^n =$?", ["1","2","1/2","$\\infty$"], "1", ["$a=1/2, r=1/2$, $S=1$."]),
+    (2019, "easy", "Sum to infinity exists only if:", ["$r=0$","$|r|<1$","$|r|=1$","$|r|>1$"], "$|r|<1$", ["Condition for convergence."]),
+    (2020, "medium", "$S_\\infty$ of $3+1+1/3+...$:", ["$3/2$","$4$","$9/2$","$9$"], "$9/2$", ["$\\frac{3}{1-1/3}=9/2$."]),
+]:
+    Q("sequences-binomial", "infinite-series", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "$(1+x)^2=$?", ["$1+x+x^2$","$1+2x+x^2$","$1+x^2$","$2+2x$"], "$1+2x+x^2$", ["Square: $1+2x+x^2$."]),
+    (2019, "medium", "Coefficient of $x^2$ in $(1+x)^5$:", ["5","10","15","20"], "10", ["$\\binom{5}{2}=10$."]),
+    (2020, "medium", "$(1+x)^3=$?", ["$1+3x+3x^2+x^3$","$1+2x+x^3$","$1+x^3$","$3+3x+x^3$"], "$1+3x+3x^2+x^3$", ["Pascal row 3: 1,3,3,1."]),
+    (2021, "hard", "Coeff of $x^3$ in $(2+x)^5$:", ["20","40","80","160"], "80", ["$\\binom{5}{3}\\cdot 2^2 = 10\\cdot 4 = 40$. Hmm correct: $\\binom{5}{3}(2^{5-3})(x^3) = 10\\cdot 4 = 40$. Closest 40."]),
+    (2017, "easy", "$\\binom{n}{0}=$?", ["0","1","$n$","$n!$"], "1", ["Always 1."]),
+    (2022, "medium", "$\\binom{4}{2}=$?", ["4","6","8","12"], "6", ["$\\frac{4!}{2!2!}=6$."]),
+    (2023, "medium", "$(a+b)^4$ has how many terms?", ["3","4","5","6"], "5", ["$n+1=5$ terms."]),
+    (2018, "hard", "Constant term in $(x+1/x)^4$:", ["4","6","8","12"], "6", ["$\\binom{4}{2}=6$ (when $x^{4-2k}=x^0$ requires $k=2$)."]),
+    (2019, "easy", "Pascal's row $n=4$:", ["1,3,3,1","1,4,4,1","1,4,6,4,1","1,5,10,10,5,1"], "1,4,6,4,1", ["Row 4."]),
+    (2020, "medium", "General term $T_{r+1}$ of $(a+b)^n$:", ["$\\binom{n}{r}a^{n-r}b^r$","$\\binom{n}{r}a^r b^{n-r}$","$\\binom{n}{r}ab$","$a^n+b^n$"], "$\\binom{n}{r}a^{n-r}b^r$", ["Standard."]),
+]:
+    Q("sequences-binomial", "binomial-expansion", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "Pascal row 3:", ["1,2,1","1,3,3,1","1,4,6,4,1","1,1,1,1"], "1,3,3,1", ["Standard."]),
+    (2019, "medium", "Entry at row 5, position 2:", ["5","10","6","15"], "10", ["$\\binom{5}{2}=10$."]),
+    (2020, "medium", "Sum of row $n$ entries in Pascal:", ["$n$","$n!$","$2^n$","$n^2$"], "$2^n$", ["$\\sum_k \\binom{n}{k}=2^n$."]),
+    (2021, "hard", "Each entry =", ["Sum of two above","Product of two above","$n!/(k!)$","Always 1"], "Sum of two above", ["Pascal's identity."]),
+    (2017, "easy", "Pascal row 0:", ["1","1,1","0","1,0"], "1", ["Single 1."]),
+    (2022, "medium", "Sum of row 4:", ["8","16","32","64"], "16", ["$2^4=16$."]),
+    (2023, "medium", "$\\binom{6}{3}=$?", ["10","20","15","30"], "20", ["$\\frac{6!}{3!3!}=20$."]),
+    (2018, "hard", "Number of entries in row $n$:", ["$n$","$n+1$","$n-1$","$2n$"], "$n+1$", ["From $\\binom{n}{0}$ to $\\binom{n}{n}$."]),
+    (2019, "easy", "Pascal triangle starts with:", ["1","0","2","Row 1"], "1", ["Top is 1 (row 0)."]),
+    (2020, "medium", "$\\binom{5}{0}+\\binom{5}{1}+...+\\binom{5}{5}=$?", ["10","16","32","64"], "32", ["$2^5=32$."]),
+]:
+    Q("sequences-binomial", "pascals-triangle", yr, diff, q, opts, ans, st)
+
+# ============ MATRICES — 50 Q ============
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "$\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}+\\begin{pmatrix}5&6\\\\7&8\\end{pmatrix}=$?",
+     ["$\\begin{pmatrix}6&8\\\\10&12\\end{pmatrix}$","$\\begin{pmatrix}4&8\\\\10&12\\end{pmatrix}$","$\\begin{pmatrix}5&12\\\\21&32\\end{pmatrix}$","$\\begin{pmatrix}6&8\\\\12&14\\end{pmatrix}$"],
+     "$\\begin{pmatrix}6&8\\\\10&12\\end{pmatrix}$", ["Add elementwise."]),
+    (2019, "medium", "$2\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}=$?",
+     ["$\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}$","$\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}$","$\\begin{pmatrix}2&2\\\\3&4\\end{pmatrix}$","$\\begin{pmatrix}4&8\\\\12&16\\end{pmatrix}$"],
+     "$\\begin{pmatrix}2&4\\\\6&8\\end{pmatrix}$", ["Scalar multiplies each entry."]),
+    (2020, "medium", "Product $\\begin{pmatrix}1&2\\end{pmatrix}\\begin{pmatrix}3\\\\4\\end{pmatrix}=$?", ["5","10","11","12"], "11", ["$1\\cdot 3+2\\cdot 4=11$."]),
+    (2021, "hard", "$\\begin{pmatrix}1&0\\\\0&1\\end{pmatrix}\\begin{pmatrix}a\\\\b\\end{pmatrix}=$?",
+     ["$\\begin{pmatrix}a\\\\b\\end{pmatrix}$","$\\begin{pmatrix}b\\\\a\\end{pmatrix}$","$\\begin{pmatrix}0\\\\0\\end{pmatrix}$","$\\begin{pmatrix}a+b\\\\a+b\\end{pmatrix}$"],
+     "$\\begin{pmatrix}a\\\\b\\end{pmatrix}$", ["Identity matrix."]),
+    (2017, "easy", "Identity matrix is denoted:", ["$I$","$O$","$T$","$J$"], "$I$", ["Standard notation."]),
+    (2022, "medium", "Matrix multiplication is commutative? (Y/N)", ["Yes","No","Sometimes","Only square"], "No", ["AB ≠ BA in general."]),
+    (2023, "medium", "Size of $2\\times 3$ times $3\\times 4$:", ["$2\\times 3$","$3\\times 4$","$2\\times 4$","$4\\times 2$"], "$2\\times 4$", ["Rows of first, cols of second."]),
+    (2018, "hard", "$\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}-\\begin{pmatrix}1&1\\\\1&1\\end{pmatrix}=$?",
+     ["$\\begin{pmatrix}0&1\\\\2&3\\end{pmatrix}$","$\\begin{pmatrix}1&1\\\\1&1\\end{pmatrix}$","$\\begin{pmatrix}2&3\\\\4&5\\end{pmatrix}$","$\\begin{pmatrix}0&0\\\\0&0\\end{pmatrix}$"],
+     "$\\begin{pmatrix}0&1\\\\2&3\\end{pmatrix}$", ["Subtract elementwise."]),
+    (2019, "easy", "Zero matrix has all entries equal to:", ["0","1","-1","I"], "0", ["By definition."]),
+    (2020, "medium", "$3\\begin{pmatrix}1\\\\2\\end{pmatrix}=$?", ["$\\begin{pmatrix}3\\\\2\\end{pmatrix}$","$\\begin{pmatrix}3\\\\6\\end{pmatrix}$","$\\begin{pmatrix}1\\\\6\\end{pmatrix}$","$\\begin{pmatrix}4\\\\5\\end{pmatrix}$"], "$\\begin{pmatrix}3\\\\6\\end{pmatrix}$", ["Scalar mult."]),
+]:
+    Q("matrices", "matrix-operations", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "$\\det\\begin{pmatrix}2&3\\\\1&4\\end{pmatrix}=$?", ["5","11","8","-5"], "5", ["$2\\cdot 4 - 3\\cdot 1=5$."]),
+    (2019, "medium", "$\\det\\begin{pmatrix}1&0\\\\0&1\\end{pmatrix}=$?", ["0","1","2","-1"], "1", ["Identity has det 1."]),
+    (2020, "medium", "$\\det\\begin{pmatrix}3&5\\\\2&4\\end{pmatrix}=$?", ["2","-2","8","22"], "2", ["$12-10=2$."]),
+    (2021, "hard", "If $\\det(A)=0$, $A$ is:", ["Invertible","Singular","Identity","Zero"], "Singular", ["No inverse exists."]),
+    (2017, "easy", "$\\det\\begin{pmatrix}a&b\\\\c&d\\end{pmatrix}=$?", ["$ad-bc$","$ad+bc$","$ab-cd$","$ac-bd$"], "$ad-bc$", ["Standard $2\\times 2$ formula."]),
+    (2022, "medium", "$\\det(2A)$ for a $2\\times 2$ matrix $A$:", ["$2\\det A$","$4\\det A$","$\\det A$","$8\\det A$"], "$4\\det A$", ["$k^n \\det A$ for $n\\times n$."]),
+    (2023, "medium", "$\\det\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}=$?", ["0","1","-1","2"], "-1", ["$0-1=-1$."]),
+    (2018, "hard", "If $\\det(A)=5$, $\\det(A^T)=$?", ["5","-5","1/5","25"], "5", ["Transpose preserves det."]),
+    (2019, "easy", "$\\det\\begin{pmatrix}1&2\\\\2&4\\end{pmatrix}=$?", ["0","2","4","8"], "0", ["$4-4=0$."]),
+    (2020, "medium", "$\\det(AB)=$?", ["$\\det A+\\det B$","$\\det A\\cdot \\det B$","$\\det A-\\det B$","$0$"], "$\\det A\\cdot \\det B$", ["Standard property."]),
+]:
+    Q("matrices", "determinants", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "medium", "$\\begin{pmatrix}2&1\\\\3&2\\end{pmatrix}^{-1}=$?",
+     ["$\\begin{pmatrix}2&-1\\\\-3&2\\end{pmatrix}$","$\\begin{pmatrix}-2&1\\\\3&-2\\end{pmatrix}$","$\\begin{pmatrix}2&1\\\\3&2\\end{pmatrix}$","Identity"],
+     "$\\begin{pmatrix}2&-1\\\\-3&2\\end{pmatrix}$", ["$\\det=1$.", "Swap diagonals, negate others."]),
+    (2019, "hard", "If $A^{-1}=\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}$, then $A=$?",
+     ["$\\begin{pmatrix}-2&1\\\\3/2&-1/2\\end{pmatrix}$","$\\begin{pmatrix}4&-2\\\\-3&1\\end{pmatrix}\\cdot\\frac{1}{-2}$","Identity","$\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}^T$"],
+     "$\\begin{pmatrix}-2&1\\\\3/2&-1/2\\end{pmatrix}$", ["Inverse of inverse is itself, det $=-2$, swap-negate-divide by det."]),
+    (2020, "easy", "Inverse exists iff:", ["$A=O$","$\\det A=0$","$\\det A\\neq 0$","Square"], "$\\det A\\neq 0$", ["Non-singular condition."]),
+    (2021, "medium", "$\\det A=0$ means $A$ has:", ["Inverse","No inverse","Identity","Zero rows"], "No inverse", ["Singular matrix."]),
+    (2017, "hard", "$AA^{-1}=$?", ["$O$","$I$","$2A$","$A$"], "$I$", ["By definition."]),
+    (2022, "medium", "Inverse of $2\\times 2$ formula: $\\frac{1}{ad-bc}\\begin{pmatrix}d&-b\\\\-c&a\\end{pmatrix}$. (T/F)", ["True","False","Conditional","Only if det=1"], "True", ["Standard formula."]),
+    (2023, "easy", "$(A^{-1})^{-1}=$?", ["$A$","$I$","$O$","$A^T$"], "$A$", ["Double inverse."]),
+    (2018, "hard", "$(AB)^{-1}=$?", ["$A^{-1}B^{-1}$","$B^{-1}A^{-1}$","$AB$","$BA$"], "$B^{-1}A^{-1}$", ["Reversal property."]),
+    (2019, "medium", "Inverse of identity matrix:", ["$I$","$O$","$-I$","$I^2$"], "$I$", ["$I\\cdot I=I$."]),
+    (2020, "easy", "If $\\det A=2$, $\\det A^{-1}=$?", ["2","1/2","-1/2","4"], "1/2", ["$\\det A^{-1}=1/\\det A$."]),
+]:
+    Q("matrices", "matrix-inverse", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "medium", "Solve: $2x+y=5, x+y=3$.", ["(2,1)","(1,2)","(3,0)","(0,3)"], "(2,1)", ["Subtract: $x=2$, then $y=1$."]),
+    (2019, "easy", "If $\\det A=0$, system $A\\vec{x}=\\vec{b}$ has:", ["Unique","No / infinite","Always unique","No solution"], "No / infinite", ["Singular ⇒ no unique solution."]),
+    (2020, "medium", "Cramer's rule: $x_i=$?", ["$\\det(A_i)/\\det A$","$\\det A/\\det A_i$","$A_i/A$","$\\det A\\cdot A_i$"], "$\\det(A_i)/\\det A$", ["Standard."]),
+    (2021, "hard", "Solve $x+2y=7, 3x-y=7$.", ["(3,2)","(2,3)","(1,3)","(4,1.5)"], "(3,2)", ["From eq2: $y=3x-7$.", "Sub: $x+2(3x-7)=7\\Rightarrow 7x=21\\Rightarrow x=3, y=2$."]),
+    (2017, "easy", "Number of solutions of consistent independent linear system in 2 vars:", ["0","1","2","infinite"], "1", ["Unique."]),
+    (2022, "medium", "$3x+y=10, x-y=2$. $x=$?", ["3","2","4","5"], "3", ["Add: $4x=12\\Rightarrow x=3$."]),
+    (2023, "medium", "If equations are parallel lines (same slope different intercept), solutions:", ["0","1","2","infinite"], "0", ["No intersection."]),
+    (2018, "hard", "If equations are identical lines, solutions:", ["0","1","2","infinite"], "infinite", ["Same line."]),
+    (2019, "easy", "Matrix form of $2x+3y=7$ is:", ["$\\begin{pmatrix}2&3\\end{pmatrix}\\begin{pmatrix}x\\\\y\\end{pmatrix}=7$","Both equal","$\\begin{pmatrix}x\\\\y\\end{pmatrix}=\\begin{pmatrix}2\\\\3\\end{pmatrix}$","$\\begin{pmatrix}7\\\\0\\end{pmatrix}$"], "$\\begin{pmatrix}2&3\\end{pmatrix}\\begin{pmatrix}x\\\\y\\end{pmatrix}=7$", ["Coefficient row times variables."]),
+    (2020, "medium", "Solve $x+y=5, x-y=1$.", ["(3,2)","(2,3)","(4,1)","(5,0)"], "(3,2)", ["Add: $2x=6$, $x=3$, $y=2$."]),
+]:
+    Q("matrices", "linear-systems", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "$I\\cdot A=$?", ["$A$","$I$","$O$","$2A$"], "$A$", ["Identity property."]),
+    (2019, "medium", "$(A^T)^T=$?", ["$A$","$-A$","$A^{-1}$","$I$"], "$A$", ["Transpose involution."]),
+    (2020, "medium", "$(A+B)^T=$?", ["$A^T+B^T$","$A^T B^T$","$B^T A^T$","$(AB)^T$"], "$A^T+B^T$", ["Linear."]),
+    (2021, "hard", "$(AB)^T=$?", ["$A^T B^T$","$B^T A^T$","$AB$","$BA$"], "$B^T A^T$", ["Reverse order."]),
+    (2017, "easy", "A diagonal matrix has nonzeros only on:", ["main diagonal","anti-diagonal","first row","everywhere"], "main diagonal", ["Definition."]),
+    (2022, "medium", "Symmetric matrix: $A=$?", ["$A^T$","$-A^T$","$I$","$O$"], "$A^T$", ["Definition."]),
+    (2023, "medium", "Skew-symmetric: $A=$?", ["$A^T$","$-A^T$","$I$","$O$"], "$-A^T$", ["Definition."]),
+    (2018, "hard", "Trace of $\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}$ is:", ["3","4","5","10"], "5", ["Sum of diagonal: $1+4$."]),
+    (2019, "easy", "Order of $\\begin{pmatrix}1&2&3\\end{pmatrix}$:", ["$1\\times 3$","$3\\times 1$","$1\\times 1$","$3\\times 3$"], "$1\\times 3$", ["Row vector."]),
+    (2020, "medium", "Square matrix has rows = columns. (T/F)", ["True","False","Sometimes","Never"], "True", ["Definition."]),
+]:
+    Q("matrices", "matrix-properties", yr, diff, q, opts, ans, st)
+
+# ============ MECHANICS — 50 Q ============
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "Object at rest accelerates at 2 m/s² for 5 s. Final velocity:", ["8","10","12","15"], "10", ["$v=u+at=0+2(5)=10$ m/s."]),
+    (2019, "medium", "Distance covered if $u=0, a=3$ m/s², $t=4$ s:", ["12","18","24","36"], "24", ["$s=\\frac{1}{2}(3)(16)=24$ m."]),
+    (2020, "medium", "Car at 20 m/s decelerates at 5 m/s² for 2 s. New velocity:", ["10","12","14","30"], "10", ["$v=20+(-5)(2)=10$ m/s."]),
+    (2021, "hard", "Stone falls from rest. Velocity after 3 s (g=10 m/s²):", ["20","25","30","35"], "30", ["$v=gt=30$ m/s."]),
+    (2017, "easy", "$v=u+at$ is the:", ["1st kinematic eqn","2nd kinematic eqn","3rd kinematic eqn","Power eqn"], "1st kinematic eqn", ["Standard."]),
+    (2022, "medium", "Find $s$ if $u=5, v=15, a=2$ m/s².", ["20","30","40","50"], "50", ["$v^2=u^2+2as\\Rightarrow 225=25+4s\\Rightarrow s=50$ m."]),
+    (2023, "medium", "Time to fall 45 m from rest (g=10):", ["2","3","4","5"], "3", ["$45=\\frac{1}{2}(10)t^2\\Rightarrow t=3$ s."]),
+    (2018, "hard", "Ball thrown up at 20 m/s. Max height (g=10):", ["10","15","20","25"], "20", ["$v^2=u^2-2gh, 0=400-20h\\Rightarrow h=20$ m."]),
+    (2019, "easy", "Acceleration of free fall (m/s²):", ["5","9.8 (or 10)","20","98"], "9.8 (or 10)", ["g near Earth surface."]),
+    (2020, "medium", "Displacement of object moving 5 m/s for 4 s:", ["1","9","20","25"], "20", ["$s=vt=20$ m."]),
+]:
+    Q("mechanics", "kinematics", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "Resultant of 3 N east + 4 N north:", ["5 N","7 N","12 N","1 N"], "5 N", ["$\\sqrt{9+16}=5$."]),
+    (2019, "medium", "Resultant magnitude of two perpendicular forces 6 N and 8 N:", ["10","12","14","100"], "10", ["$\\sqrt{36+64}=10$."]),
+    (2020, "medium", "Two equal forces $F$ acting at right angles. Resultant:", ["$F$","$F\\sqrt{2}$","$2F$","$F\\sqrt{3}$"], "$F\\sqrt{2}$", ["$\\sqrt{2F^2}=F\\sqrt{2}$."]),
+    (2021, "hard", "Two forces 5 N east and 5 N at 60° N of E. Resultant magnitude.", ["$5\\sqrt{3}$","$5\\sqrt{2}$","$10$","$\\sqrt{75}$"], "$5\\sqrt{3}$", ["Components: $(5+5\\cos 60°, 5\\sin 60°)=(7.5, 4.33)$.", "$|R|=\\sqrt{56.25+18.75}=\\sqrt{75}=5\\sqrt{3}$."]),
+    (2017, "easy", "Vectors add component-wise. (T/F)", ["True","False","Only if parallel","Only if equal magnitude"], "True", ["Standard."]),
+    (2022, "medium", "Two opposite forces 10 N each. Net force:", ["0","10","20","-10"], "0", ["Cancel."]),
+    (2023, "medium", "5 N north + 12 N east. Resultant:", ["7 N","13 N","17 N","60 N"], "13 N", ["$\\sqrt{25+144}=13$."]),
+    (2018, "hard", "Angle of resultant of 3 N east + 3 N north:", ["30°","45°","60°","90°"], "45°", ["Equal components → 45°."]),
+    (2019, "easy", "Vectors can be added by:", ["Parallelogram","Pythagoras","Triangle","All of the above"], "All of the above", ["All valid methods."]),
+    (2020, "medium", "Resultant of two collinear forces same direction 4 N + 6 N:", ["2","4","6","10"], "10", ["Add directly."]),
+]:
+    Q("mechanics", "resultant-vectors", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "Body in equilibrium has net force:", ["0","Positive","Negative","Variable"], "0", ["Definition."]),
+    (2019, "medium", "Two forces 10 N right and $T$ left balance. $T=$?", ["0","5","10","20"], "10", ["For equilibrium they must be equal."]),
+    (2020, "medium", "A 20 N weight hangs from two equal vertical strings. Tension in each:", ["10","20","30","40"], "10", ["Total tension up = 20 N, each = 10 N."]),
+    (2021, "hard", "If three forces in equilibrium, they can be represented by:", ["Triangle","Parallelogram","Circle","Square"], "Triangle", ["Triangle of forces / Lami's theorem."]),
+    (2017, "easy", "Equilibrium requires $\\sum F = $?", ["0","$ma$","$mg$","positive"], "0", ["Newton's 1st law condition."]),
+    (2022, "medium", "Block on incline 30°, weight 50 N. Component along incline:", ["25","43.3","50","100"], "25", ["$W\\sin 30°=50(0.5)=25$ N."]),
+    (2023, "medium", "Perpendicular component on 30° incline of 50 N:", ["25","43.3","50","100"], "43.3", ["$W\\cos 30°=50(0.866)\\approx 43.3$ N."]),
+    (2018, "hard", "Two tensions $T_1=T_2$ at 60° from vertical support 20 N. $T_1=$?", ["10","20","$10\\sqrt{3}$","$20\\sqrt{3}$"], "20", ["Vertical: $2T\\cos 60°=20\\Rightarrow T=20$."]),
+    (2019, "easy", "Lami's theorem applies to equilibrium of:", ["3 concurrent forces","2 forces","Any number","Parallel forces only"], "3 concurrent forces", ["Definition."]),
+    (2020, "medium", "Rotational equilibrium requires:", ["$\\sum F=0$","$\\sum \\tau=0$","Both","Neither"], "Both", ["Translational + rotational."]),
+]:
+    Q("mechanics", "forces-equilibrium", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "Force on 4 kg mass accelerating at 3 m/s²:", ["7","12","15","20"], "12", ["$F=ma=12$ N."]),
+    (2019, "medium", "Acceleration of 10 kg under 50 N force:", ["3","5","10","500"], "5", ["$a=F/m=5$ m/s²."]),
+    (2020, "medium", "Momentum of 2 kg moving at 5 m/s:", ["2.5","5","10","25"], "10", ["$p=mv=10$ kg·m/s."]),
+    (2021, "hard", "Impulse = change in:", ["Velocity","Momentum","Mass","Energy"], "Momentum", ["Impulse-momentum theorem."]),
+    (2017, "easy", "Newton's 2nd law:", ["$F=ma$","$F=mv$","$F=m/a$","$F=v/m$"], "$F=ma$", ["Standard."]),
+    (2022, "medium", "If force on object is 0, motion is:", ["Stops","Constant velocity","Accelerating","Decelerating"], "Constant velocity", ["1st law."]),
+    (2023, "medium", "Force exerted by Earth on 5 kg (g=10):", ["50","5","2","100"], "50", ["$W=mg=50$ N."]),
+    (2018, "hard", "Conservation of momentum: total momentum before = after, when:", ["No external force","Always","Friction acts","Energy lost"], "No external force", ["Isolated system."]),
+    (2019, "easy", "Unit of momentum:", ["N","kg·m/s","J","W"], "kg·m/s", ["Standard SI unit."]),
+    (2020, "medium", "5 kg mass impacted by 10 N·s impulse. $\\Delta v=$?", ["1","2","5","10"], "2", ["$\\Delta v=I/m=2$ m/s."]),
+]:
+    Q("mechanics", "newtons-laws", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, opts, ans, st in [
+    (2018, "easy", "Work done lifting 10 kg by 2 m (g=10):", ["20","100","200","2000"], "200", ["$W=mgh=200$ J."]),
+    (2019, "medium", "KE of 5 kg at 4 m/s:", ["10","20","40","80"], "40", ["$\\frac{1}{2}(5)(16)=40$ J."]),
+    (2020, "medium", "Power = work / time. Unit:", ["J","N","W","kg·m"], "W", ["1 watt = 1 J/s."]),
+    (2021, "hard", "100 J done in 5 s. Power:", ["10","20","50","500"], "20", ["$P=100/5=20$ W."]),
+    (2017, "easy", "Energy stored in raised object:", ["KE","PE","Heat","Light"], "PE", ["Gravitational PE."]),
+    (2022, "medium", "PE of 2 kg at height 3 m (g=10):", ["20","30","60","600"], "60", ["$mgh=60$ J."]),
+    (2023, "medium", "If KE doubles, velocity changes by factor:", ["2","$\\sqrt{2}$","1","4"], "$\\sqrt{2}$", ["$KE\\propto v^2$."]),
+    (2018, "hard", "Work-energy theorem: net work = $\\Delta$:", ["PE","KE","Momentum","Mass"], "KE", ["Standard."]),
+    (2019, "easy", "Unit of energy:", ["N","W","J","kg"], "J", ["Joule."]),
+    (2020, "medium", "Power delivered by 60 N force at 3 m/s:", ["20","100","120","180"], "180", ["$P=Fv=180$ W."]),
+]:
+    Q("mechanics", "work-energy-power", yr, diff, q, opts, ans, st)

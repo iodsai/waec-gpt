@@ -718,11 +718,12 @@ async def save_imported_questions(req: WaecBulkSaveReq, current=Depends(require_
     Supports both `objective` (with options) and `theory` (no options) question types.
     """
     docs = []
+    DEFAULT_SUB = "measures-of-location"
     for q in req.questions:
-        subtopic = q.get("subtopic") or q.get("subtopic_guess") or "linear-equations"
+        subtopic = q.get("subtopic") or q.get("subtopic_guess") or DEFAULT_SUB
         if subtopic not in SUBTOPIC_NAME:
-            subtopic = "linear-equations"
-        topic = SUBTOPIC_TOPIC.get(subtopic, "algebra")
+            subtopic = DEFAULT_SUB
+        topic = SUBTOPIC_TOPIC.get(subtopic, "statistics")
         qtype = q.get("question_type") or ("theory" if not q.get("options") else "objective")
         doc = {
             "id": str(uuid.uuid4()),
@@ -749,6 +750,158 @@ async def save_imported_questions(req: WaecBulkSaveReq, current=Depends(require_
         raise HTTPException(status_code=400, detail="No valid questions in payload")
     await db.questions.insert_many(docs)
     return {"saved": len(docs), "ids": [d["id"] for d in docs]}
+
+# ============ BATCH IMPORT (background) ============
+import asyncio as _asyncio
+
+FURTHER_MATHS_SUBTOPICS = {
+    "measures-of-location", "measures-of-spread", "correlation", "probability",
+    "perms-combinations", "limits", "differentiation", "applications-differentiation",
+    "integration", "applications-integration", "vector-algebra-2d", "vectors-3d",
+    "magnitude-direction", "scalar-product", "vectors-applications",
+}
+
+class BatchImportReq(BaseModel):
+    year_from: int = 2010
+    year_to: int = 2018
+    max_questions_per_paper: int = 13
+
+
+async def _run_batch_import(job_id: str, papers: list[dict], max_q: int):
+    """Background worker — extracts each paper sequentially and saves accepted questions."""
+    total_saved = 0
+    total_extracted = 0
+    errors: list[str] = []
+
+    for idx, paper in enumerate(papers):
+        try:
+            await db.import_jobs.update_one(
+                {"id": job_id},
+                {"$set": {
+                    "current_paper": paper["label"],
+                    "current_year": paper["year"],
+                    "progress_index": idx,
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                }}
+            )
+            result = await extract_paper(
+                EMERGENT_LLM_KEY, paper["url"], paper["year"],
+                max_questions=max_q,
+            )
+            qs = result.get("questions", [])
+            total_extracted += len(qs)
+
+            # Save inline (mirroring /admin/import/save logic but no auth checks)
+            docs = []
+            for q in qs:
+                subtopic = q.get("subtopic") or q.get("subtopic_guess") or "measures-of-location"
+                if subtopic not in FURTHER_MATHS_SUBTOPICS:
+                    subtopic = "measures-of-location"
+                qtype = q.get("question_type") or ("theory" if not q.get("options") else "objective")
+                doc = {
+                    "id": str(uuid.uuid4()),
+                    "topic": SUBTOPIC_TOPIC.get(subtopic, "statistics"),
+                    "subtopic": subtopic,
+                    "year": paper["year"],
+                    "difficulty": q.get("difficulty") or q.get("difficulty_guess") or "medium",
+                    "question": (q.get("question") or "").strip(),
+                    "options": q.get("options", []) if qtype == "objective" else [],
+                    "answer": q.get("answer", ""),
+                    "solution_steps": q.get("solution_steps", []),
+                    "question_type": qtype,
+                    "source": "waeconline-batch",
+                    "source_url": q.get("source_url") or paper["url"],
+                    "batch_job_id": job_id,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                }
+                if not doc["question"] or not doc["answer"]:
+                    continue
+                if qtype == "objective" and len(doc["options"]) < 2:
+                    continue
+                docs.append(doc)
+            if docs:
+                await db.questions.insert_many(docs)
+                total_saved += len(docs)
+
+            await db.import_jobs.update_one(
+                {"id": job_id},
+                {"$set": {
+                    "total_extracted": total_extracted,
+                    "total_saved": total_saved,
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                },
+                 "$push": {"papers_done": {
+                    "label": paper["label"], "year": paper["year"], "url": paper["url"],
+                    "extracted": len(qs), "saved": len(docs),
+                 }}}
+            )
+        except Exception as e:
+            logging.exception("Batch paper failed: %s", paper.get("url"))
+            errors.append(f"{paper['label']}: {str(e)[:200]}")
+            await db.import_jobs.update_one(
+                {"id": job_id},
+                {"$push": {"errors": f"{paper['label']}: {str(e)[:200]}"}}
+            )
+
+    await db.import_jobs.update_one(
+        {"id": job_id},
+        {"$set": {
+            "status": "completed",
+            "total_saved": total_saved,
+            "total_extracted": total_extracted,
+            "completed_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }}
+    )
+
+
+@api.post("/admin/import/batch")
+async def start_batch_import(req: BatchImportReq, current=Depends(require_admin)):
+    """Start a background batch import for a range of years."""
+    papers = [p for p in WAEC_PAPERS if req.year_from <= p["year"] <= req.year_to]
+    if not papers:
+        raise HTTPException(status_code=400, detail="No papers in that year range")
+
+    # Prevent overlapping jobs
+    running = await db.import_jobs.find_one({"status": "running"}, {"_id": 0})
+    if running:
+        raise HTTPException(status_code=409, detail=f"Batch job already running: {running['id']}")
+
+    job_id = str(uuid.uuid4())
+    job = {
+        "id": job_id,
+        "status": "running",
+        "year_from": req.year_from,
+        "year_to": req.year_to,
+        "total_papers": len(papers),
+        "progress_index": 0,
+        "papers_done": [],
+        "errors": [],
+        "total_saved": 0,
+        "total_extracted": 0,
+        "started_by": current["id"],
+        "started_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.import_jobs.insert_one(job)
+    _asyncio.create_task(_run_batch_import(job_id, papers, req.max_questions_per_paper))
+    return {"job_id": job_id, "total_papers": len(papers), "papers": [
+        {"label": p["label"], "year": p["year"]} for p in papers
+    ]}
+
+
+@api.get("/admin/import/batch")
+async def list_batch_jobs(current=Depends(require_admin)):
+    jobs = await db.import_jobs.find({}, {"_id": 0}).sort("started_at", -1).to_list(20)
+    return {"jobs": jobs}
+
+
+@api.get("/admin/import/batch/{job_id}")
+async def get_batch_job(job_id: str, current=Depends(require_admin)):
+    job = await db.import_jobs.find_one({"id": job_id}, {"_id": 0})
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    return job
 
 # ============ HEALTH ============
 @api.get("/")

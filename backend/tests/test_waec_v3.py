@@ -42,7 +42,7 @@ class TestTopics:
         coming_soon = {"sets-logic", "surds-polynomials", "sequences-binomial", "matrices", "mechanics"}
         for tid in available:
             assert by_id[tid]["status"] == "available", f"{tid} should be available"
-            assert by_id[tid]["question_count"] == 50, f"{tid} should have 50 questions, got {by_id[tid]['question_count']}"
+            assert by_id[tid]["question_count"] >= 50, f"{tid} should have ≥50 questions, got {by_id[tid]['question_count']}"
         for tid in coming_soon:
             assert by_id[tid]["status"] == "coming_soon", f"{tid} should be coming_soon"
             assert by_id[tid]["question_count"] == 0

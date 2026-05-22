@@ -31,19 +31,21 @@ AI-powered, mobile-first **WAEC Further Mathematics (Elective)** learning platfo
 ### V3 — Further Maths Pivot ✅ (current)
 - **Branding**: WAEC Elective Math AI.
 - **Topics (8)**: 3 live + 5 coming soon
-  - ✅ Statistics & Probability (5 subtopics, 50 Q + lessons)
-  - ✅ Calculus (5 subtopics: limits, differentiation, applications, integration, applications of integration, 50 Q + lessons)
-  - ✅ Vectors (5 subtopics: 2D, 3D, magnitude/direction, scalar product, applications, 50 Q + lessons)
+  - ✅ Statistics & Probability (5 subtopics, 50 seed + ~56 imported = 106 Q + lessons)
+  - ✅ Calculus (5 subtopics, 50 seed + ~60 imported = 110 Q + lessons)
+  - ✅ Vectors (5 subtopics, 50 seed + ~72 imported = 122 Q + lessons)
   - 🕓 Sets & Logic
   - 🕓 Surds & Polynomials
   - 🕓 Sequences & Binomial
   - 🕓 Matrices & Determinants
   - 🕓 Mechanics
-- **Scraper**: 29 Further Maths papers (waeconline.org.ng/Further/) — admin can import with preview → save.
+- **Scraper**: 29 Further Maths papers (waeconline.org.ng/Further/) — admin can import paper-by-paper with preview → save.
+- **Batch importer** ✅ — background job processes a year-range of papers, polls progress, auto-saves accepted questions (`/api/admin/import/batch`).
+  - 2026-02-22: ran 2010-2018 batch → 16 papers, 188 questions saved, 0 errors.
 - **SymPy verify**: inline modal in Tutor (replaced `window.prompt`).
 - **Exam hydration warning**: fixed (no warnings in console).
 - **Theory question support**: schema exists, exam sampler excludes theory, accuracy stats exclude reveals.
-- **Validation**: 16/17 backend pytest pass + 100% frontend flows verified.
+- **Validation**: 17/17 backend pytest pass + 100% frontend flows verified.
 
 ### V1/V2 (deprecated/dropped)
 - General Maths content (Algebra/Trig/Geometry seed + 62 real waeconline imports) — DROPPED in pivot.
@@ -51,8 +53,8 @@ AI-powered, mobile-first **WAEC Further Mathematics (Elective)** learning platfo
 ## Backlog
 ### P0
 - Add Further Maths content for the 5 coming-soon topics (Sets/Logic, Surds, Polynomials, Matrices, Mechanics — 50 Q + lessons each).
-- Background batch-import all 29 Further Maths papers via Gemini Vision pipeline.
 - Refactor `PastQuestions.jsx` → split into `ObjectivePane` / `TheoryPane` components.
+- Optionally batch-import 2019-2023 papers (the 2010-2018 range is now done; ~13 papers remain).
 
 ### P1
 - Paystack subscription (₦1,500/mo "Elective Pro") — unlimited tutor + full mock access.

@@ -5,10 +5,9 @@ import MathText from "@/components/MathText";
 import { Download, CheckSquare, Square, Loader2, ExternalLink, Save } from "lucide-react";
 
 const SUBTOPICS_FLAT = [
-  "linear-equations", "quadratic-equations", "simultaneous-equations", "indices", "logarithms",
-  "variation", "sequences-series", "inequalities",
-  "trig-ratios", "trig-identities", "sine-cosine-rules", "elevation-depression", "bearings",
-  "circle-theorems", "polygons", "area-volume", "similarity-congruence", "coordinate-geometry",
+  "measures-of-location", "measures-of-spread", "correlation", "probability", "perms-combinations",
+  "limits", "differentiation", "applications-differentiation", "integration", "applications-integration",
+  "vector-algebra-2d", "vectors-3d", "magnitude-direction", "scalar-product", "vectors-applications",
 ];
 
 const WaecImport = () => {

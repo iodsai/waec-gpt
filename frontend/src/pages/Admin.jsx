@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import MathText from "@/components/MathText";
 import { Upload, Save, Image as ImageIcon, Trash2, ShieldAlert } from "lucide-react";
 import WaecImport from "@/components/WaecImport";
+import BatchImport from "@/components/BatchImport";
 
 const blankQuestion = {
   topic: "algebra", subtopic: "linear-equations", year: 2024,
@@ -120,6 +121,7 @@ const Admin = () => {
       <p className="text-muted2 mt-2">Import real past papers from waeconline.org.ng, paste / type a question manually, or upload an image and let AI extract it.</p>
 
       <WaecImport />
+      <BatchImport />
 
       <div className="grid lg:grid-cols-3 gap-6 mt-8">
         {/* Image extract */}

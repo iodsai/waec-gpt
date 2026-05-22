@@ -26,6 +26,7 @@ from seed_data_v2 import (
 )
 from sympy_verify import verify as sympy_verify
 from ai_helpers import extract_question_from_image, generate_similar_questions
+from waec_scraper import WAEC_PAPERS, extract_paper
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -168,6 +169,16 @@ class AdminCreateQuestionReq(BaseModel):
     options: List[str]
     answer: str
     solution_steps: List[str]
+
+class WaecImportReq(BaseModel):
+    paper_url: str
+    year: int
+    max_questions: int = 13
+
+class WaecBulkSaveReq(BaseModel):
+    paper_url: str
+    year: int
+    questions: List[dict]  # each: subtopic, difficulty, question, options, answer, solution_steps
 
 # ============ HELPERS ============
 def hash_password(pw: str) -> str:
@@ -737,6 +748,56 @@ async def admin_delete_question(qid: str, current=Depends(require_admin)):
     if r.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Not found")
     return {"ok": True}
+
+# ============ WAEC PAST PAPER IMPORT (admin) ============
+@api.get("/admin/import/papers")
+async def list_waec_papers(current=Depends(require_admin)):
+    """Return the catalog of available WAEC papers."""
+    return {"papers": WAEC_PAPERS}
+
+@api.post("/admin/import/extract")
+async def import_waec_paper(req: WaecImportReq, current=Depends(require_admin)):
+    """Scrape + convert a WAEC paper to MCQ JSON (does NOT save).
+
+    Latency: ~30-90 seconds per paper (13 Gemini Vision calls).
+    """
+    try:
+        result = await extract_paper(EMERGENT_LLM_KEY, req.paper_url, req.year, max_questions=req.max_questions)
+    except Exception as e:
+        logging.exception("WAEC import failed")
+        raise HTTPException(status_code=500, detail=f"Import failed: {e}") from e
+    return result
+
+@api.post("/admin/import/save")
+async def save_imported_questions(req: WaecBulkSaveReq, current=Depends(require_admin)):
+    """Persist accepted questions from a paper-import preview."""
+    docs = []
+    for q in req.questions:
+        subtopic = q.get("subtopic") or q.get("subtopic_guess") or "linear-equations"
+        if subtopic not in SUBTOPIC_NAME:
+            subtopic = "linear-equations"
+        topic = SUBTOPIC_TOPIC.get(subtopic, "algebra")
+        doc = {
+            "id": str(uuid.uuid4()),
+            "topic": topic, "subtopic": subtopic,
+            "year": req.year,
+            "difficulty": q.get("difficulty") or q.get("difficulty_guess") or "medium",
+            "question": q["question"],
+            "options": q.get("options", []),
+            "answer": q.get("answer", ""),
+            "solution_steps": q.get("solution_steps", []),
+            "source": "waeconline",
+            "source_url": q.get("source_url") or req.paper_url,
+            "created_by": current["id"],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+        if not doc["question"] or not doc["answer"] or len(doc["options"]) < 2:
+            continue
+        docs.append(doc)
+    if not docs:
+        raise HTTPException(status_code=400, detail="No valid questions in payload")
+    await db.questions.insert_many(docs)
+    return {"saved": len(docs), "ids": [d["id"] for d in docs]}
 
 # ============ HEALTH ============
 @api.get("/")

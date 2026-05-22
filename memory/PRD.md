@@ -47,6 +47,13 @@ AI-powered, mobile-first math learning platform purpose-built for West African s
 - **PastQuestions**: added topic filter, "Generate similar" CTA, topic+subtopic cascade.
 - **Tutor**: "Verify with SymPy" button.
 
+### V2.1 — Real WAEC past-paper ingestion (this session)
+- **WAEC scraper** (`waec_scraper.py`): catalog of 26 papers (2010-2023) from waeconline.org.ng.
+- For each chosen paper, fetches all 13 question pages, downloads inline math PNGs, sends to **Gemini 3 Flash Vision** to convert theory questions into MCQ format with 4 plausible distractors and step-by-step worked solutions in WAEC examiner style.
+- Admin endpoints: `/api/admin/import/papers`, `/api/admin/import/extract` (preview, no save), `/api/admin/import/save` (bulk persist).
+- Admin UI: paper-select dropdown → Extract → preview cards (toggle to include/exclude, edit subtopic/difficulty/answer inline) → Save selected.
+- Verified live: WASSCE 2017 Q1 → "If $(y-1)\\log_{10}4 = y\\log_{10}16$, find $y$" with correct answer $-1$, 8-step solution.
+
 ## Backlog
 ### P0
 - Real WAEC past papers — scrape from URL when user provides source, or admin team uploads images via existing Vision pipeline.

@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import MathText from "@/components/MathText";
 import { Upload, Save, Image as ImageIcon, Trash2, ShieldAlert } from "lucide-react";
+import WaecImport from "@/components/WaecImport";
 
 const blankQuestion = {
   topic: "algebra", subtopic: "linear-equations", year: 2024,
@@ -116,7 +117,9 @@ const Admin = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-10" data-testid="admin-page">
       <span className="overline">Admin</span>
       <h1 className="font-heading text-4xl font-bold text-ink mt-2">Add WAEC question</h1>
-      <p className="text-muted2 mt-2">Paste / type a question manually, or upload an image and let AI extract it.</p>
+      <p className="text-muted2 mt-2">Import real past papers from waeconline.org.ng, paste / type a question manually, or upload an image and let AI extract it.</p>
+
+      <WaecImport />
 
       <div className="grid lg:grid-cols-3 gap-6 mt-8">
         {/* Image extract */}

@@ -1,0 +1,96 @@
+{
+  "theme": "Light",
+  "archetype": "Archetype 1: Organic & Earthy",
+  "archetype_reasoning": "WAEC students need a platform that feels warm, encouraging, and highly focused. We avoid clinical EdTech blue and generic AI purple. Instead, we use 'African Modernity' tones—Terracotta, Moss, Warm Sand—to create a grounded, highly legible, and distinctly local-feeling study environment.",
+  "colors": {
+    "background": "#F9F7F1",
+    "surface": "#FFFFFF",
+    "surface_alt": "#F0EBE1",
+    "primary": "#D95D39",
+    "primary_hover": "#C04F2E",
+    "secondary": "#2A4B46",
+    "secondary_hover": "#1E3632",
+    "text_main": "#1A1C1A",
+    "text_muted": "#5C605A",
+    "border": "#E2DCD0",
+    "success": "#446C56",
+    "warning": "#E8B253",
+    "error": "#B74134",
+    "card_background": "#FFFFFF",
+    "chat_user_bubble": "#D95D39",
+    "chat_ai_bubble": "#F0EBE1"
+  },
+  "typography": {
+    "heading_font": "Outfit",
+    "body_font": "Work Sans",
+    "mono_font": "JetBrains Mono",
+    "math_font": "KaTeX default (Computer Modern)",
+    "font_install_instructions": "Use Google Fonts for Outfit, Work Sans, and JetBrains Mono.",
+    "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-none font-bold text-[#1A1C1A]",
+    "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight leading-tight font-semibold text-[#1A1C1A]",
+    "h3": "text-xl sm:text-2xl tracking-tight leading-snug font-medium text-[#1A1C1A]",
+    "body": "text-base leading-relaxed text-[#1A1C1A] font-normal",
+    "body_small": "text-sm leading-relaxed text-[#5C605A]",
+    "overline": "text-xs uppercase tracking-[0.2em] font-medium text-[#5C605A]"
+  },
+  "layout_spacing": {
+    "container_padding": "px-4 sm:px-6 lg:px-12",
+    "section_gap": "py-20 lg:py-32",
+    "element_gap": "gap-6 lg:gap-8",
+    "border_radius": "rounded-2xl",
+    "card_padding": "p-6 sm:p-8"
+  },
+  "surface_strategies": {
+    "cards": "Flat background (#FFFFFF), 1px solid border (#E2DCD0), no heavy shadows. Hover state: subtle lift (-translate-y-1) and shadow-md.",
+    "header": "Solid background (#F9F7F1) with a hard bottom border (#E2DCD0) to ground the app, no glassmorphism to keep reading focused.",
+    "ai_chat_area": "Abstract math texture background (math_abstract_bg) at 10% opacity. AI bubbles left-aligned in #F0EBE1 (text #1A1C1A), User bubbles right-aligned in #D95D39 (text #FFFFFF). KaTeX math blocks must have a #FFFFFF background with 1px #E2DCD0 border and rounded-md for isolation and clarity."
+  },
+  "motion_interactions": {
+    "button_hover": "transition-colors duration-200 ease-in-out",
+    "card_hover": "transition-all duration-300 ease-in-out hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1 hover:border-[#D95D39]/30",
+    "list_stagger": "Framer motion staggered entrance for topic cards and past questions.",
+    "page_transition": "Simple opacity fade. Do not over-animate learning content."
+  },
+  "component_guidelines": {
+    "buttons": "Shadcn standard. Primary uses #D95D39 (Terracotta). Secondary uses #2A4B46 (Moss). Rounded-xl.",
+    "inputs": "Shadcn input. bg-[#FFFFFF], border-[#E2DCD0], focus:ring-2 focus:ring-[#D95D39]/50 focus:border-[#D95D39].",
+    "tabs": "Override Shadcn fixed height. bg-[#F0EBE1] text-[#5C605A]. Active tab bg-[#FFFFFF] text-[#1A1C1A] shadow-sm.",
+    "badges": "For topic/difficulty tags: bg-[#F0EBE1] text-[#2A4B46] border border-[#E2DCD0]/50 rounded-full px-3 py-1 text-xs font-medium."
+  },
+  "media": {
+    "hero_image": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/6b12fdb0-d53c-4163-bc29-3a0f2edc149a/images/735327ee4f38ab1ad84004ebb6ec9e2343847ff1cc5974441c267b040fc9b3b7.png",
+      "description": "Main landing page hero image: African high school student studying.",
+      "category": "hero"
+    },
+    "math_abstract_bg": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/6b12fdb0-d53c-4163-bc29-3a0f2edc149a/images/4ede2bc38f55d9e0217bb938345dfc325f3e5cfc08e89a27dc85d90cd289e6d5.png",
+      "description": "Subtle textured background for the AI tutor chat or practice mode dashboard.",
+      "category": "background"
+    },
+    "student_studying_alt": {
+      "url": "https://images.unsplash.com/photo-1620829813573-7c9e1877706f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzB8MHwxfHNlYXJjaHwxfHxhZnJpY2FuJTIwc3R1ZGVudCUyMHN0dWR5aW5nJTIwdGFibGV0fGVufDB8fHx8MTc3OTQ1OTg2N3ww&ixlib=rb-4.1.0&q=85",
+      "description": "Alternative photo of an African student using a laptop for 'About' or 'Practice' sections.",
+      "category": "feature"
+    }
+  },
+  "specific_views": {
+    "landing_page": "Bento Grid (Mode A) for features. Hero uses the hero_image with a gradient overlay (bg-gradient-to-r from-black/60 via-black/30 to-transparent) to ensure text contrast for the value prop.",
+    "dashboard_home": "Control Room Grid (Mode B). Top left: 'North Star' metric (Progress/Score). Right: Modular topic cards (Algebra: linear equations, quadratics, etc.).",
+    "past_questions_browser": "List view. Shadcn Select/Dropdowns for filters (Subtopic, Year, Difficulty). Each question card has a 'Solve Step-by-Step' CTA in Moss Green.",
+    "ai_math_tutor": "Chat interface. Input area fixed at bottom. Must use KaTeX for rendering equations. AI responses must be formatted with clear spacing between steps, mimicking a WAEC examiner's layout."
+  },
+  "icons_library": "lucide-react",
+  "accessibility_and_testing": {
+    "contrast": "Ensure minimum 4.5:1 for normal text. Terracotta (#D95D39) on Sand (#F9F7F1) meets criteria.",
+    "test_ids": "All interactive elements MUST include data-testid (e.g., data-testid='start-practice-button', data-testid='filter-year-select')."
+  },
+  "instructions_to_main_agent": [
+    "Strictly adhere to the color palette. No Tailwind default blue, purple, or teal.",
+    "Ensure KaTeX is installed and configured properly (e.g. via react-katex) to render math formulas beautifully in the AI chat and Past Questions.",
+    "Build the dashboard mobile-first, ensuring all tables and grids collapse gracefully.",
+    "Use Shadcn components but override default Vercel aesthetics to match the warm, earthy theme.",
+    "Ensure the header is solid #F9F7F1, NOT glassmorphic, to maintain focus.",
+    "Images provided in the media section MUST be used; do NOT use placeholders."
+  ]
+}

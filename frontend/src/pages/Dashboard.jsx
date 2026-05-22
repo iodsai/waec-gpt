@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import http from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { BookOpen, Sparkles, FileText, TrendingUp, Target } from "lucide-react";
+import MathText from "@/components/MathText";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -114,9 +115,13 @@ const Dashboard = () => {
           <div className="mt-4 card-surface divide-y divide-edge">
             {progress.recent_attempts.map((r) => (
               <div key={r.id} className="px-5 py-3 flex items-center justify-between gap-3" data-testid={`recent-attempt-${r.id}`}>
-                <div className="min-w-0">
-                  <div className="text-sm text-ink truncate">{r.question_text || "Question"}</div>
-                  <div className="text-xs text-muted2">{r.subtopic_name} · selected: {r.selected}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm text-ink truncate">
+                    <MathText text={r.question_text || "Question"} />
+                  </div>
+                  <div className="text-xs text-muted2 mt-0.5">
+                    {r.subtopic_name} · selected: <MathText text={r.selected} />
+                  </div>
                 </div>
                 <span className={`tag ${r.correct ? "!bg-success/10 !text-success" : "!bg-error/10 !text-error"}`}>
                   {r.correct ? "Correct" : "Wrong"}

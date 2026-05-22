@@ -38,7 +38,7 @@ function App() {
             <Route path="/tutor" element={<ProtectedRoute><Tutor /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-          <Toaster position="top-center" richColors closeButton />
+          <Toaster position="bottom-right" richColors closeButton offset={20} />
         </div>
       </BrowserRouter>
     </AuthProvider>

@@ -169,13 +169,13 @@ QUESTIONS = [
          "Simplify: $2x = 12$, so $x = 6$."
      ]},
     {"subtopic": "linear-equations", "year": 2021, "difficulty": "medium",
-     "question": "Find $y$ if $\\frac{2y+1}{3} - \\frac{y-2}{4} = 2$.",
-     "options": ["1", "2", "3", "4"], "answer": "2",
+     "question": "Find $y$ if $\\frac{2y+1}{3} - \\frac{y-2}{4} = \\frac{5}{6}$.",
+     "options": ["0", "1", "2", "3"], "answer": "0",
      "solution_steps": [
-         "Multiply through by LCM 12: $4(2y+1) - 3(y-2) = 24$.",
-         "Expand: $8y + 4 - 3y + 6 = 24$.",
-         "Simplify: $5y + 10 = 24$, so $5y = 14$... wait recompute.",
-         "$5y = 24 - 10 = 14$ gives $y = 2.8$. Verify by direct substitution of $y = 2$: $\\frac{5}{3} - 0 = 1.67 \\neq 2$. The intended WAEC answer key (after rounding to nearest option) is $y = 2$. For this practice item, accept $y = 2$ as closest."
+         "Multiply through by LCM 12: $4(2y+1) - 3(y-2) = 10$.",
+         "Expand: $8y + 4 - 3y + 6 = 10$.",
+         "Simplify: $5y + 10 = 10$, so $5y = 0$.",
+         "Therefore $y = 0$."
      ]},
     {"subtopic": "linear-equations", "year": 2017, "difficulty": "hard",
      "question": "If $4(x + 2) - 3(x - 1) = 2x + 5$, find $x$.",

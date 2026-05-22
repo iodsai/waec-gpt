@@ -38,14 +38,11 @@ class TestTopics:
         assert len(topics) == 8, f"expected 8 topics, got {len(topics)}"
 
         by_id = {t["id"]: t for t in topics}
-        available = {"statistics", "calculus", "vectors"}
-        coming_soon = {"sets-logic", "surds-polynomials", "sequences-binomial", "matrices", "mechanics"}
+        available = {"statistics", "calculus", "vectors",
+                     "sets-logic", "surds-polynomials", "sequences-binomial", "matrices", "mechanics"}
         for tid in available:
             assert by_id[tid]["status"] == "available", f"{tid} should be available"
             assert by_id[tid]["question_count"] >= 50, f"{tid} should have ≥50 questions, got {by_id[tid]['question_count']}"
-        for tid in coming_soon:
-            assert by_id[tid]["status"] == "coming_soon", f"{tid} should be coming_soon"
-            assert by_id[tid]["question_count"] == 0
 
 
 # ---------------- Questions ----------------
@@ -97,7 +94,8 @@ class TestExams:
         qs = data.get("questions") or data.get("items") or []
         assert len(qs) == 10, f"quick should be 10, got {len(qs)}"
         topics = {q.get("topic") for q in qs}
-        fm = {"statistics", "calculus", "vectors"}
+        fm = {"statistics", "calculus", "vectors",
+              "sets-logic", "surds-polynomials", "sequences-binomial", "matrices", "mechanics"}
         assert topics.issubset(fm), f"non-FM topics found: {topics - fm}"
 
     def test_mock_40(self, session, student_token):

@@ -25,6 +25,16 @@ from seed_data_v3 import (
     LESSONS_V3 as LESSONS_V2,
     QUESTIONS_V3,
 )
+from seed_data_v3_extra import EXTRA_SUBTOPICS, EXTRA_LESSONS, EXTRA_QUESTIONS
+
+# Activate the 5 previously coming-soon topics + merge their subtopics/lessons/questions
+_EXTRA_TOPIC_IDS = set(EXTRA_SUBTOPICS.keys())
+for _t in TOPICS_V2:
+    if _t["id"] in _EXTRA_TOPIC_IDS:
+        _t["status"] = "available"
+SUBTOPICS_BY_TOPIC = {**SUBTOPICS_BY_TOPIC, **EXTRA_SUBTOPICS}
+LESSONS_V2 = {**LESSONS_V2, **EXTRA_LESSONS}
+QUESTIONS_V3 = QUESTIONS_V3 + EXTRA_QUESTIONS
 from sympy_verify import verify as sympy_verify
 from ai_helpers import extract_question_from_image, generate_similar_questions
 from waec_scraper import WAEC_PAPERS, extract_paper
@@ -239,6 +249,22 @@ async def lifespan(app: FastAPI):
         if docs:
             await db.questions.insert_many(docs)
             logging.info(f"Seeded {len(docs)} Further Maths questions")
+
+    # Top-up: seed any new topics that have no questions yet (idempotent per-topic)
+    for _tid in _EXTRA_TOPIC_IDS:
+        if await db.questions.count_documents({"topic": _tid, "source": "seed"}) == 0:
+            topic_qs = [q for q in EXTRA_QUESTIONS if q["topic"] == _tid]
+            if topic_qs:
+                await db.questions.insert_many([{
+                    "id": str(uuid.uuid4()),
+                    "topic": q["topic"], "subtopic": q["subtopic"],
+                    "year": q["year"], "difficulty": q["difficulty"],
+                    "question": q["question"], "options": q["options"],
+                    "answer": q["answer"], "solution_steps": q["solution_steps"],
+                    "question_type": "objective", "source": "seed",
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                } for q in topic_qs])
+                logging.info(f"Top-up seeded {len(topic_qs)} questions for topic '{_tid}'")
 
     # Backfill question_type if missing
     await db.questions.update_many({"question_type": {"$exists": False}}, {"$set": {"question_type": "objective"}})

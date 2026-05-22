@@ -30,33 +30,33 @@ AI-powered, mobile-first **WAEC Further Mathematics (Elective)** learning platfo
 
 ### V3 — Further Maths Pivot ✅ (current)
 - **Branding**: WAEC Elective Math AI.
-- **Topics (8)**: 3 live + 5 coming soon
-  - ✅ Statistics & Probability (5 subtopics, 50 seed + ~56 imported = 106 Q + lessons)
-  - ✅ Calculus (5 subtopics, 50 seed + ~60 imported = 110 Q + lessons)
-  - ✅ Vectors (5 subtopics, 50 seed + ~72 imported = 122 Q + lessons)
-  - 🕓 Sets & Logic
-  - 🕓 Surds & Polynomials
-  - 🕓 Sequences & Binomial
-  - 🕓 Matrices & Determinants
-  - 🕓 Mechanics
-- **Scraper**: 29 Further Maths papers (waeconline.org.ng/Further/) — admin can import paper-by-paper with preview → save.
-- **Batch importer** ✅ — background job processes a year-range of papers, polls progress, auto-saves accepted questions (`/api/admin/import/batch`).
-  - 2026-02-22: ran 2010-2018 batch → 16 papers, 188 questions saved, 0 errors.
-- **SymPy verify**: inline modal in Tutor (replaced `window.prompt`).
-- **Exam hydration warning**: fixed (no warnings in console).
+- **Topics (8 live, full syllabus)**:
+  - ✅ Statistics & Probability (5 subtopics, 106 Q + lessons)
+  - ✅ Calculus (5 subtopics, 110 Q + lessons)
+  - ✅ Vectors (5 subtopics, 122 Q + lessons)
+  - ✅ Sets & Logic (5 subtopics, 50 Q + lessons)
+  - ✅ Surds & Polynomials (5 subtopics, 50 Q + lessons)
+  - ✅ Sequences & Binomial (5 subtopics, 50 Q + lessons)
+  - ✅ Matrices & Determinants (5 subtopics, 50 Q + lessons)
+  - ✅ Mechanics (5 subtopics, 50 Q + lessons)
+- **Total bank**: 588 questions (338 seed + 250 new topic seed) + 16 imported papers.
+- **Scraper**: 29 Further Maths papers indexed; admin can preview-import per paper.
+- **Batch importer** ✅ — background job processes a year-range; live progress UI in admin.
+  - 2026-02-22: 2010-2018 batch → 16 papers, 188 questions, 0 errors.
+- **SymPy verify**: inline modal in Tutor.
+- **Exam hydration warning**: fixed.
 - **Theory question support**: schema exists, exam sampler excludes theory, accuracy stats exclude reveals.
-- **Validation**: 17/17 backend pytest pass + 100% frontend flows verified.
+- **Validation**: 17/17 backend pytest pass + frontend flows verified.
 
 ### V1/V2 (deprecated/dropped)
 - General Maths content (Algebra/Trig/Geometry seed + 62 real waeconline imports) — DROPPED in pivot.
 
 ## Backlog
 ### P0
-- Add Further Maths content for the 5 coming-soon topics (Sets/Logic, Surds, Polynomials, Matrices, Mechanics — 50 Q + lessons each).
 - Refactor `PastQuestions.jsx` → split into `ObjectivePane` / `TheoryPane` components.
-- Optionally batch-import 2019-2023 papers (the 2010-2018 range is now done; ~13 papers remain).
 
 ### P1
+- Optionally batch-import 2019-2023 papers (~13 papers remaining; 2010-2018 done).
 - Paystack subscription (₦1,500/mo "Elective Pro") — unlimited tutor + full mock access.
 - Streaks + leaderboards (gamification).
 - Personalised daily study plan from weak-topic detection.
@@ -67,6 +67,5 @@ AI-powered, mobile-first **WAEC Further Mathematics (Elective)** learning platfo
 - Export progress to PDF / share to WhatsApp.
 
 ## Known limitations
-- 5 of 8 syllabus topics still "coming soon".
 - AI similar-question / vision-extract latency: 5-20s (Gemini).
 - Theory-question rendering path implemented but unused in V3 seed (only used after admin import).

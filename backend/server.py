@@ -439,18 +439,24 @@ async def submit_attempt(req: AttemptReq, current=Depends(get_current_user)):
     qdoc = await db.questions.find_one({"id": req.question_id}, {"_id": 0})
     if not qdoc:
         raise HTTPException(status_code=404, detail="Question not found")
-    correct = req.selected.strip() == qdoc["answer"].strip()
+    is_theory = qdoc.get("question_type") == "theory"
+    correct = (not is_theory) and req.selected.strip() == qdoc["answer"].strip()
     await db.attempts.insert_one({
         "id": str(uuid.uuid4()), "user_id": current["id"], "question_id": req.question_id,
         "topic": qdoc.get("topic", topic_of(qdoc["subtopic"])),
         "subtopic": qdoc["subtopic"], "selected": req.selected, "correct": correct,
+        "is_reveal": is_theory,  # theory reveals don't count toward accuracy
         "created_at": datetime.now(timezone.utc).isoformat(),
     })
     return AttemptResp(correct=correct, correct_answer=qdoc["answer"], solution_steps=qdoc["solution_steps"])
 
 @api.get("/progress")
 async def get_progress(current=Depends(get_current_user)):
-    attempts = await db.attempts.find({"user_id": current["id"]}, {"_id": 0}).to_list(5000)
+    # Exclude theory "reveal" entries from accuracy stats
+    attempts = await db.attempts.find(
+        {"user_id": current["id"], "$or": [{"is_reveal": {"$exists": False}}, {"is_reveal": False}]},
+        {"_id": 0}
+    ).to_list(5000)
     total = len(attempts)
     correct = sum(1 for a in attempts if a["correct"])
     acc = round((correct / total) * 100, 1) if total else 0.0

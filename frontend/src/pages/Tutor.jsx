@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import http from "@/lib/api";
 import MathText from "@/components/MathText";
-import { Send, Sparkles, Loader2 } from "lucide-react";
+import { Send, Sparkles, Loader2, FunctionSquare, Check, X } from "lucide-react";
 import { toast } from "sonner";
 
 const SUGGESTED = [
@@ -68,6 +68,28 @@ const Tutor = () => {
     window.location.reload();
   };
 
+  const verifyEquation = async () => {
+    const eq = window.prompt(
+      "Enter an algebraic equation to verify (e.g. 2x + 7 = 19, or x^2 - 5x + 6 = 0).\nOptionally append `; answer=…` to check a specific answer.",
+      ""
+    );
+    if (!eq?.trim()) return;
+    let equation = eq, claimed = null;
+    const m = eq.match(/^(.+?);\s*answer\s*=\s*(.+)$/i);
+    if (m) { equation = m[1]; claimed = m[2]; }
+    try {
+      const { data } = await http.post("/solver/verify", { equation, claimed_answer: claimed, variable: "x" });
+      if (!data.ok) { toast.error("Couldn't parse equation: " + data.error); return; }
+      const sols = data.solutions.join(", ") || "no real solution";
+      let msg = `Verified by SymPy ✓\nSolutions: x = ${sols}`;
+      if (data.matches_claim === true) msg += `\nClaim ${claimed} ✓ matches`;
+      else if (data.matches_claim === false) msg += `\nClaim ${claimed} ✗ does NOT match`;
+      toast.success(msg, { duration: 8000 });
+    } catch (e) {
+      toast.error("Verification failed");
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 py-8 flex flex-col h-[calc(100vh-4rem)]" data-testid="tutor-page">
       <div className="flex items-end justify-between gap-3 flex-shrink-0">
@@ -77,7 +99,12 @@ const Tutor = () => {
             Ask anything about WAEC algebra. <Sparkles className="text-terracotta" />
           </h1>
         </div>
-        <button onClick={resetSession} className="btn-ghost text-sm" data-testid="reset-session-btn">New chat</button>
+        <div className="flex items-center gap-2">
+          <button onClick={verifyEquation} className="btn-ghost text-sm inline-flex items-center gap-2" data-testid="verify-sympy-btn">
+            <FunctionSquare size={14} /> Verify with SymPy
+          </button>
+          <button onClick={resetSession} className="btn-ghost text-sm" data-testid="reset-session-btn">New chat</button>
+        </div>
       </div>
 
       {/* CHAT AREA */}

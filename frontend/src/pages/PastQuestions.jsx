@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import http from "@/lib/api";
 import MathText from "@/components/MathText";
 import { toast } from "sonner";
-import { Filter, CheckCircle2, XCircle, Sparkles } from "lucide-react";
+import { Filter, CheckCircle2, XCircle, Sparkles, Wand2, X } from "lucide-react";
 
 const DIFFICULTIES = [
   { id: "", name: "All difficulties" },
@@ -35,13 +35,14 @@ const PastQuestions = () => {
   useEffect(() => {
     setLoading(true);
     const q = {};
+    if (topic) q.topic = topic;
     if (subtopic) q.subtopic = subtopic;
     if (year) q.year = year;
     if (difficulty) q.difficulty = difficulty;
     http.get("/questions", { params: q })
       .then((r) => setQuestions(r.data))
       .finally(() => setLoading(false));
-  }, [subtopic, year, difficulty]);
+  }, [topic, subtopic, year, difficulty]);
 
   const updateFilter = (key, val) => {
     const next = new URLSearchParams(params);
@@ -50,9 +51,21 @@ const PastQuestions = () => {
   };
 
   const openQuestion = async (id) => {
-    setSelectedOption(null); setResult(null);
+    setSelectedOption(null); setResult(null); setSimilar(null);
     const { data } = await http.get(`/questions/${id}`);
     setActive(data);
+  };
+
+  const generateSimilar = async () => {
+    if (!active) return;
+    setSimilar({ loading: true, items: [] });
+    try {
+      const { data } = await http.post(`/questions/${active.id}/similar`, { n: 3 });
+      setSimilar({ loading: false, items: data.items });
+    } catch (e) {
+      setSimilar(null);
+      toast.error(e?.response?.data?.detail || "Could not generate similar questions");
+    }
   };
 
   const submit = async () => {
@@ -87,12 +100,20 @@ const PastQuestions = () => {
           <Filter size={16} /> Filters
         </div>
         <select
+          value={topic} onChange={(e) => { updateFilter("topic", e.target.value); updateFilter("subtopic", ""); }}
+          data-testid="filter-topic-select"
+          className="px-3 py-2 rounded-lg border border-edge bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+        >
+          <option value="">All topics</option>
+          {topics.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+        </select>
+        <select
           value={subtopic} onChange={(e) => updateFilter("subtopic", e.target.value)}
           data-testid="filter-subtopic-select"
           className="px-3 py-2 rounded-lg border border-edge bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
         >
           <option value="">All subtopics</option>
-          {topics?.subtopics?.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+          {availableSubtopics.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
         <select
           value={year} onChange={(e) => updateFilter("year", e.target.value)}
@@ -217,6 +238,45 @@ const PastQuestions = () => {
                   >
                     Try this question again
                   </button>
+                  <button
+                    onClick={generateSimilar}
+                    className="btn-secondary mt-5 ml-2 text-sm inline-flex items-center gap-2"
+                    data-testid="generate-similar-btn"
+                    disabled={similar?.loading}
+                  >
+                    <Wand2 size={14} /> {similar?.loading ? "Generating…" : "Generate similar"}
+                  </button>
+                </div>
+              )}
+
+              {similar && !similar.loading && similar.items?.length > 0 && (
+                <div className="mt-6 border-t border-edge pt-5" data-testid="similar-block">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-heading text-lg font-semibold text-ink">AI-generated practice (similar)</h3>
+                    <button onClick={() => setSimilar(null)} className="p-1 rounded hover:bg-sand" aria-label="close"><X size={16} /></button>
+                  </div>
+                  <div className="space-y-4 mt-3">
+                    {similar.items.map((it, i) => (
+                      <details key={i} className="card-surface p-4" data-testid={`similar-item-${i}`}>
+                        <summary className="cursor-pointer text-ink"><MathText text={it.question} /></summary>
+                        <ol className="mt-3 space-y-1.5">
+                          {(it.options || []).map((o, oi) => (
+                            <li key={oi} className="text-sm text-ink flex gap-2">
+                              <span className="font-mono text-xs bg-sand border border-edge px-2 rounded">{["A","B","C","D"][oi]}</span>
+                              <span><MathText text={o} /></span>
+                            </li>
+                          ))}
+                        </ol>
+                        <div className="text-sm text-success mt-3">Answer: <MathText text={it.answer} /></div>
+                        <div className="text-xs text-muted2 mt-2">Steps:</div>
+                        <ol className="mt-1 space-y-1">
+                          {(it.solution_steps || []).map((s, si) => (
+                            <li key={si} className="text-sm text-ink"><span className="font-mono text-xs mr-2">{si + 1}</span><MathText text={s} /></li>
+                          ))}
+                        </ol>
+                      </details>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

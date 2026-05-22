@@ -2,18 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import http from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import { BookOpen, Sparkles, FileText, TrendingUp, Target } from "lucide-react";
+import { BookOpen, Sparkles, FileText, TrendingUp, Target, Trophy, Compass } from "lucide-react";
 import MathText from "@/components/MathText";
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [topics, setTopics] = useState(null);
+  const [topicsData, setTopicsData] = useState([]);
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([http.get("/topics"), http.get("/progress")])
-      .then(([t, p]) => { setTopics(t.data); setProgress(p.data); })
+      .then(([t, p]) => { setTopicsData(t.data.topics || []); setProgress(p.data); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -22,6 +22,9 @@ const Dashboard = () => {
   const acc = progress?.accuracy || 0;
   const total = progress?.total_attempts || 0;
   const correct = progress?.correct || 0;
+  const availableTopics = topicsData.filter((t) => t.status === "available");
+  const totalSubtopics = availableTopics.reduce((acc, t) => acc + (t.subtopics?.length || 0), 0);
+  const coveredSubtopics = Object.keys(progress?.by_subtopic || {}).length;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-10" data-testid="dashboard-page">
@@ -33,9 +36,12 @@ const Dashboard = () => {
           </h1>
           <p className="text-muted2 mt-2">Pick a subtopic, attempt a past question, or ask the AI tutor.</p>
         </div>
-        <div className="flex gap-3">
-          <Link to="/tutor" className="btn-secondary inline-flex items-center gap-2" data-testid="dashboard-cta-tutor">
+        <div className="flex flex-wrap gap-3">
+          <Link to="/tutor" className="btn-ghost inline-flex items-center gap-2" data-testid="dashboard-cta-tutor">
             <Sparkles size={18} /> Ask AI Tutor
+          </Link>
+          <Link to="/exams" className="btn-secondary inline-flex items-center gap-2" data-testid="dashboard-cta-exams">
+            <Trophy size={18} /> Exam mode
           </Link>
           <Link to="/past-questions" className="btn-primary inline-flex items-center gap-2" data-testid="dashboard-cta-practice">
             <FileText size={18} /> Practice now
@@ -67,33 +73,39 @@ const Dashboard = () => {
             <BookOpen size={18} className="text-moss" />
           </div>
           <div className="font-heading text-5xl font-bold text-ink mt-3">
-            {Object.keys(progress?.by_subtopic || {}).length}<span className="text-muted2 text-2xl"> / {topics?.subtopics?.length || 0}</span>
+            {coveredSubtopics}<span className="text-muted2 text-2xl"> / {totalSubtopics}</span>
           </div>
-          <div className="text-xs text-muted2 mt-1">Out of the {topics?.subtopics?.length || 0} algebra subtopics.</div>
+          <div className="text-xs text-muted2 mt-1">Across {availableTopics.length} live topics.</div>
         </div>
       </div>
 
-      {/* SUBTOPIC GRID */}
+      {/* TOPIC GRID */}
       <div className="mt-12">
-        <h2 className="font-heading text-2xl font-semibold text-ink">Algebra subtopics</h2>
-        <p className="text-muted2 text-sm mt-1">Open a topic to view notes, worked examples, and past questions.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
-          {topics?.subtopics?.map((s, i) => {
-            const stat = progress?.by_subtopic?.[s.id];
+        <div className="flex items-end justify-between">
+          <div>
+            <h2 className="font-heading text-2xl font-semibold text-ink">Your topics</h2>
+            <p className="text-muted2 text-sm mt-1">Open a topic to explore its subtopics, lessons, and past questions.</p>
+          </div>
+          <Link to="/topics" className="text-sm text-terracotta hover:underline inline-flex items-center gap-1" data-testid="dashboard-all-topics">
+            <Compass size={14} /> All topics
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
+          {availableTopics.map((t, i) => {
+            const tstat = progress?.by_topic?.[t.id];
             return (
-              <Link
-                key={s.id}
-                to={`/lessons/${s.id}`}
-                data-testid={`subtopic-card-${s.id}`}
-                className="card-surface p-5 group block"
-                style={{ animationDelay: `${i * 50}ms` }}
-              >
-                <div className="font-heading text-lg font-semibold text-ink group-hover:text-terracotta transition-colors">{s.name}</div>
-                <div className="mt-3 flex items-center justify-between text-xs">
-                  {stat ? (
+              <Link key={t.id} to={`/topics/${t.id}`} data-testid={`topic-card-${t.id}`}
+                className="card-surface p-6 group block" style={{ animationDelay: `${i * 50}ms` }}>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-heading text-xl font-semibold text-ink group-hover:text-terracotta">{t.name}</h3>
+                  <span className="tag">{t.question_count} Q</span>
+                </div>
+                <p className="text-sm text-muted2 mt-1 line-clamp-2">{t.description}</p>
+                <div className="mt-4 flex items-center justify-between text-xs">
+                  {tstat ? (
                     <>
-                      <span className="tag">{stat.accuracy}% accuracy</span>
-                      <span className="text-muted2">{stat.total} attempts</span>
+                      <span className="tag !text-success !bg-success/10">{tstat.accuracy}% accuracy</span>
+                      <span className="text-muted2">{tstat.total} attempts</span>
                     </>
                   ) : (
                     <>

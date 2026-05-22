@@ -1,0 +1,61 @@
+{
+  "summary": "WAEC Math AI V2 testing complete. Backend: 36/36 pytest passing (17 new V2 tests + 19 regression). All V2 endpoints verified — topics(6), trig/geometry questions, lessons, solver/verify (SymPy), exams quick+mock with topic filtering, submit/report/history, similar-question generation (Gemini), admin CRUD with RBAC (403 for student), image-extract multipart endpoint. Frontend: 11/12 flows pass — student login, /topics (6 cards), /topics/trigonometry (5 subtopics), lesson KaTeX, exam quick drill start with 10 questions + timer + navigator, exam submit + report (10 reviews + subtopic breakdown), Tutor 'Verify with SymPy' toast ('Verified by SymPy ✓ Solutions: x = 6 Claim 6 ✓ matches'), student blocked from /admin, admin nav link visible, admin page loads, admin manual save shows new question in list with success toast. CRITICAL BUG: /past-questions page crashes with ReferenceError: topic is not defined — PastQuestions.jsx references undefined identifiers `topic`, `similar`, `setSimilar`, `availableSubtopics`, and treats `topics` (an array from /api/topics → {topics:[...]}) as if it had a .subtopics property.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "PastQuestions page (/past-questions)",
+        "issue": "Page crashes immediately with 'ReferenceError: topic is not defined'. Multiple undefined identifiers in src/pages/PastQuestions.jsx: (1) `topic` used in useEffect dep array, query builder, and <select value={topic}> — it is read from URL params for subtopic/year/difficulty but never extracted for topic. Need: `const topic = params.get('topic') || ''`. (2) `similar` / `setSimilar` referenced (lines 54, 61, 64, 66, 245-256) but never declared via useState. (3) `availableSubtopics` referenced in subtopic select map (line 116) but never computed. (4) Line 32 stores `t.data` into `topics` state. The API returns `{topics: [...]}`, but line 108 does `topics.map(...)` (would TypeError) and line 88 does `topics.subtopics.find(...)` (wrong shape). Need to set `setTopics(t.data.topics)` and derive availableSubtopics from the selected topic.",
+        "selector": "[data-testid=\"past-questions-page\"]",
+        "priority": "CRITICAL"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Generate similar (UI)",
+        "issue": "Cannot be exercised end-to-end because /past-questions page crashes before any question can be opened. Backend endpoint POST /api/questions/{id}/similar is verified working via pytest (TestSimilar.test_similar_generation passed).",
+        "affected_selectors": ["[data-testid=\"generate-similar-btn\"]", "[data-testid=\"similar-block\"]"]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "Tutor page",
+        "issues": ["Uses window.prompt() for SymPy verify input — functional but feels jarring; consider a small inline modal/dialog for parity with the rest of the UI."]
+      },
+      {
+        "screen": "DOM nesting",
+        "issues": ["Console hydration warning: '<span> cannot be a child of <option>' coming from one of the select dropdowns (likely topics list inside Exams or PastQuestions). Cosmetic but worth cleaning."]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_waec_v2.py",
+    "/app/backend/tests/test_waec_backend.py",
+    "/app/test_reports/pytest/pytest_full_v2.xml",
+    "/app/test_reports/pytest/pytest_v2_results.xml"
+  ],
+  "action_items": [
+    "Fix /app/frontend/src/pages/PastQuestions.jsx: declare topic from params, declare similar/setSimilar state, derive availableSubtopics from the selected topic's subtopics, and store the array (`setTopics(t.data.topics)`) instead of the wrapper object. Without this the entire Past Questions flow + Generate Similar UI is unusable.",
+    "Optional polish: replace window.prompt in Tutor 'Verify with SymPy' with an inline modal.",
+    "Optional polish: fix hydration warning by removing <span> wrappers inside <option> children in select dropdowns."
+  ],
+  "critical_code_review_comments": [
+    "PastQuestions.jsx — multiple undefined identifiers leak through because there is no lint/type-check enforcement. Recommend enabling ESLint no-undef + react/jsx-no-undef in CI; this would have caught the crash before deploy.",
+    "Topics endpoint returns an array nested under a `topics` key; some frontend consumers (PastQuestions) assume different shapes. Consider a thin client wrapper or TypeScript types for response contracts.",
+    "Backend admin image-extract returns raw Gemini error string in 500 detail (`Extraction failed: {e}`). Same sanitization caveat raised in iteration_1 for tutor. Low priority for MVP."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_waec_v2.py (new — 17 V2 tests)",
+    "/app/backend/tests/test_waec_backend.py (updated TestContent.test_topics to match new /topics shape)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "92% (11/12 — only PastQuestions crash)"},
+  "test_credentials": "student@waec.com / Student@123 and admin@waec.com / Admin@123 — both work; admin user returns is_admin=true.",
+  "seed_data_creation": "Admin UI test created one transient question TEST_UI_<rand>; left in DB (cleaned/identifiable by TEST_UI_ prefix). Pytest TestAdmin self-cleans (creates and deletes its own TEST_ question).",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend regression: run `pytest /app/backend/tests/` — should be 36/36. The single critical issue is the /past-questions page; once PastQuestions.jsx is fixed, re-run the Playwright suite to validate (1) topic-filter dropdown lists Algebra/Trigonometry/Geometry, (2) selecting topic resets subtopic, (3) clicking a question opens detail, (4) submit + Generate similar shows >=1 similar item. Everything else (exams flow, tutor sympy, admin RBAC, admin save) is already confirmed working on https://mathmastery-waec.preview.emergentagent.com.",
+  "rca of the issue": "PastQuestions.jsx was edited to add a topic filter + similar-question generation, but the new logic depends on identifiers (`topic`, `similar`, `setSimilar`, `availableSubtopics`) that were never declared. Additionally, the topics fetch was changed in the backend to return `{topics: [...]}` (nested) but the frontend still stores the wrapper object and iterates it as if it were the array. The combined result is a `ReferenceError: topic is not defined` thrown during render, which the React error overlay catches — making the entire Past Questions page unusable. Fix: in PastQuestions.jsx replace the topics load with `setTopics(t.data.topics)`, add `const topic = params.get('topic') || '';`, add `const [similar, setSimilar] = useState(null);`, and add `const availableSubtopics = useMemo(() => { if (!topic || !topics) return []; const tt = topics.find(x => x.id === topic); return tt?.subtopics || []; }, [topic, topics]);`."
+}

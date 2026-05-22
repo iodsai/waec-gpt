@@ -11,9 +11,15 @@ import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Dashboard from "@/pages/Dashboard";
+import Topics from "@/pages/Topics";
+import TopicDetail from "@/pages/TopicDetail";
 import Lessons from "@/pages/Lessons";
 import PastQuestions from "@/pages/PastQuestions";
 import Tutor from "@/pages/Tutor";
+import Exams from "@/pages/Exams";
+import ExamRun from "@/pages/ExamRun";
+import ExamReport from "@/pages/ExamReport";
+import Admin from "@/pages/Admin";
 
 const LandingRoute = () => {
   const { user, loading } = useAuth();
@@ -32,10 +38,16 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/topics" element={<ProtectedRoute><Topics /></ProtectedRoute>} />
+            <Route path="/topics/:topicId" element={<ProtectedRoute><TopicDetail /></ProtectedRoute>} />
             <Route path="/lessons" element={<ProtectedRoute><Lessons /></ProtectedRoute>} />
             <Route path="/lessons/:subtopicId" element={<ProtectedRoute><Lessons /></ProtectedRoute>} />
             <Route path="/past-questions" element={<ProtectedRoute><PastQuestions /></ProtectedRoute>} />
             <Route path="/tutor" element={<ProtectedRoute><Tutor /></ProtectedRoute>} />
+            <Route path="/exams" element={<ProtectedRoute><Exams /></ProtectedRoute>} />
+            <Route path="/exams/:examId/run" element={<ProtectedRoute><ExamRun /></ProtectedRoute>} />
+            <Route path="/exams/:examId/report" element={<ProtectedRoute><ExamReport /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <Toaster position="bottom-right" richColors closeButton offset={20} />

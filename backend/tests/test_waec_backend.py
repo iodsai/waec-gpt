@@ -87,9 +87,12 @@ class TestContent:
         r = session.get(f"{API}/topics")
         assert r.status_code == 200
         d = r.json()
-        assert d["topic"] == "Algebra"
-        assert len(d["subtopics"]) == 8
-        ids = {s["id"] for s in d["subtopics"]}
+        # V2: nested topics list
+        assert "topics" in d
+        algebra = next((t for t in d["topics"] if t["id"] == "algebra"), None)
+        assert algebra is not None
+        assert algebra["name"] == "Algebra"
+        ids = {s["id"] for s in algebra["subtopics"]}
         assert "linear-equations" in ids and "quadratic-equations" in ids
 
     def test_lesson_linear(self, session):

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { LogOut, BookOpen, Sparkles, FileText, LayoutDashboard } from "lucide-react";
+import { LogOut, BookOpen, Sparkles, FileText, LayoutDashboard, Trophy, Compass, ShieldCheck } from "lucide-react";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -31,15 +31,23 @@ const Navbar = () => {
               <NavLink to="/dashboard" className={linkCls} data-testid="nav-dashboard">
                 <LayoutDashboard size={16} /> Dashboard
               </NavLink>
-              <NavLink to="/lessons" className={linkCls} data-testid="nav-lessons">
-                <BookOpen size={16} /> Lessons
+              <NavLink to="/topics" className={linkCls} data-testid="nav-topics">
+                <Compass size={16} /> Topics
               </NavLink>
               <NavLink to="/past-questions" className={linkCls} data-testid="nav-past-questions">
-                <FileText size={16} /> Past Questions
+                <FileText size={16} /> Past Q's
+              </NavLink>
+              <NavLink to="/exams" className={linkCls} data-testid="nav-exams">
+                <Trophy size={16} /> Exams
               </NavLink>
               <NavLink to="/tutor" className={linkCls} data-testid="nav-tutor">
                 <Sparkles size={16} /> AI Tutor
               </NavLink>
+              {user.is_admin && (
+                <NavLink to="/admin" className={linkCls} data-testid="nav-admin">
+                  <ShieldCheck size={16} /> Admin
+                </NavLink>
+              )}
             </nav>
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex flex-col items-end leading-tight">

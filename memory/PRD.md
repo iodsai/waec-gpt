@@ -1,26 +1,25 @@
-# WAEC Math AI — Product Requirements (Living Doc)
+# WAEC Elective Math AI — Product Requirements (Living Doc)
 
 ## Original Problem Statement
-> "I have uploaded two documents based on https://app.mathgpt.ai/. The intention is to create an intelligent math system for WAEC — the west african examination council, with self-paced learning and solved past questions based on which we can predict and solve similar questions or give similar practice questions to students to practice for help."
+> "I have uploaded two documents based on https://app.mathgpt.ai/. The intention is to create an intelligent math system for WAEC — the west african examination council, with self-paced learning and solved past questions based on which we can predict and solve similar questions or give similar practice questions to students to practice."
 
 ## Vision
-AI-powered, mobile-first math learning platform purpose-built for West African secondary-school students (SS1–SS3) preparing for WAEC. Inspired by MathGPT but tailored to the WAEC syllabus and examiner style.
+AI-powered, mobile-first **WAEC Further Mathematics (Elective)** learning platform purpose-built for West African senior-secondary science students preparing for the WAEC Elective Maths exam. Inspired by MathGPT, tailored to the WAEC Further Maths syllabus and examiner style.
 
 ## User Personas
-- **Student** (primary) — SS1–SS3, age 14–18, mobile-first, exam-focused.
-- **Teacher / content team** — needs an admin interface to add real past-paper questions.
-- **Parent** — tracks progress.
+- **Primary** — SS2 / SS3 science students writing WAEC Elective Maths (Further Maths).
+- **Admin / Teacher** — adds real past-paper questions via the import pipeline.
 
 ## Core Requirements (static)
 1. Topic-organised lessons (notes + worked examples) with KaTeX rendering.
-2. Solved WAEC past questions browser — filterable by topic/subtopic/year/difficulty.
+2. Solved WAEC Further Maths past questions browser — filterable by topic/subtopic/year/difficulty.
 3. AI Math Tutor — Gemini 3 Flash chat, step-by-step working in WAEC examiner style.
-4. SymPy verification — programmatic check of equations / claimed answers.
-5. AI Similar-question generator — given a question, produce analogous practice items.
-6. Exam-simulator — Quick Drill (10 Q, 5 min) + Full Mock (40 Q, 60 min) with timer, auto-grade, and report.
-7. Admin tools — manual question entry + Gemini Vision image extraction.
+4. SymPy verification — inline modal to check student equations.
+5. AI Similar-question generator — produce analogous practice items.
+6. Exam-simulator — Quick Drill (10 Q / 5 min) + Full Mock (40 Q / 60 min) with timer + report.
+7. Admin tools — manual question entry + Gemini Vision image extraction + WAEC past-paper scraper (from waeconline.org.ng/Further/).
 8. Authentication (email/password JWT) with progress tracking + role flag (`is_admin`).
-9. Mobile-first design with the "African Modernity" earthy palette (terracotta + moss + warm sand) — distinctly *not* purple AI slop.
+9. Mobile-first "African Modernity" earthy palette (terracotta + moss + warm sand).
 
 ## Architecture
 - **Backend**: FastAPI + MongoDB (Motor), JWT (bcrypt + pyjwt), SymPy for solver, `emergentintegrations` → Gemini 3 Flash for tutor / similar / vision-extract.
@@ -29,42 +28,36 @@ AI-powered, mobile-first math learning platform purpose-built for West African s
 
 ## Implemented
 
-### V1 — 2026-02-22 ✅
-- Auth (student demo seeded), 8 algebra subtopics, 50 algebra Q's, attempts, progress dashboard, AI Tutor (Gemini 3 Flash), KaTeX everywhere.
+### V3 — Further Maths Pivot ✅ (current)
+- **Branding**: WAEC Elective Math AI.
+- **Topics (8)**: 3 live + 5 coming soon
+  - ✅ Statistics & Probability (5 subtopics, 50 Q + lessons)
+  - ✅ Calculus (5 subtopics: limits, differentiation, applications, integration, applications of integration, 50 Q + lessons)
+  - ✅ Vectors (5 subtopics: 2D, 3D, magnitude/direction, scalar product, applications, 50 Q + lessons)
+  - 🕓 Sets & Logic
+  - 🕓 Surds & Polynomials
+  - 🕓 Sequences & Binomial
+  - 🕓 Matrices & Determinants
+  - 🕓 Mechanics
+- **Scraper**: 29 Further Maths papers (waeconline.org.ng/Further/) — admin can import with preview → save.
+- **SymPy verify**: inline modal in Tutor (replaced `window.prompt`).
+- **Exam hydration warning**: fixed (no warnings in console).
+- **Theory question support**: schema exists, exam sampler excludes theory, accuracy stats exclude reveals.
+- **Validation**: 16/17 backend pytest pass + 100% frontend flows verified.
 
-### V2 — 2026-02-22 ✅ (this session)
-- **Topic system**: 6 topics modeled (Algebra, Trigonometry, Geometry, Statistics, Calculus, Vectors) — 3 live, 3 Coming Soon.
-- **Trigonometry**: 5 subtopics, full lessons + 25 questions (years 2016-2023).
-- **Geometry**: 5 subtopics, full lessons + 25 questions (years 2016-2023).
-- **Algebra expanded**: +30 questions spanning years 2010-2024 → 80 algebra questions total.
-- **Exam simulator**: Quick Drill (10 Q, 5 min) + Full Mock (40 Q, 60 min). Topic-scoped or mixed. Timer auto-submits. Report shows score, time, per-subtopic accuracy, per-question review with worked solutions. Exam attempts also recorded into the regular attempts collection so dashboard accuracy reflects practice.
-- **SymPy verify** (`/api/solver/verify`): parses LaTeX-ish equations, solves with SymPy, can verify a claimed answer.
-- **Similar-question generator** (`/api/questions/{id}/similar`): Gemini 3 Flash produces N analogous questions with full options + worked solutions.
-- **Admin role**: `is_admin` flag on users; admin-only routes (`/api/admin/questions` CRUD + `/api/admin/questions/extract`).
-- **Image extraction**: Gemini Vision endpoint accepts multipart image → parsed JSON (question/options/answer/subtopic_guess/difficulty/steps).
-- **Admin UI** (`/admin`): manual form + image upload + admin-added list with delete.
-- **Topics overview** (`/topics`) + topic detail (`/topics/:topicId`).
-- **PastQuestions**: added topic filter, "Generate similar" CTA, topic+subtopic cascade.
-- **Tutor**: "Verify with SymPy" button.
-
-### V2.1 — Real WAEC past-paper ingestion (this session)
-- **WAEC scraper** (`waec_scraper.py`): catalog of 26 papers (2010-2023) from waeconline.org.ng.
-- For each chosen paper, fetches all 13 question pages, downloads inline math PNGs, sends to **Gemini 3 Flash Vision** to convert theory questions into MCQ format with 4 plausible distractors and step-by-step worked solutions in WAEC examiner style.
-- Admin endpoints: `/api/admin/import/papers`, `/api/admin/import/extract` (preview, no save), `/api/admin/import/save` (bulk persist).
-- Admin UI: paper-select dropdown → Extract → preview cards (toggle to include/exclude, edit subtopic/difficulty/answer inline) → Save selected.
-- Verified live: WASSCE 2017 Q1 → "If $(y-1)\\log_{10}4 = y\\log_{10}16$, find $y$" with correct answer $-1$, 8-step solution.
+### V1/V2 (deprecated/dropped)
+- General Maths content (Algebra/Trig/Geometry seed + 62 real waeconline imports) — DROPPED in pivot.
 
 ## Backlog
 ### P0
-- Real WAEC past papers — scrape from URL when user provides source, or admin team uploads images via existing Vision pipeline.
-- Statistics, Calculus, Vectors syllabi (50 Q + lessons each).
-- Replace tutor `window.prompt` with inline modal for SymPy verify.
+- Add Further Maths content for the 5 coming-soon topics (Sets/Logic, Surds, Polynomials, Matrices, Mechanics — 50 Q + lessons each).
+- Background batch-import all 29 Further Maths papers via Gemini Vision pipeline.
+- Refactor `PastQuestions.jsx` → split into `ObjectivePane` / `TheoryPane` components.
 
 ### P1
-- Subscription tier (Paystack ₦1,500/mo "WAEC Pro") for unlimited tutor + mock exam access.
+- Paystack subscription (₦1,500/mo "Elective Pro") — unlimited tutor + full mock access.
 - Streaks + leaderboards (gamification).
 - Personalised daily study plan from weak-topic detection.
-- Audio narration of solutions.
 
 ### P2
 - PWA offline mode.
@@ -72,6 +65,6 @@ AI-powered, mobile-first math learning platform purpose-built for West African s
 - Export progress to PDF / share to WhatsApp.
 
 ## Known limitations
-- Trig/Geometry questions are original WAEC-style, not real past-paper transcriptions — real papers can be added via admin Vision pipeline.
-- AI tutor / similar generation latency: 5–20s (Gemini).
-- Image extraction quality depends on image clarity & Gemini Vision parsing.
+- 5 of 8 syllabus topics still "coming soon".
+- AI similar-question / vision-extract latency: 5-20s (Gemini).
+- Theory-question rendering path implemented but unused in V3 seed (only used after admin import).

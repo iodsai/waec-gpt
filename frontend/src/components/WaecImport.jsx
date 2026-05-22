@@ -64,8 +64,9 @@ const WaecImport = () => {
     const payload = chosen.map((q) => ({
       subtopic: q.subtopic || q.subtopic_guess,
       difficulty: q.difficulty || q.difficulty_guess,
+      question_type: q.question_type || (q.options?.length ? "objective" : "theory"),
       question: q.question,
-      options: q.options,
+      options: q.options || [],
       answer: q.answer,
       solution_steps: q.solution_steps,
       source_url: q.source_url,
@@ -137,6 +138,9 @@ const WaecImport = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap text-xs text-muted2">
                       <span className="tag">Q{i + 1}</span>
+                      <span className={`tag ${q.question_type === "theory" ? "!bg-moss/10 !text-moss" : "!bg-terracotta/10 !text-terracotta"}`}>
+                        {q.question_type === "theory" ? "Theory" : "Objective"}
+                      </span>
                       {q.source_url && (
                         <a href={q.source_url} target="_blank" rel="noreferrer" className="text-terracotta hover:underline inline-flex items-center gap-1">
                           source <ExternalLink size={11} />
@@ -146,14 +150,16 @@ const WaecImport = () => {
                     <div className="mt-2 text-ink font-medium leading-relaxed">
                       <MathText text={q.question} />
                     </div>
-                    <div className="grid sm:grid-cols-2 gap-2 mt-3">
-                      {(q.options || []).map((opt, j) => (
-                        <div key={j} className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${opt === q.answer ? "border-success bg-success/10" : "border-edge"}`}>
-                          <span className="font-mono text-xs text-muted2">{["A","B","C","D"][j]}</span>
-                          <span className="text-sm text-ink"><MathText text={opt} /></span>
-                        </div>
-                      ))}
-                    </div>
+                    {q.question_type !== "theory" && (q.options || []).length > 0 && (
+                      <div className="grid sm:grid-cols-2 gap-2 mt-3">
+                        {(q.options || []).map((opt, j) => (
+                          <div key={j} className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${opt === q.answer ? "border-success bg-success/10" : "border-edge"}`}>
+                            <span className="font-mono text-xs text-muted2">{["A","B","C","D"][j]}</span>
+                            <span className="text-sm text-ink"><MathText text={opt} /></span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     <div className="grid sm:grid-cols-3 gap-3 mt-4 text-sm">
                       <div>
                         <label className="text-xs font-medium text-muted2">Subtopic</label>

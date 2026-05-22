@@ -93,6 +93,7 @@ class Question(BaseModel):
     difficulty: str
     question: str
     options: List[str]
+    question_type: str = "objective"
 
 class QuestionDetail(Question):
     answer: str
@@ -392,7 +393,8 @@ def _qpublic(d: dict) -> Question:
         subtopic=d["subtopic"],
         subtopic_name=SUBTOPIC_NAME.get(d["subtopic"], d["subtopic"]),
         year=d["year"], difficulty=d["difficulty"],
-        question=d["question"], options=d["options"],
+        question=d["question"], options=d.get("options", []),
+        question_type=d.get("question_type", "objective"),
     )
 
 @api.get("/questions", response_model=List[Question])
@@ -420,7 +422,8 @@ async def get_question(qid: str):
         id=d["id"], topic=d.get("topic", topic_of(d["subtopic"])), topic_name=tname,
         subtopic=d["subtopic"], subtopic_name=SUBTOPIC_NAME.get(d["subtopic"], d["subtopic"]),
         year=d["year"], difficulty=d["difficulty"],
-        question=d["question"], options=d["options"],
+        question=d["question"], options=d.get("options", []),
+        question_type=d.get("question_type", "objective"),
         answer=d["answer"], solution_steps=d["solution_steps"],
     )
 
@@ -560,7 +563,7 @@ EXAM_CONFIG = {
 @api.post("/exams/start", response_model=ExamStartResp)
 async def exam_start(req: ExamStartReq, current=Depends(get_current_user)):
     cfg = EXAM_CONFIG[req.mode]
-    q: dict = {}
+    q: dict = {"$or": [{"question_type": {"$exists": False}}, {"question_type": "objective"}]}
     if req.topic and req.topic != "mixed":
         q["topic"] = req.topic
     docs = await db.questions.find(q, {"_id": 0}).to_list(2000)
@@ -770,28 +773,36 @@ async def import_waec_paper(req: WaecImportReq, current=Depends(require_admin)):
 
 @api.post("/admin/import/save")
 async def save_imported_questions(req: WaecBulkSaveReq, current=Depends(require_admin)):
-    """Persist accepted questions from a paper-import preview."""
+    """Persist accepted questions from a paper-import preview.
+
+    Supports both `objective` (with options) and `theory` (no options) question types.
+    """
     docs = []
     for q in req.questions:
         subtopic = q.get("subtopic") or q.get("subtopic_guess") or "linear-equations"
         if subtopic not in SUBTOPIC_NAME:
             subtopic = "linear-equations"
         topic = SUBTOPIC_TOPIC.get(subtopic, "algebra")
+        qtype = q.get("question_type") or ("theory" if not q.get("options") else "objective")
         doc = {
             "id": str(uuid.uuid4()),
             "topic": topic, "subtopic": subtopic,
             "year": req.year,
             "difficulty": q.get("difficulty") or q.get("difficulty_guess") or "medium",
-            "question": q["question"],
-            "options": q.get("options", []),
+            "question": q.get("question", "").strip(),
+            "options": q.get("options", []) if qtype == "objective" else [],
             "answer": q.get("answer", ""),
             "solution_steps": q.get("solution_steps", []),
+            "question_type": qtype,
             "source": "waeconline",
             "source_url": q.get("source_url") or req.paper_url,
             "created_by": current["id"],
             "created_at": datetime.now(timezone.utc).isoformat(),
         }
-        if not doc["question"] or not doc["answer"] or len(doc["options"]) < 2:
+        if not doc["question"] or not doc["answer"]:
+            continue
+        # objective requires at least 2 options; theory does not
+        if qtype == "objective" and len(doc["options"]) < 2:
             continue
         docs.append(doc)
     if not docs:

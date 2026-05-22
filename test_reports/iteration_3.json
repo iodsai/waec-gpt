@@ -1,0 +1,40 @@
+{
+  "summary": "V2.2 (question_type=theory + waeconline imports) verified end-to-end. Backend: 11/11 new pytest in test_waec_v22.py pass — /api/questions and /api/questions/{id} expose `question_type`, theory items have options=[] with non-empty answer/solution_steps, POST /api/attempts on a theory question records and returns the worked solution, POST /api/exams/start excludes theory (verified 3 consecutive runs — all 10 sampled Qs had >=2 options), POST /api/admin/import/save accepts theory (no options) and rejects objective with <2 options (400), /api/admin/import/papers returns 26 papers, and DB now has 62 waeconline questions across 2019-2023 (55 theory, 7 objective; per-year: 2019=13, 2020=13, 2021=11, 2022=12, 2023=13). Frontend: /past-questions?topic=trigonometry&year=2023 loads cleanly (no crash, PastQuestions.jsx fix verified — declares topic/similar/availableSubtopics correctly); clicking the elevation 'A boy stands at a point M' theory question renders the Theory badge, no options grid, [data-testid=theory-question] block with a 'Reveal worked solution' button, which on click renders [data-testid=solution-block] with final answer and 10 numbered steps. Admin /admin shows 'Import WAEC past paper' card with the 26-paper select dropdown.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Exams page select dropdown (and other selects)",
+        "issues": ["Still present from iteration_2: React hydration warning '<span> cannot be a child of <option>' coming from topic select on /exams (data-testid=exam-topic...). Cosmetic only — does not break functionality. Caused by an x-source-* span wrapper around the option label."]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_waec_v22.py",
+    "/app/test_reports/pytest/v22_results.xml"
+  ],
+  "action_items": [
+    "(Optional polish) Remove the <span style={{display:'contents'}}> wrappers inside <option> children of the topic select on /exams (and any similar selects) to clear the persistent hydration warning."
+  ],
+  "critical_code_review_comments": [
+    "server.py admin/import/save quietly drops invalid questions (objective with <2 options) and only raises 400 if ALL are invalid. Acceptable for bulk import UX, but consider returning a {saved, skipped, reasons} payload so the admin UI can show 'N skipped because <2 options'.",
+    "Theory attempts: POST /api/attempts on a theory question still computes `correct = selected == answer`. With selected='—' it always records correct=false, polluting the user's accuracy on the dashboard. Recommend either filtering theory attempts out of accuracy stats in /api/progress, or storing a separate `was_revealed` flag.",
+    "waec_scraper.py imports run via Gemini Vision are bypassed in this iteration (per instructions). Live DB matches expectations, but consider adding a CI smoke that mocks Gemini to keep the schema contract guarded.",
+    "/app/frontend/src/pages/PastQuestions.jsx is now correct, but the file mixes the objective + theory render branches inside one large JSX subtree (~340 lines). Splitting into <ObjectivePane/> and <TheoryPane/> sub-components would improve readability and let each branch own its own state (selectedOption / result)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_waec_v22.py (new — 11 V2.2 tests)"
+  ],
+  "success_rate": {"backend": "100% (11/11 V2.2 + prior 36 regression untouched)", "frontend": "100% on V2.2 flows tested (theory render, theory reveal, admin import dropdown 26 papers, quick exam objective-only validated via backend)"},
+  "test_credentials": "student@waec.com / Student@123 and admin@waec.com / Admin@123 — both working.",
+  "seed_data_creation": "test_admin_save_theory_no_options creates one theory question with question='TEST_THEORY_<rand>...' year=2099 then deletes it in the same test. test_admin_save_rejects_objective_with_too_few_options sends an invalid payload that is rejected (no data persisted).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Live DB has 62 waeconline questions (year 2019-2023, mostly theory). To exercise theory render manually: login as student, navigate to /past-questions?topic=trigonometry&year=2023, the 5th card (long elevation question starting 'A boy stands at a point M') is a theory item. Backend regression: `pytest /app/backend/tests/` should run prior 36 + new 11 = 47 tests all green. The only outstanding cosmetic is the <span>-in-<option> hydration warning (pre-existing).",
+  "rca of the issue": "No new bugs uncovered. The earlier blocker (PastQuestions.jsx crash from iteration_2) is confirmed fixed: topic/similar/availableSubtopics are declared and topics state is set from t.data.topics. The theory branch is gated by active.question_type === 'theory' and uses [data-testid=theory-question] + reveal-solution-btn, which POSTs /api/attempts with selected='—' to register practice and surface the worked solution — verified live."
+}

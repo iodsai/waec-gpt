@@ -189,39 +189,76 @@ const PastQuestions = () => {
                 <span className="tag">{active.subtopic_name}</span>
                 <span className="tag">WAEC {active.year}</span>
                 <span className="tag !text-terracotta">{active.difficulty}</span>
+                {active.question_type === "theory" && (
+                  <span className="tag !bg-moss/10 !text-moss !border-moss/30">Theory</span>
+                )}
               </div>
               <h2 className="font-heading text-2xl font-semibold text-ink mt-4 leading-snug">
                 <MathText text={active.question} />
               </h2>
 
-              <div className="mt-5 space-y-2" data-testid="answer-options">
-                {active.options.map((opt, idx) => {
-                  const letter = ["A", "B", "C", "D", "E"][idx];
-                  const chosen = selectedOption === opt;
-                  const showCorrect = result && opt === result.correct_answer;
-                  const showWrong = result && chosen && !result.correct;
-                  return (
-                    <button
-                      key={idx}
-                      disabled={!!result}
-                      onClick={() => setSelectedOption(opt)}
-                      data-testid={`option-${letter}`}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition
-                        ${chosen ? "border-terracotta bg-terracotta/5" : "border-edge hover:border-terracotta/40"}
-                        ${showCorrect ? "!border-success !bg-success/10" : ""}
-                        ${showWrong ? "!border-error !bg-error/10" : ""}
-                      `}
-                    >
-                      <span className="font-mono text-sm w-6 h-6 grid place-items-center rounded-md bg-sand text-ink">{letter}</span>
-                      <span className="text-ink"><MathText text={opt} /></span>
-                      {showCorrect && <CheckCircle2 className="ml-auto text-success" size={18} />}
-                      {showWrong && <XCircle className="ml-auto text-error" size={18} />}
+              {active.question_type === "theory" ? (
+                <div className="mt-5" data-testid="theory-question">
+                  {!result ? (
+                    <button onClick={async () => {
+                      try {
+                        const { data } = await http.post("/attempts", { question_id: active.id, selected: "—" });
+                        setResult(data);
+                      } catch (e) {
+                        toast.error("Could not load solution");
+                      }
+                    }} className="btn-primary w-full" data-testid="reveal-solution-btn">
+                      Reveal worked solution
                     </button>
-                  );
-                })}
-              </div>
+                  ) : (
+                    <div className="p-5 rounded-xl bg-sand/60 border border-edge" data-testid="solution-block">
+                      <div className="text-sm text-muted2">Final answer:</div>
+                      <div className="font-heading text-lg text-success mt-1"><MathText text={result.correct_answer} /></div>
+                      <h3 className="font-heading text-lg font-semibold text-ink mt-4">Worked solution</h3>
+                      <ol className="mt-3 space-y-2 list-none">
+                        {result.solution_steps.map((s, i) => (
+                          <li key={i} className="flex gap-3 text-ink" data-testid={`solution-step-${i}`}>
+                            <span className="font-mono text-xs bg-surface border border-edge px-2 py-0.5 rounded-md h-6 flex-shrink-0">Step {i + 1}</span>
+                            <span><MathText text={s} /></span>
+                          </li>
+                        ))}
+                      </ol>
+                      <button onClick={generateSimilar} className="btn-secondary mt-5 text-sm inline-flex items-center gap-2" data-testid="generate-similar-btn" disabled={similar?.loading}>
+                        <Wand2 size={14} /> {similar?.loading ? "Generating…" : "Generate similar"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="mt-5 space-y-2" data-testid="answer-options">
+                  {active.options.map((opt, idx) => {
+                    const letter = ["A", "B", "C", "D", "E"][idx];
+                    const chosen = selectedOption === opt;
+                    const showCorrect = result && opt === result.correct_answer;
+                    const showWrong = result && chosen && !result.correct;
+                    return (
+                      <button
+                        key={idx}
+                        disabled={!!result}
+                        onClick={() => setSelectedOption(opt)}
+                        data-testid={`option-${letter}`}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition
+                          ${chosen ? "border-terracotta bg-terracotta/5" : "border-edge hover:border-terracotta/40"}
+                          ${showCorrect ? "!border-success !bg-success/10" : ""}
+                          ${showWrong ? "!border-error !bg-error/10" : ""}
+                        `}
+                      >
+                        <span className="font-mono text-sm w-6 h-6 grid place-items-center rounded-md bg-sand text-ink">{letter}</span>
+                        <span className="text-ink"><MathText text={opt} /></span>
+                        {showCorrect && <CheckCircle2 className="ml-auto text-success" size={18} />}
+                        {showWrong && <XCircle className="ml-auto text-error" size={18} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
-              {!result ? (
+              {active.question_type !== "theory" && (!result ? (
                 <button
                   onClick={submit}
                   disabled={submitting}
@@ -265,7 +302,7 @@ const PastQuestions = () => {
                     <Wand2 size={14} /> {similar?.loading ? "Generating…" : "Generate similar"}
                   </button>
                 </div>
-              )}
+              ))}
 
               {similar && !similar.loading && similar.items?.length > 0 && (
                 <div className="mt-6 border-t border-edge pt-5" data-testid="similar-block">

@@ -120,30 +120,43 @@ def _parse_question_page(html: str, base_url: str) -> dict:
     }
 
 
-EXTRACT_TO_MCQ_SYSTEM = """You convert real WAEC mathematics past questions into multiple-choice format suitable for student practice.
+EXTRACT_TO_MCQ_SYSTEM = """You convert real WAEC mathematics past questions into one of two structured shapes suitable for student practice.
 
 You will receive:
 - The original WAEC theory question text (Paper 2)
 - The chief examiner's observation/solution text
-- Inline math expressions as attached images
+- Inline math expressions as attached images (read these carefully)
 
-Your job: produce a single JSON object (no markdown fences, no prose) representing the FIRST sub-question (e.g. part (a)) with this exact shape:
+Decide between two shapes:
+
+**A) Multiple-choice ("objective")** — preferred when the question has a single numeric/symbolic answer that can be expressed in one short string:
 {
-  "question": "the question text with LaTeX wrapped in $...$ inline or $$...$$ display, reconstructed from the images and surrounding text",
-  "options": ["option A", "option B", "option C", "option D"],
-  "answer": "the value exactly matching one of the options",
-  "subtopic_guess": "one of: linear-equations, quadratic-equations, simultaneous-equations, indices, logarithms, variation, sequences-series, inequalities, trig-ratios, trig-identities, sine-cosine-rules, elevation-depression, bearings, circle-theorems, polygons, area-volume, similarity-congruence, coordinate-geometry",
+  "question_type": "objective",
+  "question": "the question (LaTeX in $...$ inline or $$...$$ display)",
+  "options": ["A", "B", "C", "D"],
+  "answer": "exact match to one option",
+  "subtopic_guess": "...",
   "difficulty_guess": "easy|medium|hard",
   "solution_steps": ["Step 1 ...", "Step 2 ...", "Step 3 ..."]
 }
 
+**B) Theory ("theory")** — when the question has multiple parts, requires construction/diagram, has a list of answers, or is otherwise not reducible to 4 short options:
+{
+  "question_type": "theory",
+  "question": "the question (preserve sub-parts (a), (b), (c) with LaTeX)",
+  "answer": "concise summary of the final answer(s), e.g. 'a) x=5, b) area = 24 cm²'",
+  "subtopic_guess": "...",
+  "difficulty_guess": "easy|medium|hard",
+  "solution_steps": ["Step 1 ...", "Step 2 ...", "..."]
+}
+
 Rules:
-- Reconstruct any maths that was shown as an image using LaTeX. Read the attached images carefully.
-- Generate three PLAUSIBLE distractors based on common student mistakes (sign errors, off-by-one, wrong formula).
-- The correct answer field must EXACTLY match one of the four options.
-- solution_steps must mirror the examiner's working in clear, numbered prose (5-8 short steps).
-- If the question has multiple parts (a), (b), produce only part (a). Ignore the rest.
-- Output JSON only — no commentary, no markdown fences."""
+- Reconstruct any maths shown as image into LaTeX using $...$ delimiters.
+- For objective: generate 3 PLAUSIBLE distractors based on common student mistakes (sign errors, wrong formula, off-by-one). The answer must EXACTLY match one option string.
+- solution_steps: mirror the examiner's working in clear, numbered prose (5-10 short steps).
+- If the question has parts (a)/(b), and part (a) alone yields a single clean answer, prefer "objective" for part (a) only. Otherwise use "theory" and include all parts.
+- subtopic_guess must be one of: linear-equations, quadratic-equations, simultaneous-equations, indices, logarithms, variation, sequences-series, inequalities, trig-ratios, trig-identities, sine-cosine-rules, elevation-depression, bearings, circle-theorems, polygons, area-volume, similarity-congruence, coordinate-geometry.
+- Output a single JSON object only — no commentary, no markdown fences."""
 
 
 def _strip_json(text: str) -> str:
@@ -151,6 +164,33 @@ def _strip_json(text: str) -> str:
     t = re.sub(r"^```(?:json)?\s*", "", t)
     t = re.sub(r"\s*```$", "", t)
     return t.strip()
+
+
+def _fix_latex_in_json(s: str) -> str:
+    """Gemini sometimes outputs unescaped backslashes for LaTeX commands inside JSON strings
+    (e.g. "\sin" instead of "\\sin"). Escape any `\X` where X is not a valid JSON escape char."""
+    # Valid JSON escapes: \" \\ \/ \b \f \n \r \t \uXXXX
+    return re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', s)
+
+
+def _safe_json_loads(raw: str) -> dict | list | None:
+    import json as _json
+    cleaned = _strip_json(raw)
+    for attempt in (cleaned, _fix_latex_in_json(cleaned)):
+        try:
+            return _json.loads(attempt)
+        except _json.JSONDecodeError:
+            continue
+    # last attempt: extract first {...} or [...] and try again
+    for pat in (r"\{[\s\S]*\}", r"\[[\s\S]*\]"):
+        m = re.search(pat, cleaned)
+        if m:
+            for variant in (m.group(0), _fix_latex_in_json(m.group(0))):
+                try:
+                    return _json.loads(variant)
+                except _json.JSONDecodeError:
+                    continue
+    return None
 
 
 async def _gemini_to_mcq(api_key: str, q: dict, year: int, attempt: int = 0) -> dict | None:
@@ -183,15 +223,10 @@ async def _gemini_to_mcq(api_key: str, q: dict, year: int, attempt: int = 0) -> 
         ).with_model("gemini", "gemini-3-flash-preview")
         msg = UserMessage(text=prompt, file_contents=file_contents or None)
         raw = await chat.send_message(msg)
-        cleaned = _strip_json(raw)
-        try:
-            return _json.loads(cleaned)
-        except _json.JSONDecodeError:
-            m = re.search(r"\{[\s\S]*\}", cleaned)
-            if m:
-                return _json.loads(m.group(0))
+        data = _safe_json_loads(raw)
+        if data is None:
             logger.warning("Gemini returned non-JSON: %s", raw[:200])
-            return None
+        return data
     except Exception as e:
         logger.exception("Gemini extract failed: %s", e)
         return None

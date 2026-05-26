@@ -130,6 +130,7 @@ class ChatResp(BaseModel):
 class ExamStartReq(BaseModel):
     mode: Literal["quick", "mock"]
     topic: Optional[str] = None  # if None, mixed
+    question_ids: Optional[List[str]] = None  # custom set (e.g. revision deck)
 
 class ExamQuestion(BaseModel):
     id: str
@@ -749,27 +750,44 @@ EXAM_CONFIG = {
 @api.post("/exams/start", response_model=ExamStartResp)
 async def exam_start(req: ExamStartReq, current=Depends(get_current_user)):
     cfg = EXAM_CONFIG[req.mode]
-    q: dict = {"$or": [{"question_type": {"$exists": False}}, {"question_type": "objective"}]}
-    if req.topic and req.topic != "mixed":
-        q["topic"] = req.topic
-    docs = await db.questions.find(q, {"_id": 0}).to_list(2000)
-    if len(docs) < 1:
-        raise HTTPException(status_code=400, detail="Not enough questions for an exam in this scope")
-    count = min(cfg["count"], len(docs))
-    sampled = random.sample(docs, count)
+    objective_filter = {"$or": [{"question_type": {"$exists": False}}, {"question_type": "objective"}]}
+
+    if req.question_ids:
+        # Custom question set (e.g. revision deck). Honor provided IDs, filter to objective.
+        q = {"id": {"$in": req.question_ids}, **objective_filter}
+        docs = await db.questions.find(q, {"_id": 0}).to_list(2000)
+        if not docs:
+            raise HTTPException(status_code=400, detail="No objective questions found in this set")
+        # Preserve caller-provided order, drop unknown ids
+        by_id = {d["id"]: d for d in docs}
+        sampled = [by_id[qid] for qid in req.question_ids if qid in by_id]
+        # Duration scales with set size, using quick-mode pace (~30s/question), min 3 min
+        duration = max(180, len(sampled) * 30)
+    else:
+        q: dict = dict(objective_filter)
+        if req.topic and req.topic != "mixed":
+            q["topic"] = req.topic
+        docs = await db.questions.find(q, {"_id": 0}).to_list(2000)
+        if len(docs) < 1:
+            raise HTTPException(status_code=400, detail="Not enough questions for an exam in this scope")
+        count = min(cfg["count"], len(docs))
+        sampled = random.sample(docs, count)
+        duration = cfg["duration_seconds"]
+
     started = datetime.now(timezone.utc)
     exam = {
         "id": str(uuid.uuid4()), "user_id": current["id"], "mode": req.mode, "topic": req.topic,
-        "duration_seconds": cfg["duration_seconds"],
+        "duration_seconds": duration,
         "question_ids": [d["id"] for d in sampled],
         "answers_map": {d["id"]: d["answer"] for d in sampled},
         "started_at": started.isoformat(),
         "submitted_at": None, "score": None,
+        "source": "deck" if req.question_ids else "random",
     }
     await db.exams.insert_one(exam)
     return ExamStartResp(
         exam_id=exam["id"], mode=req.mode, topic=req.topic,
-        duration_seconds=cfg["duration_seconds"],
+        duration_seconds=duration,
         questions=[
             ExamQuestion(
                 id=d["id"],

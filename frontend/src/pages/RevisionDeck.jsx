@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import http from "@/lib/api";
 import { toast } from "sonner";
 import MathText from "@/components/MathText";
-import { Bookmark, BookmarkX, FileText, Loader2 } from "lucide-react";
+import { Bookmark, BookmarkX, FileText, Loader2, Zap } from "lucide-react";
 
 const RevisionDeck = () => {
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [drilling, setDrilling] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -34,13 +36,50 @@ const RevisionDeck = () => {
     }
   };
 
+  const drillDeck = async () => {
+    if (!items.length) return;
+    // Only objective questions are eligible (theory has no options)
+    const ids = items.filter((q) => q.question_type !== "theory").map((q) => q.question_id);
+    if (!ids.length) {
+      toast.error("Your deck has no objective questions to drill.");
+      return;
+    }
+    setDrilling(true);
+    try {
+      const { data } = await http.post("/exams/start", {
+        mode: "quick",
+        question_ids: ids,
+      });
+      navigate(`/exams/${data.exam_id}/run`);
+    } catch (err) {
+      console.error("Drill deck failed:", err);
+      toast.error(err?.response?.data?.detail || "Could not start drill");
+      setDrilling(false);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 py-10" data-testid="revision-deck-page">
-      <span className="overline">Your saved questions</span>
-      <h1 className="font-heading text-4xl font-bold text-ink mt-2">Revision deck</h1>
-      <p className="text-muted2 mt-2">
-        Questions you've bookmarked for later. Perfect for one-day-before-exam drilling.
-      </p>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span className="overline">Your saved questions</span>
+          <h1 className="font-heading text-4xl font-bold text-ink mt-2">Revision deck</h1>
+          <p className="text-muted2 mt-2">
+            Questions you've bookmarked for later. Perfect for one-day-before-exam drilling.
+          </p>
+        </div>
+        {items.length > 0 && (
+          <button
+            onClick={drillDeck}
+            disabled={drilling}
+            className="btn-primary inline-flex items-center gap-2 disabled:opacity-60 self-start sm:self-auto"
+            data-testid="deck-drill-btn"
+          >
+            {drilling ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
+            Drill my deck ({items.filter((q) => q.question_type !== "theory").length})
+          </button>
+        )}
+      </div>
 
       {loading ? (
         <div className="mt-10 flex items-center gap-2 text-muted2" data-testid="deck-loading">

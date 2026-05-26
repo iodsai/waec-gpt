@@ -31,7 +31,7 @@ const TheoryPane = ({ question, onGenerateSimilar, similarLoading }) => {
           <h3 className="font-heading text-lg font-semibold text-ink mt-4">Worked solution</h3>
           <ol className="mt-3 space-y-2 list-none">
             {result.solution_steps.map((s, i) => (
-              <li key={i} className="flex gap-3 text-ink" data-testid={`solution-step-${i}`}>
+              <li key={`tstep-${i}`} className="flex gap-3 text-ink" data-testid={`solution-step-${i}`}>
                 <span className="font-mono text-xs bg-surface border border-edge px-2 py-0.5 rounded-md h-6 flex-shrink-0">Step {i + 1}</span>
                 <span><MathText text={s} /></span>
               </li>

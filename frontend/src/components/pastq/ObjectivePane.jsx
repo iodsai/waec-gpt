@@ -36,7 +36,7 @@ const ObjectivePane = ({ question, onTryAgain, onGenerateSimilar, similarLoading
           const showWrong = result && chosen && !result.correct;
           return (
             <button
-              key={idx}
+              key={`opt-${idx}-${opt}`}
               disabled={!!result}
               onClick={() => setSelected(opt)}
               data-testid={`option-${letter}`}
@@ -77,7 +77,7 @@ const ObjectivePane = ({ question, onTryAgain, onGenerateSimilar, similarLoading
           <h3 className="font-heading text-lg font-semibold text-ink mt-4">Step-by-step solution</h3>
           <ol className="mt-3 space-y-2 list-none">
             {result.solution_steps.map((s, i) => (
-              <li key={i} className="flex gap-3 text-ink" data-testid={`solution-step-${i}`}>
+              <li key={`step-${i}`} className="flex gap-3 text-ink" data-testid={`solution-step-${i}`}>
                 <span className="font-mono text-xs bg-surface border border-edge px-2 py-0.5 rounded-md h-6 flex-shrink-0">Step {i + 1}</span>
                 <span><MathText text={s} /></span>
               </li>

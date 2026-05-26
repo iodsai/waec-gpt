@@ -9,6 +9,7 @@ import os
 import logging
 import base64
 import random
+import hashlib
 from pathlib import Path
 from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional, Literal, Any
@@ -613,6 +614,82 @@ async def daily_plan(current=Depends(get_current_user)):
     return {"cards": cards, "message": None}
 
 # ============ BOOKMARKS ============
+@api.get("/predictions")
+async def topic_predictions(current=Depends(get_current_user)):
+    """Predict top-5 likely subtopics for the next WAEC paper based on past-paper frequency.
+    Only counts questions from real scraped papers (not seed data)."""
+    # Count subtopic appearances across imported papers
+    pipeline = [
+        {"$match": {"source": {"$in": ["waeconline", "waeconline-batch"]}}},
+        {"$group": {"_id": "$subtopic", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 8},
+    ]
+    rows = await db.questions.aggregate(pipeline).to_list(20)
+    total = sum(r["count"] for r in rows) or 1
+    items = []
+    for r in rows[:5]:
+        sub = r["_id"]
+        items.append({
+            "subtopic": sub,
+            "subtopic_name": SUBTOPIC_NAME.get(sub, sub),
+            "topic": SUBTOPIC_TOPIC.get(sub, ""),
+            "topic_name": TOPIC_NAME.get(SUBTOPIC_TOPIC.get(sub, ""), ""),
+            "appearances": r["count"],
+            "frequency_pct": round((r["count"] / total) * 100, 1),
+        })
+    paper_count = await db.questions.count_documents(
+        {"source": {"$in": ["waeconline", "waeconline-batch"]}}
+    )
+    return {
+        "items": items,
+        "sample_size": paper_count,
+        "papers_analysed": 29,
+    }
+
+
+@api.get("/question-of-the-day")
+async def question_of_the_day(current=Depends(get_current_user)):
+    """Return one deterministic question for today (UTC date). Same for everyone, changes at midnight UTC."""
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    # Hash the date to pick a stable question index
+    seed = int(hashlib.md5(today_str.encode()).hexdigest(), 16)
+    # Only objective questions of medium/hard difficulty for daily challenge
+    pool = await db.questions.find(
+        {"$and": [
+            {"$or": [{"question_type": {"$exists": False}}, {"question_type": "objective"}]},
+            {"difficulty": {"$in": ["medium", "hard"]}},
+        ]},
+        {"_id": 0, "answer": 0, "solution_steps": 0},
+    ).to_list(2000)
+    if not pool:
+        return {"question": None, "date": today_str}
+    pool.sort(key=lambda q: q["id"])  # stable order
+    pick = pool[seed % len(pool)]
+    # Check whether the user already attempted today's question
+    attempt = await db.attempts.find_one(
+        {"user_id": current["id"], "question_id": pick["id"],
+         "$expr": {"$gte": ["$created_at", today_str]}},
+        {"_id": 0},
+    )
+    return {
+        "date": today_str,
+        "question": {
+            "id": pick["id"],
+            "question": pick["question"],
+            "options": pick["options"],
+            "subtopic": pick["subtopic"],
+            "subtopic_name": SUBTOPIC_NAME.get(pick["subtopic"], pick["subtopic"]),
+            "topic": pick.get("topic", topic_of(pick["subtopic"])),
+            "topic_name": TOPIC_NAME.get(pick.get("topic", topic_of(pick["subtopic"])), ""),
+            "year": pick["year"],
+            "difficulty": pick["difficulty"],
+        },
+        "already_attempted": bool(attempt),
+        "attempt_correct": attempt.get("correct") if attempt else None,
+    }
+
+
 @api.post("/bookmarks/toggle")
 async def toggle_bookmark(req: BookmarkToggleReq, current=Depends(get_current_user)):
     """Toggle bookmark for a question. Returns the new state."""

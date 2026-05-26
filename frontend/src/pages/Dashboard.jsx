@@ -5,6 +5,8 @@ import { useAuth } from "@/context/AuthContext";
 import { BookOpen, Sparkles, FileText, TrendingUp, Target, Trophy, Compass } from "lucide-react";
 import MathText from "@/components/MathText";
 import DailyPlan from "@/components/DailyPlan";
+import QuestionOfDay from "@/components/QuestionOfDay";
+import PredictionsCard from "@/components/PredictionsCard";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -83,6 +85,12 @@ const Dashboard = () => {
       {/* DAILY PLAN */}
       <div className="mt-10">
         <DailyPlan />
+      </div>
+
+      {/* QUESTION OF THE DAY + PREDICTIONS */}
+      <div className="mt-8 grid lg:grid-cols-2 gap-6">
+        <QuestionOfDay />
+        <PredictionsCard />
       </div>
 
       {/* TOPIC GRID */}

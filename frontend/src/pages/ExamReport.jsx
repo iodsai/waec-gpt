@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import http from "@/lib/api";
 import MathText from "@/components/MathText";
-import { Trophy, CheckCircle2, XCircle, ChevronLeft } from "lucide-react";
+import { Trophy, CheckCircle2, XCircle, ChevronLeft, Share2 } from "lucide-react";
 
 const ExamReport = () => {
   const { examId } = useParams();
@@ -21,6 +21,18 @@ const ExamReport = () => {
   const scoreColor = report.score_percent >= 70 ? "text-success" :
                      report.score_percent >= 40 ? "text-warning" : "text-error";
 
+  const shareWhatsApp = () => {
+    const grade = report.score_percent >= 70 ? "🏆 Crushed it!" :
+                  report.score_percent >= 50 ? "💪 Solid work" : "📚 Practice mode";
+    const msg = encodeURIComponent(
+      `${grade}\n\n📊 *WAEC Further Maths exam — ${report.score_percent}%*\n` +
+      `✓ ${report.correct} / ${report.total_questions} correct\n` +
+      `⏱ ${mins}m ${secs}s · ${report.mode === "mock" ? "Full Mock" : "Quick Drill"}\n\n` +
+      `Practising on WAEC Elective Math AI 👉 ${window.location.origin}`
+    );
+    window.open(`https://wa.me/?text=${msg}`, "_blank");
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-12 py-10" data-testid="exam-report-page">
       <Link to="/exams" className="inline-flex items-center gap-2 text-sm text-muted2 hover:text-terracotta" data-testid="back-to-exams">
@@ -38,6 +50,13 @@ const ExamReport = () => {
         <p className="text-muted2 mt-1">
           {report.correct} / {report.total_questions} correct · {mins}m {secs}s · {report.mode === "mock" ? "Full Mock" : "Quick Drill"}
         </p>
+        <button
+          onClick={shareWhatsApp}
+          className="btn-secondary mt-5 inline-flex items-center gap-2"
+          data-testid="exam-share-whatsapp-btn"
+        >
+          <Share2 size={16} /> Share on WhatsApp
+        </button>
       </div>
 
       {/* SUBTOPIC BREAKDOWN */}

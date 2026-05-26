@@ -21,6 +21,7 @@ import ExamRun from "@/pages/ExamRun";
 import ExamReport from "@/pages/ExamReport";
 import Admin from "@/pages/Admin";
 import RevisionDeck from "@/pages/RevisionDeck";
+import FormulaSheet from "@/pages/FormulaSheet";
 
 const LandingRoute = () => {
   const { user, loading } = useAuth();
@@ -50,6 +51,7 @@ function App() {
             <Route path="/exams/:examId/report" element={<ProtectedRoute><ExamReport /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="/revision" element={<ProtectedRoute><RevisionDeck /></ProtectedRoute>} />
+            <Route path="/formulas" element={<ProtectedRoute><FormulaSheet /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <Toaster position="bottom-right" richColors closeButton offset={20} />

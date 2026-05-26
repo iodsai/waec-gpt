@@ -44,7 +44,9 @@ AI-powered, mobile-first **WAEC Further Mathematics (Elective)** learning platfo
 - **Batch importer** ✅ — background job processes a year-range; live progress UI in admin; orphaned-job recovery on backend restart.
 - **PastQuestions.jsx refactored** ✅ — split into `ObjectivePane`, `TheoryPane`, `SimilarBlock`, `BookmarkButton` child components.
 - **Weak-spot Radar / Daily Plan widget** ✅ — `GET /api/progress/weak-spot` (single suggestion) + `GET /api/progress/daily-plan` (3 cards: weak / medium / new). Dashboard now shows "Today's Plan" with three colour-coded cards, each with a dedicated "Drill 10" launcher scoped to that topic.
-- **Bookmark / Revision deck** ✅ — `POST /api/bookmarks/toggle`, `GET /api/bookmarks`, `GET /api/bookmarks/ids`; bookmark button on every question; standalone `/revision` page with nav link.
+- **Bookmark / Revision deck** ✅ — `POST /api/bookmarks/toggle`, `GET /api/bookmarks`, `GET /api/bookmarks/ids`; bookmark button on every question; standalone `/revision` page with "Drill my deck (N)" CTA that launches a quick exam from bookmarked IDs.
+- **Daily-engagement features** ✅ — `GET /api/predictions` (top-5 likely subtopics from 29 papers), `GET /api/question-of-the-day` (deterministic per UTC date, medium/hard difficulty). Dashboard now surfaces both as cards. WhatsApp share on predictions + exam reports (viral loop via `wa.me/?text=`).
+- **Formula sheet** ✅ — new `/formulas` page with 8 topic groups, ~60 LaTeX-typeset formulas, full-text search, browser print/PDF flow with custom `@media print` CSS.
 - **SymPy verify**: inline modal in Tutor.
 - **Validation**: 37/37 backend pytest pass + frontend flows verified.
 

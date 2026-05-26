@@ -201,3 +201,11 @@ code, pre {
 input, textarea, select {
   font-family: 'Work Sans', sans-serif;
 }
+
+@media print {
+  @page { margin: 1.2cm; }
+  nav, header, footer { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+  .card-surface { break-inside: avoid; }
+  .btn-primary, .btn-secondary, .btn-ghost { display: none !important; }
+}

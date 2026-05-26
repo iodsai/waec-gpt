@@ -286,6 +286,15 @@ async def lifespan(app: FastAPI):
         await db.users.update_one({"email": "admin@waec.com"}, {"$set": {"is_admin": True}})
     await db.users.update_many({"is_admin": {"$exists": False}}, {"$set": {"is_admin": False}})
 
+    # Mark any orphaned 'running' import jobs as 'interrupted' (background tasks die on reload)
+    await db.import_jobs.update_many(
+        {"status": "running"},
+        {"$set": {
+            "status": "interrupted",
+            "interrupted_at": datetime.now(timezone.utc).isoformat(),
+        }}
+    )
+
     yield
     client.close()
 

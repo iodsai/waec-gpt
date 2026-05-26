@@ -1,9 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import http from "@/lib/api";
-import MathText from "@/components/MathText";
 import { toast } from "sonner";
-import { Filter, CheckCircle2, XCircle, Sparkles, Wand2, X } from "lucide-react";
+import MathText from "@/components/MathText";
+import ObjectivePane from "@/components/pastq/ObjectivePane";
+import TheoryPane from "@/components/pastq/TheoryPane";
+import SimilarBlock from "@/components/pastq/SimilarBlock";
+import { Filter, Sparkles } from "lucide-react";
 
 const DIFFICULTIES = [
   { id: "", name: "All difficulties" },
@@ -17,12 +20,10 @@ const PastQuestions = () => {
   const [topics, setTopics] = useState([]);
   const [years, setYears] = useState([]);
   const [questions, setQuestions] = useState([]);
-  const [active, setActive] = useState(null); // QuestionDetail
+  const [active, setActive] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [result, setResult] = useState(null); // { correct, correct_answer, solution_steps }
   const [similar, setSimilar] = useState(null); // { loading, items }
+  const [reloadKey, setReloadKey] = useState(0); // forces pane remount on "try again"
 
   const topic = params.get("topic") || "";
   const subtopic = params.get("subtopic") || "";
@@ -30,11 +31,10 @@ const PastQuestions = () => {
   const difficulty = params.get("difficulty") || "";
 
   useEffect(() => {
-    Promise.all([http.get("/topics"), http.get("/years")])
-      .then(([t, y]) => {
-        setTopics((t.data.topics || []).filter((x) => x.status === "available"));
-        setYears(y.data);
-      });
+    Promise.all([http.get("/topics"), http.get("/years")]).then(([t, y]) => {
+      setTopics((t.data.topics || []).filter((x) => x.status === "available"));
+      setYears(y.data);
+    });
   }, []);
 
   useEffect(() => {
@@ -56,13 +56,13 @@ const PastQuestions = () => {
     }
     setParams(next, { replace: true });
   };
-
   const updateFilter = (key, val) => updateFilters({ [key]: val });
 
   const openQuestion = async (id) => {
-    setSelectedOption(null); setResult(null); setSimilar(null);
+    setSimilar(null);
     const { data } = await http.get(`/questions/${id}`);
     setActive(data);
+    setReloadKey((k) => k + 1);
   };
 
   const generateSimilar = async () => {
@@ -76,30 +76,6 @@ const PastQuestions = () => {
       toast.error(e?.response?.data?.detail || "Could not generate similar questions");
     }
   };
-
-  const submit = async () => {
-    if (!selectedOption) { toast.error("Please select an option."); return; }
-    setSubmitting(true);
-    try {
-      const { data } = await http.post("/attempts", { question_id: active.id, selected: selectedOption });
-      setResult(data);
-      if (data.correct) toast.success("Correct! Well done.");
-      else toast.error("Not quite — see the worked solution below.");
-    } catch (e) {
-      toast.error("Could not submit attempt.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const subtopicLabel = useMemo(() => {
-    if (!subtopic) return "All subtopics";
-    for (const t of topics) {
-      const s = (t.subtopics || []).find((x) => x.id === subtopic);
-      if (s) return s.name;
-    }
-    return subtopic;
-  }, [subtopic, topics]);
 
   const availableSubtopics = useMemo(() => {
     if (!topic) return topics.flatMap((t) => t.subtopics || []);
@@ -170,6 +146,9 @@ const PastQuestions = () => {
                 <span className="tag">{q.subtopic_name}</span>
                 <span className="tag">{q.year}</span>
                 <span className="tag !text-terracotta">{q.difficulty}</span>
+                {q.question_type === "theory" && (
+                  <span className="tag !bg-moss/10 !text-moss !border-moss/30">Theory</span>
+                )}
               </div>
               <div className="text-ink"><MathText text={q.question} /></div>
             </button>
@@ -198,141 +177,24 @@ const PastQuestions = () => {
               </h2>
 
               {active.question_type === "theory" ? (
-                <div className="mt-5" data-testid="theory-question">
-                  {!result ? (
-                    <button onClick={async () => {
-                      try {
-                        const { data } = await http.post("/attempts", { question_id: active.id, selected: "—" });
-                        setResult(data);
-                      } catch (e) {
-                        toast.error("Could not load solution");
-                      }
-                    }} className="btn-primary w-full" data-testid="reveal-solution-btn">
-                      Reveal worked solution
-                    </button>
-                  ) : (
-                    <div className="p-5 rounded-xl bg-sand/60 border border-edge" data-testid="solution-block">
-                      <div className="text-sm text-muted2">Final answer:</div>
-                      <div className="font-heading text-lg text-success mt-1"><MathText text={result.correct_answer} /></div>
-                      <h3 className="font-heading text-lg font-semibold text-ink mt-4">Worked solution</h3>
-                      <ol className="mt-3 space-y-2 list-none">
-                        {result.solution_steps.map((s, i) => (
-                          <li key={i} className="flex gap-3 text-ink" data-testid={`solution-step-${i}`}>
-                            <span className="font-mono text-xs bg-surface border border-edge px-2 py-0.5 rounded-md h-6 flex-shrink-0">Step {i + 1}</span>
-                            <span><MathText text={s} /></span>
-                          </li>
-                        ))}
-                      </ol>
-                      <button onClick={generateSimilar} className="btn-secondary mt-5 text-sm inline-flex items-center gap-2" data-testid="generate-similar-btn" disabled={similar?.loading}>
-                        <Wand2 size={14} /> {similar?.loading ? "Generating…" : "Generate similar"}
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <TheoryPane
+                  key={reloadKey}
+                  question={active}
+                  onGenerateSimilar={generateSimilar}
+                  similarLoading={!!similar?.loading}
+                />
               ) : (
-                <div className="mt-5 space-y-2" data-testid="answer-options">
-                  {active.options.map((opt, idx) => {
-                    const letter = ["A", "B", "C", "D", "E"][idx];
-                    const chosen = selectedOption === opt;
-                    const showCorrect = result && opt === result.correct_answer;
-                    const showWrong = result && chosen && !result.correct;
-                    return (
-                      <button
-                        key={idx}
-                        disabled={!!result}
-                        onClick={() => setSelectedOption(opt)}
-                        data-testid={`option-${letter}`}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition
-                          ${chosen ? "border-terracotta bg-terracotta/5" : "border-edge hover:border-terracotta/40"}
-                          ${showCorrect ? "!border-success !bg-success/10" : ""}
-                          ${showWrong ? "!border-error !bg-error/10" : ""}
-                        `}
-                      >
-                        <span className="font-mono text-sm w-6 h-6 grid place-items-center rounded-md bg-sand text-ink">{letter}</span>
-                        <span className="text-ink"><MathText text={opt} /></span>
-                        {showCorrect && <CheckCircle2 className="ml-auto text-success" size={18} />}
-                        {showWrong && <XCircle className="ml-auto text-error" size={18} />}
-                      </button>
-                    );
-                  })}
-                </div>
+                <ObjectivePane
+                  key={reloadKey}
+                  question={active}
+                  onTryAgain={() => openQuestion(active.id)}
+                  onGenerateSimilar={generateSimilar}
+                  similarLoading={!!similar?.loading}
+                />
               )}
 
-              {active.question_type !== "theory" && (!result ? (
-                <button
-                  onClick={submit}
-                  disabled={submitting}
-                  className="btn-primary mt-6 w-full disabled:opacity-60"
-                  data-testid="submit-answer-btn"
-                >
-                  {submitting ? "Submitting…" : "Submit answer"}
-                </button>
-              ) : (
-                <div className="mt-6 p-5 rounded-xl bg-sand/60 border border-edge" data-testid="solution-block">
-                  <div className="flex items-center gap-2">
-                    {result.correct ? (
-                      <><CheckCircle2 className="text-success" /> <span className="font-heading font-semibold text-success">Correct</span></>
-                    ) : (
-                      <><XCircle className="text-error" /> <span className="font-heading font-semibold text-error">Incorrect</span></>
-                    )}
-                    <span className="text-sm text-muted2 ml-auto">Answer: <MathText text={result.correct_answer} /></span>
-                  </div>
-                  <h3 className="font-heading text-lg font-semibold text-ink mt-4">Step-by-step solution</h3>
-                  <ol className="mt-3 space-y-2 list-none">
-                    {result.solution_steps.map((s, i) => (
-                      <li key={i} className="flex gap-3 text-ink" data-testid={`solution-step-${i}`}>
-                        <span className="font-mono text-xs bg-surface border border-edge px-2 py-0.5 rounded-md h-6 flex-shrink-0">Step {i + 1}</span>
-                        <span><MathText text={s} /></span>
-                      </li>
-                    ))}
-                  </ol>
-                  <button
-                    onClick={() => openQuestion(active.id)}
-                    className="btn-ghost mt-5 text-sm"
-                    data-testid="try-again-btn"
-                  >
-                    Try this question again
-                  </button>
-                  <button
-                    onClick={generateSimilar}
-                    className="btn-secondary mt-5 ml-2 text-sm inline-flex items-center gap-2"
-                    data-testid="generate-similar-btn"
-                    disabled={similar?.loading}
-                  >
-                    <Wand2 size={14} /> {similar?.loading ? "Generating…" : "Generate similar"}
-                  </button>
-                </div>
-              ))}
-
-              {similar && !similar.loading && similar.items?.length > 0 && (
-                <div className="mt-6 border-t border-edge pt-5" data-testid="similar-block">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-heading text-lg font-semibold text-ink">AI-generated practice (similar)</h3>
-                    <button onClick={() => setSimilar(null)} className="p-1 rounded hover:bg-sand" aria-label="close"><X size={16} /></button>
-                  </div>
-                  <div className="space-y-4 mt-3">
-                    {similar.items.map((it, i) => (
-                      <details key={i} className="card-surface p-4" data-testid={`similar-item-${i}`}>
-                        <summary className="cursor-pointer text-ink"><MathText text={it.question} /></summary>
-                        <ol className="mt-3 space-y-1.5">
-                          {(it.options || []).map((o, oi) => (
-                            <li key={oi} className="text-sm text-ink flex gap-2">
-                              <span className="font-mono text-xs bg-sand border border-edge px-2 rounded">{["A","B","C","D"][oi]}</span>
-                              <span><MathText text={o} /></span>
-                            </li>
-                          ))}
-                        </ol>
-                        <div className="text-sm text-success mt-3">Answer: <MathText text={it.answer} /></div>
-                        <div className="text-xs text-muted2 mt-2">Steps:</div>
-                        <ol className="mt-1 space-y-1">
-                          {(it.solution_steps || []).map((s, si) => (
-                            <li key={si} className="text-sm text-ink"><span className="font-mono text-xs mr-2">{si + 1}</span><MathText text={s} /></li>
-                          ))}
-                        </ol>
-                      </details>
-                    ))}
-                  </div>
-                </div>
+              {similar && !similar.loading && (
+                <SimilarBlock items={similar.items} onClose={() => setSimilar(null)} />
               )}
             </div>
           )}

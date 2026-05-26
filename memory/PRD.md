@@ -39,27 +39,29 @@ AI-powered, mobile-first **WAEC Further Mathematics (Elective)** learning platfo
   - ✅ Sequences & Binomial (5 subtopics, 50 Q + lessons)
   - ✅ Matrices & Determinants (5 subtopics, 50 Q + lessons)
   - ✅ Mechanics (5 subtopics, 50 Q + lessons)
-- **Total bank**: 588 questions (338 seed + 250 new topic seed) + 16 imported papers.
+- **Total bank**: ~700+ questions (588 seed + 188 from 2010-2018 batch + 88 from 2019-2023 batch).
 - **Scraper**: 29 Further Maths papers indexed; admin can preview-import per paper.
-- **Batch importer** ✅ — background job processes a year-range; live progress UI in admin.
+- **Batch importer** ✅ — background job processes a year-range; live progress UI in admin; orphaned-job recovery on backend restart.
   - 2026-02-22: 2010-2018 batch → 16 papers, 188 questions, 0 errors.
+  - 2026-02-22: 2019-2023 batch → 7/9 papers, 88 questions saved.
+- **PastQuestions.jsx refactored** ✅ — split into `ObjectivePane`, `TheoryPane`, `SimilarBlock` child components.
 - **SymPy verify**: inline modal in Tutor.
 - **Exam hydration warning**: fixed.
 - **Theory question support**: schema exists, exam sampler excludes theory, accuracy stats exclude reveals.
-- **Validation**: 17/17 backend pytest pass + frontend flows verified.
+- **Validation**: 37/37 backend pytest pass (+1 intentional skip) + frontend flows verified.
 
 ### V1/V2 (deprecated/dropped)
 - General Maths content (Algebra/Trig/Geometry seed + 62 real waeconline imports) — DROPPED in pivot.
 
 ## Backlog
 ### P0
-- Refactor `PastQuestions.jsx` → split into `ObjectivePane` / `TheoryPane` components.
+- (none — all P0 items closed in 2026-02-22 session)
 
 ### P1
-- Optionally batch-import 2019-2023 papers (~13 papers remaining; 2010-2018 done).
 - Paystack subscription (₦1,500/mo "Elective Pro") — unlimited tutor + full mock access.
 - Streaks + leaderboards (gamification).
-- Personalised daily study plan from weak-topic detection.
+- Personalised daily study plan from weak-topic detection ("Weak-spot radar" widget).
+- Retry the 2 failed scraper papers (WASSCE School 2023, WASSCE Private 2nd 2019 — Gemini occasionally returns array shape).
 
 ### P2
 - PWA offline mode.

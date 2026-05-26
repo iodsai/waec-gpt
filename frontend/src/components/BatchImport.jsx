@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import http from "@/lib/api";
 import { toast } from "sonner";
 import { Layers, Play, Loader2, CheckCircle2, AlertTriangle, Clock } from "lucide-react";
@@ -12,22 +12,22 @@ const BatchImport = () => {
   const [recent, setRecent] = useState([]);
   const pollRef = useRef(null);
 
-  const loadJobs = async () => {
+  const loadJobs = useCallback(async () => {
     try {
       const { data } = await http.get("/admin/import/batch");
       const jobs = data.jobs || [];
       setRecent(jobs);
       const running = jobs.find((j) => j.status === "running");
       if (running) setActiveJob(running);
-    } catch (e) {
-      // silent
+    } catch (err) {
+      console.error("Failed to load batch jobs:", err);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadJobs();
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
-  }, []);
+  }, [loadJobs]);
 
   useEffect(() => {
     if (activeJob?.status === "running") {
@@ -40,11 +40,13 @@ const BatchImport = () => {
             toast.success(`Batch import done — ${data.total_saved} questions saved.`);
             loadJobs();
           }
-        } catch (e) { /* keep polling */ }
+        } catch (err) {
+          console.error("Job polling error:", err);
+        }
       }, 5000);
       return () => clearInterval(pollRef.current);
     }
-  }, [activeJob?.id, activeJob?.status]);
+  }, [activeJob?.id, activeJob?.status, loadJobs]);
 
   const start = async () => {
     if (yearFrom > yearTo) { toast.error("Year-from must be ≤ year-to"); return; }
@@ -144,8 +146,8 @@ const BatchImport = () => {
             <details className="mt-3 text-xs text-muted2">
               <summary className="cursor-pointer text-ink/80">Papers done ({activeJob.papers_done.length})</summary>
               <ul className="mt-2 space-y-1 font-mono">
-                {activeJob.papers_done.map((p, i) => (
-                  <li key={i}>✓ {p.label} ({p.year}) — saved {p.saved}/{p.extracted}</li>
+                {activeJob.papers_done.map((p) => (
+                  <li key={`${p.year}-${p.url || p.label}`}>✓ {p.label} ({p.year}) — saved {p.saved}/{p.extracted}</li>
                 ))}
               </ul>
             </details>

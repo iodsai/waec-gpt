@@ -267,12 +267,12 @@ async def extract_paper(api_key: str, paper_url: str, year: int, max_questions: 
     async def convert_one(q: dict, idx: int):
         async with sem2:
             mcq = await _gemini_to_mcq(api_key, q, year, attempt=idx)
-            if not mcq:
+            if not isinstance(mcq, dict):
                 return None
             mcq["source_url"] = q.get("source_url")
             mcq["original_text"] = q["question_text"][:500]
             return mcq
 
     converted = await asyncio.gather(*[convert_one(q, i) for i, q in enumerate(scraped)])
-    converted = [c for c in converted if c]
+    converted = [c for c in converted if isinstance(c, dict)]
     return {"paper_url": paper_url, "year": year, "questions": converted, "total_scraped": len(scraped)}

@@ -43,7 +43,7 @@ AI-powered, mobile-first **WAEC Further Mathematics (Elective)** learning platfo
 - **Scraper**: 29 Further Maths papers fully imported (all 29 papers now contribute questions).
 - **Batch importer** ✅ — background job processes a year-range; live progress UI in admin; orphaned-job recovery on backend restart.
 - **PastQuestions.jsx refactored** ✅ — split into `ObjectivePane`, `TheoryPane`, `SimilarBlock`, `BookmarkButton` child components.
-- **Weak-spot Radar widget** ✅ — dashboard tile + `GET /api/progress/weak-spot` endpoint; suggests weakest subtopic (≥3 attempts) or an unexplored area; one-click "Drill 10 questions" launches a quick exam scoped to that topic.
+- **Weak-spot Radar / Daily Plan widget** ✅ — `GET /api/progress/weak-spot` (single suggestion) + `GET /api/progress/daily-plan` (3 cards: weak / medium / new). Dashboard now shows "Today's Plan" with three colour-coded cards, each with a dedicated "Drill 10" launcher scoped to that topic.
 - **Bookmark / Revision deck** ✅ — `POST /api/bookmarks/toggle`, `GET /api/bookmarks`, `GET /api/bookmarks/ids`; bookmark button on every question; standalone `/revision` page with nav link.
 - **SymPy verify**: inline modal in Tutor.
 - **Validation**: 37/37 backend pytest pass + frontend flows verified.
@@ -58,7 +58,7 @@ AI-powered, mobile-first **WAEC Further Mathematics (Elective)** learning platfo
 ### P1
 - Paystack subscription (₦1,500/mo "Elective Pro") — unlimited tutor + full mock access.
 - Streaks + leaderboards (gamification).
-- Personalised daily study plan from weak-topic detection (weak-spot widget now shipped — could be extended to a multi-card daily plan).
+- "Drill my deck" button on `/revision` — quick exam scoped to bookmarked question IDs (needs `/exams/start` to accept `question_ids`).
 
 ### P2
 - PWA offline mode.

@@ -523,6 +523,94 @@ async def weak_spot(current=Depends(get_current_user)):
 
     return {"kind": "none", "message": "Practise a few questions and we'll spot your weak areas."}
 
+
+def _card(kind: str, sub: dict, label: str, message: str, accuracy=None, total_attempts=0):
+    return {
+        "kind": kind,
+        "label": label,
+        "subtopic": sub["id"] if "id" in sub else sub["subtopic"],
+        "subtopic_name": sub.get("name") or sub.get("subtopic_name"),
+        "topic": sub.get("topic") or SUBTOPIC_TOPIC.get(sub.get("subtopic", "")),
+        "topic_name": TOPIC_NAME.get(sub.get("topic") or SUBTOPIC_TOPIC.get(sub.get("subtopic", ""), ""), ""),
+        "accuracy": accuracy,
+        "total_attempts": total_attempts,
+        "message": message,
+    }
+
+
+@api.get("/progress/daily-plan")
+async def daily_plan(current=Depends(get_current_user)):
+    """Return a 3-card daily study plan: weak, medium, new (or 'explore' / 'none' fallbacks)."""
+    attempts = await db.attempts.find(
+        {"user_id": current["id"], "$or": [{"is_reveal": {"$exists": False}}, {"is_reveal": False}]},
+        {"_id": 0}
+    ).to_list(5000)
+
+    MIN_ATTEMPTS = 3
+    by_sub: dict = {}
+    for a in attempts:
+        s = a["subtopic"]
+        by_sub.setdefault(s, {"total": 0, "correct": 0})
+        by_sub[s]["total"] += 1
+        if a["correct"]:
+            by_sub[s]["correct"] += 1
+
+    eligible = sorted([
+        {"subtopic": s, "topic": SUBTOPIC_TOPIC.get(s),
+         "subtopic_name": SUBTOPIC_NAME.get(s, s),
+         "total": v["total"], "correct": v["correct"],
+         "accuracy": round((v["correct"] / v["total"]) * 100, 1)}
+        for s, v in by_sub.items() if v["total"] >= MIN_ATTEMPTS
+    ], key=lambda x: x["accuracy"])
+
+    used_subs: set = set()
+    cards: list = []
+
+    # 1) WEAK — lowest accuracy
+    if eligible:
+        w = eligible[0]
+        used_subs.add(w["subtopic"])
+        cards.append(_card(
+            "weak", w, "Strengthen",
+            f"You score {w['accuracy']}% on {w['subtopic_name']} — close the gap.",
+            accuracy=w["accuracy"], total_attempts=w["total"],
+        ))
+
+    # 2) MEDIUM — middle-of-the-pack accuracy (60–80%) or median if not enough range
+    medium_pool = [x for x in eligible if x["subtopic"] not in used_subs and 50 <= x["accuracy"] < 85]
+    if not medium_pool:
+        medium_pool = [x for x in eligible if x["subtopic"] not in used_subs]
+    if medium_pool:
+        m = medium_pool[len(medium_pool) // 2]
+        used_subs.add(m["subtopic"])
+        cards.append(_card(
+            "medium", m, "Push harder",
+            f"You're at {m['accuracy']}% on {m['subtopic_name']} — push toward mastery.",
+            accuracy=m["accuracy"], total_attempts=m["total"],
+        ))
+
+    # 3) NEW — an unexplored subtopic from a topic the student hasn't touched (or any)
+    attempted_subs = set(by_sub.keys()) | used_subs
+    untouched = [s for s in ALL_SUBTOPICS if s["id"] not in attempted_subs]
+    if untouched:
+        # Prefer a subtopic from a topic with the fewest attempts
+        topic_attempts: dict = {}
+        for s, v in by_sub.items():
+            t = SUBTOPIC_TOPIC.get(s, "")
+            topic_attempts[t] = topic_attempts.get(t, 0) + v["total"]
+        untouched.sort(key=lambda s: topic_attempts.get(s["topic"], 0))
+        n = untouched[0]
+        cards.append(_card(
+            "new", n, "Explore",
+            f"Try {n['name']} — fresh ground to expand your range.",
+            accuracy=None, total_attempts=0,
+        ))
+
+    if not cards:
+        return {"cards": [], "message": "Practise a few questions and we'll build your daily plan."}
+
+    return {"cards": cards, "message": None}
+
 # ============ BOOKMARKS ============
 @api.post("/bookmarks/toggle")
 async def toggle_bookmark(req: BookmarkToggleReq, current=Depends(get_current_user)):

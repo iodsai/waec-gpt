@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { LogOut, BookOpen, Sparkles, FileText, LayoutDashboard, Trophy, Compass, ShieldCheck, Bookmark, Calculator } from "lucide-react";
+import { LogOut, BookOpen, Sparkles, FileText, LayoutDashboard, Trophy, Compass, ShieldCheck, Bookmark, Calculator, Wand2 } from "lucide-react";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -48,6 +48,9 @@ const Navbar = () => {
               </NavLink>
               <NavLink to="/formulas" className={linkCls} data-testid="nav-formulas">
                 <Calculator size={16} /> Formulas
+              </NavLink>
+              <NavLink to="/playground" className={linkCls} data-testid="nav-playground">
+                <Wand2 size={16} /> Solver
               </NavLink>
               {user.is_admin && (
                 <NavLink to="/admin" className={linkCls} data-testid="nav-admin">

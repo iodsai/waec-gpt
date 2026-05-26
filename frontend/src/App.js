@@ -22,6 +22,7 @@ import ExamReport from "@/pages/ExamReport";
 import Admin from "@/pages/Admin";
 import RevisionDeck from "@/pages/RevisionDeck";
 import FormulaSheet from "@/pages/FormulaSheet";
+import Playground from "@/pages/Playground";
 
 const LandingRoute = () => {
   const { user, loading } = useAuth();
@@ -52,6 +53,7 @@ function App() {
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="/revision" element={<ProtectedRoute><RevisionDeck /></ProtectedRoute>} />
             <Route path="/formulas" element={<ProtectedRoute><FormulaSheet /></ProtectedRoute>} />
+            <Route path="/playground" element={<ProtectedRoute><Playground /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <Toaster position="bottom-right" richColors closeButton offset={20} />

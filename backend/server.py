@@ -37,6 +37,7 @@ SUBTOPICS_BY_TOPIC = {**SUBTOPICS_BY_TOPIC, **EXTRA_SUBTOPICS}
 LESSONS_V2 = {**LESSONS_V2, **EXTRA_LESSONS}
 QUESTIONS_V3 = QUESTIONS_V3 + EXTRA_QUESTIONS
 from sympy_verify import verify as sympy_verify
+from playground_solver import solve_general
 from ai_helpers import extract_question_from_image, generate_similar_questions
 from waec_scraper import WAEC_PAPERS, extract_paper
 
@@ -172,6 +173,11 @@ class SimilarReq(BaseModel):
 class SolverVerifyReq(BaseModel):
     equation: str
     claimed_answer: Optional[str] = None
+    variable: str = "x"
+
+class PlaygroundReq(BaseModel):
+    expression: str
+    operation: Literal["auto", "solve", "differentiate", "integrate", "simplify", "factor", "expand", "evaluate"] = "auto"
     variable: str = "x"
 
 class AdminCreateQuestionReq(BaseModel):
@@ -797,6 +803,11 @@ async def tutor_history(session_id: str, current=Depends(get_current_user)):
 @api.post("/solver/verify")
 async def solver_verify(req: SolverVerifyReq, current=Depends(get_current_user)):
     return sympy_verify(req.equation, req.claimed_answer, req.variable)
+
+@api.post("/playground/solve")
+async def playground_solve(req: PlaygroundReq, current=Depends(get_current_user)):
+    """General-purpose SymPy solver — solve, differentiate, integrate, simplify, factor, expand, evaluate."""
+    return solve_general(req.expression, req.operation, req.variable)
 
 # ============ SIMILAR QUESTIONS ============
 @api.post("/questions/{qid}/similar")

@@ -5,8 +5,9 @@ import { toast } from "sonner";
 import MathText from "@/components/MathText";
 import MathKeypad from "@/components/MathKeypad";
 import {
-  Calculator, Play, Loader2, AlertTriangle, Sparkles, History, Wand2, MessagesSquare,
+  Calculator, Play, Loader2, AlertTriangle, Sparkles, History, Wand2, MessagesSquare, LineChart as LineChartIcon,
 } from "lucide-react";
+import Grapher from "@/components/Grapher";
 
 const OPERATIONS = [
   { id: "auto", label: "Auto-detect", hint: "We figure out what to do" },
@@ -32,6 +33,7 @@ const EXAMPLES = [
 
 const Playground = () => {
   const navigate = useNavigate();
+  const [tab, setTab] = useState("solver"); // 'solver' | 'grapher'
   const [expression, setExpression] = useState("");
   const [operation, setOperation] = useState("auto");
   const [variable, setVariable] = useState("x");
@@ -102,8 +104,36 @@ const Playground = () => {
         Powered by SymPy; LaTeX rendered via KaTeX.
       </p>
 
+      {/* TAB STRIP */}
+      <div className="mt-8 flex gap-2" role="tablist" data-testid="playground-tabs">
+        <button
+          onClick={() => setTab("solver")}
+          role="tab"
+          aria-selected={tab === "solver"}
+          data-testid="playground-tab-solver"
+          className={`px-4 py-2 rounded-lg text-sm font-medium inline-flex items-center gap-2 transition
+            ${tab === "solver" ? "bg-terracotta text-white" : "border border-edge text-ink hover:border-terracotta/30"}`}
+        >
+          <Wand2 size={14} /> Solver
+        </button>
+        <button
+          onClick={() => setTab("grapher")}
+          role="tab"
+          aria-selected={tab === "grapher"}
+          data-testid="playground-tab-grapher"
+          className={`px-4 py-2 rounded-lg text-sm font-medium inline-flex items-center gap-2 transition
+            ${tab === "grapher" ? "bg-terracotta text-white" : "border border-edge text-ink hover:border-terracotta/30"}`}
+        >
+          <LineChartIcon size={14} /> Grapher
+        </button>
+      </div>
+
+      {tab === "grapher" ? (
+        <div className="mt-6"><Grapher /></div>
+      ) : (
+      <>
       {/* INPUT */}
-      <div className="card-surface p-6 mt-8">
+      <div className="card-surface p-6 mt-6">
         <label className="overline" htmlFor="expr-input">Expression</label>
         <textarea
           id="expr-input"
@@ -275,6 +305,8 @@ const Playground = () => {
             ))}
           </div>
         </div>
+      )}
+      </>
       )}
     </div>
   );

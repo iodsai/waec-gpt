@@ -7,6 +7,7 @@ import MathText from "@/components/MathText";
 import DailyPlan from "@/components/DailyPlan";
 import QuestionOfDay from "@/components/QuestionOfDay";
 import PredictionsCard from "@/components/PredictionsCard";
+import ReviewCard from "@/components/ReviewCard";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -91,6 +92,11 @@ const Dashboard = () => {
       <div className="mt-8 grid lg:grid-cols-2 gap-6">
         <QuestionOfDay />
         <PredictionsCard />
+      </div>
+
+      {/* SPACED REPETITION */}
+      <div className="mt-6">
+        <ReviewCard />
       </div>
 
       {/* TOPIC GRID */}

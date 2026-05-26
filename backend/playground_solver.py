@@ -14,7 +14,7 @@ Operations supported:
 from sympy import (
     sympify, Eq, solve, simplify, symbols, Symbol,
     diff, integrate, expand, factor, together, latex,
-    N as sym_N, S,
+    N as sym_N, S, lambdify as sym_lambdify,
 )
 from sympy.parsing.sympy_parser import (
     parse_expr, standard_transformations, implicit_multiplication_application,
@@ -242,3 +242,53 @@ def _do_evaluate(cleaned: str):
         f"Result: ${latex(val)}$",
     ]
     return _ok("evaluate", latex(expr), latex(val), steps)
+
+
+def graph_function(raw: str, variable: str = "x", x_min: float = -10.0, x_max: float = 10.0,
+                   samples: int = 200) -> dict:
+    """Sample a function over [x_min, x_max] and return points + the LaTeX of the expression.
+    Returns: { ok, latex, points: [{x, y}], asymptotes_clipped: bool, error }
+    """
+    if not raw or not raw.strip():
+        return {"ok": False, "points": [], "latex": None, "error": "Empty expression."}
+    try:
+        # Allow forms like "y = x^2 + 1" or "f(x) = sin(x)"
+        rest = raw
+        if "=" in rest:
+            rest = rest.split("=", 1)[1]
+        cleaned = _clean(rest)
+        expr = _parse(cleaned)
+        var = symbols(variable)
+        try:
+            f = sym_lambdify(var, expr, modules=["math"])
+        except Exception as e:
+            return {"ok": False, "points": [], "latex": latex(expr), "error": f"Could not turn into a function: {e}"}
+
+        step = (x_max - x_min) / max(2, samples - 1)
+        points = []
+        clipped = False
+        for i in range(samples):
+            xv = x_min + step * i
+            try:
+                yv = f(xv)
+                if isinstance(yv, complex):
+                    yv = yv.real if abs(yv.imag) < 1e-9 else None
+                if yv is None or yv != yv or yv == float("inf") or yv == float("-inf"):
+                    points.append({"x": round(xv, 6), "y": None})
+                    continue
+                # Clip extreme magnitudes for sane axis scaling
+                if abs(yv) > 1e6:
+                    clipped = True
+                    yv = 1e6 if yv > 0 else -1e6
+                points.append({"x": round(xv, 6), "y": round(float(yv), 6)})
+            except Exception:
+                points.append({"x": round(xv, 6), "y": None})
+        return {
+            "ok": True,
+            "latex": latex(expr),
+            "points": points,
+            "asymptotes_clipped": clipped,
+            "error": None,
+        }
+    except Exception as e:
+        return {"ok": False, "points": [], "latex": None, "error": str(e)}

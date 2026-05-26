@@ -37,7 +37,7 @@ SUBTOPICS_BY_TOPIC = {**SUBTOPICS_BY_TOPIC, **EXTRA_SUBTOPICS}
 LESSONS_V2 = {**LESSONS_V2, **EXTRA_LESSONS}
 QUESTIONS_V3 = QUESTIONS_V3 + EXTRA_QUESTIONS
 from sympy_verify import verify as sympy_verify
-from playground_solver import solve_general
+from playground_solver import solve_general, graph_function
 from ai_helpers import extract_question_from_image, generate_similar_questions
 from waec_scraper import WAEC_PAPERS, extract_paper
 
@@ -179,6 +179,13 @@ class PlaygroundReq(BaseModel):
     expression: str
     operation: Literal["auto", "solve", "differentiate", "integrate", "simplify", "factor", "expand", "evaluate"] = "auto"
     variable: str = "x"
+
+class GraphReq(BaseModel):
+    expression: str
+    variable: str = "x"
+    x_min: float = -10.0
+    x_max: float = 10.0
+    samples: int = 200
 
 class AdminCreateQuestionReq(BaseModel):
     topic: str
@@ -414,6 +421,56 @@ async def list_years(topic: Optional[str] = None):
     return sorted(years, reverse=True)
 
 # ============ ATTEMPTS / PROGRESS ============
+SRS_INTERVALS_DAYS = [1, 3, 7, 14, 30]  # level → days until next due
+
+
+async def _update_srs_card(user_id: str, question_id: str, correct: bool, is_review: bool):
+    """Insert/update an SRS card based on the latest attempt outcome."""
+    now = datetime.now(timezone.utc)
+    card = await db.srs_cards.find_one({"user_id": user_id, "question_id": question_id}, {"_id": 0})
+    if correct:
+        if not card:
+            # Got it right first time — no need to add to SRS.
+            return
+        new_level = min(len(SRS_INTERVALS_DAYS), card["level"] + 1)
+        if new_level >= len(SRS_INTERVALS_DAYS):
+            # Graduated — remove the card
+            await db.srs_cards.delete_one({"user_id": user_id, "question_id": question_id})
+            return
+        next_due = now + timedelta(days=SRS_INTERVALS_DAYS[new_level])
+        await db.srs_cards.update_one(
+            {"user_id": user_id, "question_id": question_id},
+            {"$set": {
+                "level": new_level,
+                "next_due": next_due.isoformat(),
+                "last_seen": now.isoformat(),
+            }}
+        )
+    else:
+        # Wrong answer — reset to level 0 (1 day)
+        next_due = now + timedelta(days=SRS_INTERVALS_DAYS[0])
+        if card:
+            await db.srs_cards.update_one(
+                {"user_id": user_id, "question_id": question_id},
+                {"$set": {
+                    "level": 0,
+                    "next_due": next_due.isoformat(),
+                    "last_seen": now.isoformat(),
+                }, "$inc": {"lapses": 1}}
+            )
+        else:
+            await db.srs_cards.insert_one({
+                "id": str(uuid.uuid4()),
+                "user_id": user_id,
+                "question_id": question_id,
+                "level": 0,
+                "next_due": next_due.isoformat(),
+                "last_seen": now.isoformat(),
+                "lapses": 0,
+                "created_at": now.isoformat(),
+            })
+
+
 @api.post("/attempts", response_model=AttemptResp)
 async def submit_attempt(req: AttemptReq, current=Depends(get_current_user)):
     qdoc = await db.questions.find_one({"id": req.question_id}, {"_id": 0})
@@ -428,6 +485,9 @@ async def submit_attempt(req: AttemptReq, current=Depends(get_current_user)):
         "is_reveal": is_theory,  # theory reveals don't count toward accuracy
         "created_at": datetime.now(timezone.utc).isoformat(),
     })
+    # SRS update (only for objective questions, not theory reveals)
+    if not is_theory:
+        await _update_srs_card(current["id"], req.question_id, correct, is_review=False)
     return AttemptResp(correct=correct, correct_answer=qdoc["answer"], solution_steps=qdoc["solution_steps"])
 
 @api.get("/progress")
@@ -755,6 +815,52 @@ async def list_bookmark_ids(current=Depends(get_current_user)):
     ).to_list(500)
     return {"ids": [m["question_id"] for m in marks]}
 
+# ============ SPACED REPETITION ============
+@api.get("/srs/stats")
+async def srs_stats(current=Depends(get_current_user)):
+    """Return SRS deck counts: total cards, due-now, by-level."""
+    now_iso = datetime.now(timezone.utc).isoformat()
+    cards = await db.srs_cards.find({"user_id": current["id"]}, {"_id": 0}).to_list(2000)
+    total = len(cards)
+    due_now = sum(1 for c in cards if c["next_due"] <= now_iso)
+    by_level = [0] * len(SRS_INTERVALS_DAYS)
+    for c in cards:
+        if 0 <= c["level"] < len(by_level):
+            by_level[c["level"]] += 1
+    return {"total": total, "due_now": due_now, "by_level": by_level, "intervals": SRS_INTERVALS_DAYS}
+
+
+@api.get("/srs/due")
+async def srs_due(limit: int = 20, current=Depends(get_current_user)):
+    """Return up to `limit` cards that are due for review now."""
+    now_iso = datetime.now(timezone.utc).isoformat()
+    cards = await db.srs_cards.find(
+        {"user_id": current["id"], "next_due": {"$lte": now_iso}}, {"_id": 0}
+    ).sort("next_due", 1).limit(limit).to_list(limit)
+    if not cards:
+        return {"items": [], "count": 0}
+    qids = [c["question_id"] for c in cards]
+    docs = await db.questions.find({"id": {"$in": qids}}, {"_id": 0}).to_list(limit)
+    by_id = {d["id"]: d for d in docs}
+    items = []
+    for c in cards:
+        d = by_id.get(c["question_id"])
+        if not d:
+            continue
+        items.append({
+            "question_id": d["id"],
+            "question": d["question"],
+            "options": d["options"],
+            "subtopic_name": SUBTOPIC_NAME.get(d["subtopic"], d["subtopic"]),
+            "topic": d.get("topic", topic_of(d["subtopic"])),
+            "topic_name": TOPIC_NAME.get(d.get("topic", topic_of(d["subtopic"])), ""),
+            "year": d["year"],
+            "difficulty": d["difficulty"],
+            "level": c["level"],
+            "lapses": c.get("lapses", 0),
+        })
+    return {"items": items, "count": len(items)}
+
 # ============ AI TUTOR ============
 TUTOR_SYSTEM = """You are an expert WAEC Mathematics tutor for West African secondary school students (SS1-SS3).
 
@@ -808,6 +914,11 @@ async def solver_verify(req: SolverVerifyReq, current=Depends(get_current_user))
 async def playground_solve(req: PlaygroundReq, current=Depends(get_current_user)):
     """General-purpose SymPy solver — solve, differentiate, integrate, simplify, factor, expand, evaluate."""
     return solve_general(req.expression, req.operation, req.variable)
+
+@api.post("/playground/graph")
+async def playground_graph(req: GraphReq, current=Depends(get_current_user)):
+    """Sample a function over [x_min, x_max] and return points for client-side plotting."""
+    return graph_function(req.expression, req.variable, req.x_min, req.x_max, min(500, max(20, req.samples)))
 
 # ============ SIMILAR QUESTIONS ============
 @api.post("/questions/{qid}/similar")

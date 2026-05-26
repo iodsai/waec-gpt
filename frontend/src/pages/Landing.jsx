@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { ArrowRight, CheckCircle2, MessagesSquare, FileText, BookOpen, Sparkles, GraduationCap } from "lucide-react";
+import MathText from "@/components/MathText";
 
 const HERO_IMG =
   "https://static.prod-images.emergentagent.com/jobs/6b12fdb0-d53c-4163-bc29-3a0f2edc149a/images/735327ee4f38ab1ad84004ebb6ec9e2343847ff1cc5974441c267b040fc9b3b7.png";
@@ -82,9 +83,9 @@ const Landing = () => {
             <p className="mt-2 text-muted2 max-w-lg">Ask any algebra question. The tutor explains in WAEC examiner style, with numbered steps and beautifully rendered formulas.</p>
             <div className="mt-5 bg-sand/70 border border-edge rounded-xl p-4 max-w-md">
               <div className="text-xs text-muted2">You</div>
-              <div className="text-sm text-ink">Differentiate $y = (2x+1)^3$.</div>
+              <div className="text-sm text-ink">Differentiate <MathText text="$y = (2x+1)^3$" />.</div>
               <div className="text-xs text-muted2 mt-3">AI Tutor</div>
-              <div className="text-sm text-ink"><strong>Step 1:</strong> Apply chain rule with $u = 2x+1$. <strong>Step 2:</strong> $\frac{dy}{dx} = 3u^2 \cdot 2 = 6(2x+1)^2$.</div>
+              <div className="text-sm text-ink"><strong>Step 1:</strong> Apply chain rule with <MathText text="$u = 2x+1$" />. <strong>Step 2:</strong> <MathText text="$\frac{dy}{dx} = 3u^2 \cdot 2 = 6(2x+1)^2$" />.</div>
             </div>
           </div>
           <div className="md:col-span-2 card-surface p-7" data-testid="feature-progress">

@@ -39,16 +39,14 @@ AI-powered, mobile-first **WAEC Further Mathematics (Elective)** learning platfo
   - ✅ Sequences & Binomial (5 subtopics, 50 Q + lessons)
   - ✅ Matrices & Determinants (5 subtopics, 50 Q + lessons)
   - ✅ Mechanics (5 subtopics, 50 Q + lessons)
-- **Total bank**: ~700+ questions (588 seed + 188 from 2010-2018 batch + 88 from 2019-2023 batch).
-- **Scraper**: 29 Further Maths papers indexed; admin can preview-import per paper.
+- **Total bank**: 726 questions (588 seed + 188 batch 2010-2018 + 88 batch 2019-2023 + 25 retry of failed papers).
+- **Scraper**: 29 Further Maths papers fully imported (all 29 papers now contribute questions).
 - **Batch importer** ✅ — background job processes a year-range; live progress UI in admin; orphaned-job recovery on backend restart.
-  - 2026-02-22: 2010-2018 batch → 16 papers, 188 questions, 0 errors.
-  - 2026-02-22: 2019-2023 batch → 7/9 papers, 88 questions saved.
-- **PastQuestions.jsx refactored** ✅ — split into `ObjectivePane`, `TheoryPane`, `SimilarBlock` child components.
+- **PastQuestions.jsx refactored** ✅ — split into `ObjectivePane`, `TheoryPane`, `SimilarBlock`, `BookmarkButton` child components.
+- **Weak-spot Radar widget** ✅ — dashboard tile + `GET /api/progress/weak-spot` endpoint; suggests weakest subtopic (≥3 attempts) or an unexplored area; one-click "Drill 10 questions" launches a quick exam scoped to that topic.
+- **Bookmark / Revision deck** ✅ — `POST /api/bookmarks/toggle`, `GET /api/bookmarks`, `GET /api/bookmarks/ids`; bookmark button on every question; standalone `/revision` page with nav link.
 - **SymPy verify**: inline modal in Tutor.
-- **Exam hydration warning**: fixed.
-- **Theory question support**: schema exists, exam sampler excludes theory, accuracy stats exclude reveals.
-- **Validation**: 37/37 backend pytest pass (+1 intentional skip) + frontend flows verified.
+- **Validation**: 37/37 backend pytest pass + frontend flows verified.
 
 ### V1/V2 (deprecated/dropped)
 - General Maths content (Algebra/Trig/Geometry seed + 62 real waeconline imports) — DROPPED in pivot.
@@ -60,8 +58,7 @@ AI-powered, mobile-first **WAEC Further Mathematics (Elective)** learning platfo
 ### P1
 - Paystack subscription (₦1,500/mo "Elective Pro") — unlimited tutor + full mock access.
 - Streaks + leaderboards (gamification).
-- Personalised daily study plan from weak-topic detection ("Weak-spot radar" widget).
-- Retry the 2 failed scraper papers (WASSCE School 2023, WASSCE Private 2nd 2019 — Gemini occasionally returns array shape).
+- Personalised daily study plan from weak-topic detection (weak-spot widget now shipped — could be extended to a multi-card daily plan).
 
 ### P2
 - PWA offline mode.

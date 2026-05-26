@@ -6,6 +6,7 @@ import MathText from "@/components/MathText";
 import ObjectivePane from "@/components/pastq/ObjectivePane";
 import TheoryPane from "@/components/pastq/TheoryPane";
 import SimilarBlock from "@/components/pastq/SimilarBlock";
+import BookmarkButton from "@/components/pastq/BookmarkButton";
 import { Filter, Sparkles } from "lucide-react";
 
 const DIFFICULTIES = [
@@ -24,6 +25,7 @@ const PastQuestions = () => {
   const [loading, setLoading] = useState(true);
   const [similar, setSimilar] = useState(null); // { loading, items }
   const [reloadKey, setReloadKey] = useState(0); // forces pane remount on "try again"
+  const [bookmarkIds, setBookmarkIds] = useState(new Set());
 
   const topic = params.get("topic") || "";
   const subtopic = params.get("subtopic") || "";
@@ -35,6 +37,9 @@ const PastQuestions = () => {
       setTopics((t.data.topics || []).filter((x) => x.status === "available"));
       setYears(y.data);
     });
+    http.get("/bookmarks/ids")
+      .then((r) => setBookmarkIds(new Set(r.data.ids || [])))
+      .catch((err) => console.error("bookmark fetch failed:", err));
   }, []);
 
   useEffect(() => {
@@ -171,6 +176,17 @@ const PastQuestions = () => {
                 {active.question_type === "theory" && (
                   <span className="tag !bg-moss/10 !text-moss !border-moss/30">Theory</span>
                 )}
+                <div className="ml-auto">
+                  <BookmarkButton
+                    questionId={active.id}
+                    bookmarked={bookmarkIds.has(active.id)}
+                    onChange={(b) => setBookmarkIds((prev) => {
+                      const next = new Set(prev);
+                      if (b) next.add(active.id); else next.delete(active.id);
+                      return next;
+                    })}
+                  />
+                </div>
               </div>
               <h2 className="font-heading text-2xl font-semibold text-ink mt-4 leading-snug">
                 <MathText text={active.question} />

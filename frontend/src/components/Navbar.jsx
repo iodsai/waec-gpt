@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { LogOut, BookOpen, Sparkles, FileText, LayoutDashboard, Trophy, Compass, ShieldCheck } from "lucide-react";
+import { LogOut, BookOpen, Sparkles, FileText, LayoutDashboard, Trophy, Compass, ShieldCheck, Bookmark } from "lucide-react";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -42,6 +42,9 @@ const Navbar = () => {
               </NavLink>
               <NavLink to="/tutor" className={linkCls} data-testid="nav-tutor">
                 <Sparkles size={16} /> AI Tutor
+              </NavLink>
+              <NavLink to="/revision" className={linkCls} data-testid="nav-revision">
+                <Bookmark size={16} /> Revision
               </NavLink>
               {user.is_admin && (
                 <NavLink to="/admin" className={linkCls} data-testid="nav-admin">

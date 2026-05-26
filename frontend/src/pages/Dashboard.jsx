@@ -4,6 +4,7 @@ import http from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { BookOpen, Sparkles, FileText, TrendingUp, Target, Trophy, Compass } from "lucide-react";
 import MathText from "@/components/MathText";
+import WeakSpotRadar from "@/components/WeakSpotRadar";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -77,6 +78,11 @@ const Dashboard = () => {
           </div>
           <div className="text-xs text-muted2 mt-1">Across {availableTopics.length} live topics.</div>
         </div>
+      </div>
+
+      {/* WEAK-SPOT RADAR */}
+      <div className="mt-8">
+        <WeakSpotRadar />
       </div>
 
       {/* TOPIC GRID */}

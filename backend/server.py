@@ -192,6 +192,9 @@ class WaecBulkSaveReq(BaseModel):
     year: int
     questions: List[dict]  # each: subtopic, difficulty, question, options, answer, solution_steps
 
+class BookmarkToggleReq(BaseModel):
+    question_id: str
+
 # ============ HELPERS ============
 def hash_password(pw: str) -> str:
     return bcrypt.hashpw(pw.encode(), bcrypt.gensalt()).decode()
@@ -459,6 +462,126 @@ async def get_progress(current=Depends(get_current_user)):
         "total_attempts": total, "correct": correct, "accuracy": acc,
         "by_subtopic": by_sub, "by_topic": by_topic, "recent_attempts": recent,
     }
+
+@api.get("/progress/weak-spot")
+async def weak_spot(current=Depends(get_current_user)):
+    """Return the student's lowest-accuracy subtopic with ≥3 attempts.
+    If they have fewer attempts, suggest a fresh topic with question_count > 0.
+    """
+    attempts = await db.attempts.find(
+        {"user_id": current["id"], "$or": [{"is_reveal": {"$exists": False}}, {"is_reveal": False}]},
+        {"_id": 0}
+    ).to_list(5000)
+
+    MIN_ATTEMPTS = 3
+    by_sub: dict = {}
+    for a in attempts:
+        s = a["subtopic"]
+        by_sub.setdefault(s, {"total": 0, "correct": 0})
+        by_sub[s]["total"] += 1
+        if a["correct"]:
+            by_sub[s]["correct"] += 1
+
+    eligible = [
+        {"subtopic": s, "topic": SUBTOPIC_TOPIC.get(s),
+         "subtopic_name": SUBTOPIC_NAME.get(s, s),
+         "topic_name": TOPIC_NAME.get(SUBTOPIC_TOPIC.get(s, ""), ""),
+         "total": v["total"], "correct": v["correct"],
+         "accuracy": round((v["correct"] / v["total"]) * 100, 1)}
+        for s, v in by_sub.items() if v["total"] >= MIN_ATTEMPTS
+    ]
+
+    if eligible:
+        eligible.sort(key=lambda x: x["accuracy"])
+        weakest = eligible[0]
+        return {
+            "kind": "weak_spot",
+            "subtopic": weakest["subtopic"],
+            "subtopic_name": weakest["subtopic_name"],
+            "topic": weakest["topic"],
+            "topic_name": weakest["topic_name"],
+            "accuracy": weakest["accuracy"],
+            "total_attempts": weakest["total"],
+            "message": f"You score {weakest['accuracy']}% on {weakest['subtopic_name']} — let's strengthen it.",
+        }
+
+    # Fallback: suggest an unexplored topic
+    attempted_subs = set(by_sub.keys())
+    untouched = [s for s in ALL_SUBTOPICS if s["id"] not in attempted_subs]
+    if untouched:
+        pick = untouched[0]
+        return {
+            "kind": "explore",
+            "subtopic": pick["id"],
+            "subtopic_name": pick["name"],
+            "topic": pick["topic"],
+            "topic_name": TOPIC_NAME.get(pick["topic"], ""),
+            "accuracy": None,
+            "total_attempts": 0,
+            "message": f"Try {pick['name']} — fresh ground to start exploring.",
+        }
+
+    return {"kind": "none", "message": "Practise a few questions and we'll spot your weak areas."}
+
+# ============ BOOKMARKS ============
+@api.post("/bookmarks/toggle")
+async def toggle_bookmark(req: BookmarkToggleReq, current=Depends(get_current_user)):
+    """Toggle bookmark for a question. Returns the new state."""
+    existing = await db.bookmarks.find_one(
+        {"user_id": current["id"], "question_id": req.question_id}, {"_id": 0}
+    )
+    if existing:
+        await db.bookmarks.delete_one({"user_id": current["id"], "question_id": req.question_id})
+        return {"bookmarked": False}
+    # Verify question exists
+    q = await db.questions.find_one({"id": req.question_id}, {"_id": 0, "id": 1})
+    if not q:
+        raise HTTPException(status_code=404, detail="Question not found")
+    await db.bookmarks.insert_one({
+        "id": str(uuid.uuid4()),
+        "user_id": current["id"],
+        "question_id": req.question_id,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+    return {"bookmarked": True}
+
+@api.get("/bookmarks")
+async def list_bookmarks(current=Depends(get_current_user)):
+    """Return the student's revision deck — bookmarked questions with metadata."""
+    marks = await db.bookmarks.find(
+        {"user_id": current["id"]}, {"_id": 0}
+    ).sort("created_at", -1).to_list(500)
+    if not marks:
+        return {"items": [], "count": 0}
+    qids = [m["question_id"] for m in marks]
+    docs = await db.questions.find(
+        {"id": {"$in": qids}}, {"_id": 0, "answer": 0, "solution_steps": 0}
+    ).to_list(500)
+    by_id = {d["id"]: d for d in docs}
+    items = []
+    for m in marks:
+        d = by_id.get(m["question_id"])
+        if not d:
+            continue
+        items.append({
+            "question_id": d["id"],
+            "question": d["question"],
+            "subtopic_name": SUBTOPIC_NAME.get(d["subtopic"], d["subtopic"]),
+            "topic_name": TOPIC_NAME.get(d.get("topic", topic_of(d["subtopic"])), ""),
+            "year": d["year"],
+            "difficulty": d["difficulty"],
+            "question_type": d.get("question_type", "objective"),
+            "bookmarked_at": m["created_at"],
+        })
+    return {"items": items, "count": len(items)}
+
+@api.get("/bookmarks/ids")
+async def list_bookmark_ids(current=Depends(get_current_user)):
+    """Compact list of bookmarked question_ids for client-side bookmark indicators."""
+    marks = await db.bookmarks.find(
+        {"user_id": current["id"]}, {"_id": 0, "question_id": 1}
+    ).to_list(500)
+    return {"ids": [m["question_id"] for m in marks]}
 
 # ============ AI TUTOR ============
 TUTOR_SYSTEM = """You are an expert WAEC Mathematics tutor for West African secondary school students (SS1-SS3).

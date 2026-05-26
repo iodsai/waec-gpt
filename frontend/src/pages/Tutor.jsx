@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import http from "@/lib/api";
 import MathText from "@/components/MathText";
+import MathKeypad from "@/components/MathKeypad";
 import { Send, Sparkles, Loader2, FunctionSquare, Check, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -67,6 +68,7 @@ const Tutor = () => {
   const [verifyAns, setVerifyAns] = useState("");
   const [verifyResult, setVerifyResult] = useState(null);
   const [verifying, setVerifying] = useState(false);
+  const verifyEqRef = useRef(null);
 
   const resetSession = () => {
     const id = crypto.randomUUID();
@@ -200,12 +202,14 @@ const Tutor = () => {
             <div className="mt-4">
               <label className="text-sm font-medium text-ink">Equation</label>
               <input
+                ref={verifyEqRef}
                 value={verifyEq} onChange={(e) => setVerifyEq(e.target.value)}
                 placeholder="2x + 7 = 19"
                 data-testid="verify-equation-input"
                 className="mt-1 w-full px-4 py-3 rounded-xl border border-edge bg-surface font-mono focus:outline-none focus:ring-2 focus:ring-terracotta/30"
                 autoFocus
               />
+              <MathKeypad targetRef={verifyEqRef} value={verifyEq} onChange={setVerifyEq} />
             </div>
             <div className="mt-3">
               <label className="text-sm font-medium text-ink">Your answer <span className="text-muted2 font-normal">(optional)</span></label>

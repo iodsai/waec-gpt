@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import http from "@/lib/api";
 import { toast } from "sonner";
 import MathText from "@/components/MathText";
+import MathKeypad from "@/components/MathKeypad";
 import {
   Calculator, Play, Loader2, AlertTriangle, Sparkles, History, Wand2,
 } from "lucide-react";
@@ -35,6 +36,7 @@ const Playground = () => {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]); // last 5 in-session solves
+  const inputRef = useRef(null);
 
   const submit = async (overrideExpr, overrideOp) => {
     const ex = (overrideExpr ?? expression).trim();
@@ -88,6 +90,7 @@ const Playground = () => {
         <label className="overline" htmlFor="expr-input">Expression</label>
         <textarea
           id="expr-input"
+          ref={inputRef}
           value={expression}
           onChange={(e) => setExpression(e.target.value)}
           placeholder="e.g.  x^2 - 5x + 6 = 0   ·   integrate sin(x)   ·   d/dx(x^3 + 2x)"
@@ -98,6 +101,8 @@ const Playground = () => {
             if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submit();
           }}
         />
+
+        <MathKeypad targetRef={inputRef} value={expression} onChange={setExpression} />
 
         <div className="mt-4 grid sm:grid-cols-3 gap-3">
           <div>

@@ -49,6 +49,7 @@ AI-powered, mobile-first **WAEC Further Mathematics (Elective)** learning platfo
 - **Formula sheet** ✅ — new `/formulas` page with 8 topic groups, ~60 LaTeX-typeset formulas, full-text search, browser print/PDF flow with custom `@media print` CSS.
 - **Equation Playground** ✅ — `/playground` page + `POST /api/playground/solve` (general-purpose SymPy solver supporting solve / differentiate / integrate / factor / expand / simplify / evaluate with auto-detect). Worked steps for each operation, LaTeX input normalisation (frac, sqrt, π, etc.), 8 one-click examples, in-session history. 12 dedicated pytest cases pass.
 - **On-screen math keypad** ✅ — new `MathKeypad` component with 4 tabs (Basics / Calculus / Algebra / Vectors), cursor-position-aware insertion, backspace/clear. Used by the Playground textarea and the Tutor SymPy-verify modal. Critical for Nigerian mobile users where typing LaTeX on a soft keyboard is painful.
+- **Solver → Tutor bridge** ✅ — "Ask AI Tutor to explain" button on every Playground result; pre-fills a contextual prompt (operation + input + SymPy result), navigates to `/tutor`, and auto-sends so Gemini can explain *why* in plain English. Closes the loop between deterministic SymPy answers and conversational tutoring.
 - **SymPy verify**: inline modal in Tutor.
 - **Validation**: 37/37 backend pytest pass + frontend flows verified.
 

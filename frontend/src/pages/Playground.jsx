@@ -1,10 +1,11 @@
 import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import http from "@/lib/api";
 import { toast } from "sonner";
 import MathText from "@/components/MathText";
 import MathKeypad from "@/components/MathKeypad";
 import {
-  Calculator, Play, Loader2, AlertTriangle, Sparkles, History, Wand2,
+  Calculator, Play, Loader2, AlertTriangle, Sparkles, History, Wand2, MessagesSquare,
 } from "lucide-react";
 
 const OPERATIONS = [
@@ -30,6 +31,7 @@ const EXAMPLES = [
 ];
 
 const Playground = () => {
+  const navigate = useNavigate();
   const [expression, setExpression] = useState("");
   const [operation, setOperation] = useState("auto");
   const [variable, setVariable] = useState("x");
@@ -37,6 +39,21 @@ const Playground = () => {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]); // last 5 in-session solves
   const inputRef = useRef(null);
+
+  const askTutor = () => {
+    if (!result?.ok) return;
+    const opLabel = {
+      solve: "Solve",
+      differentiate: "Differentiate",
+      integrate: "Integrate",
+      factor: "Factor",
+      expand: "Expand",
+      simplify: "Simplify",
+      evaluate: "Evaluate",
+    }[result.operation] || "Help me understand";
+    const prompt = `${opLabel} this and explain each step in plain English (for a WAEC student):\n\n$${result.input_latex}$\n\nMy solver gave the result: $${result.result_latex}$. Can you walk me through *why* this is the answer?`;
+    navigate("/tutor", { state: { autoSend: prompt } });
+  };
 
   const submit = async (overrideExpr, overrideOp) => {
     const ex = (overrideExpr ?? expression).trim();
@@ -168,7 +185,16 @@ const Playground = () => {
         <div className="card-surface p-6 mt-6" data-testid="playground-result">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <span className="overline">{result.operation}</span>
-            <span className="text-xs text-muted2 font-mono">solved by SymPy</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={askTutor}
+                className="btn-secondary inline-flex items-center gap-2 text-xs"
+                data-testid="playground-ask-tutor-btn"
+              >
+                <MessagesSquare size={14} /> Ask AI Tutor to explain
+              </button>
+              <span className="text-xs text-muted2 font-mono">solved by SymPy</span>
+            </div>
           </div>
 
           <div className="mt-4">

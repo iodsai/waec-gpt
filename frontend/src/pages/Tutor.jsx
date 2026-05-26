@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import http from "@/lib/api";
 import MathText from "@/components/MathText";
 import MathKeypad from "@/components/MathKeypad";
@@ -15,6 +16,8 @@ const SUGGESTED = [
 const BG = "https://static.prod-images.emergentagent.com/jobs/6b12fdb0-d53c-4163-bc29-3a0f2edc149a/images/4ede2bc38f55d9e0217bb938345dfc325f3e5cfc08e89a27dc85d90cd289e6d5.png";
 
 const Tutor = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [sessionId] = useState(() => {
     const existing = localStorage.getItem("waec_tutor_session");
     if (existing) return existing;
@@ -37,6 +40,17 @@ const Tutor = () => {
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  // Auto-send a prompt passed in via location.state (e.g. from /playground)
+  useEffect(() => {
+    if (historyLoading) return;
+    const auto = location.state?.autoSend;
+    if (!auto) return;
+    // clear so refresh doesn't re-send
+    navigate(location.pathname, { replace: true, state: null });
+    send(auto);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [historyLoading]);
 
   const send = async (text) => {
     const msg = (text ?? input).trim();

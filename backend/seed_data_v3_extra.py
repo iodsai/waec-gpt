@@ -219,6 +219,52 @@ SET_OPERATIONS_SECTIONS = [
     {
         "title": "The Three-Set Counting Formula",
         "intro": "Three-set questions are common in examinations because students often subtract too much or forget to add back the middle region. The safest method is to understand the seven regions of a three-circle Venn diagram.",
+        "key_points": [
+            "A three-set Venn diagram has seven inside regions: A only, B only, C only, A and B only, A and C only, B and C only, and all three.",
+            "$A\\cup B\\cup C$ means every region inside at least one of the three circles.",
+            "$A\\cap B\\cap C$ means only the middle region common to all three sets.",
+            "At least two means the three pair-overlap regions, including the middle.",
+            "Exactly one means A only plus B only plus C only.",
+            "Neither means the region in U outside all three circles."
+        ],
+        "visual_blocks": [
+            {
+                "type": "venn3",
+                "variant": "union_all",
+                "title": "At least one: $A\\cup B\\cup C$",
+                "caption": "Every shaded point belongs to A, B, C, or some combination of them."
+            },
+            {
+                "type": "venn3",
+                "variant": "triple_intersection",
+                "title": "All three: $A\\cap B\\cap C$",
+                "caption": "Only the centre region belongs to A, B and C at the same time."
+            },
+            {
+                "type": "venn3",
+                "variant": "at_least_two",
+                "title": "At least two sets",
+                "caption": "This includes A and B, A and C, B and C, and the centre where all three overlap."
+            },
+            {
+                "type": "venn3",
+                "variant": "exactly_one_all",
+                "title": "Exactly one set",
+                "caption": "Only the three outside petals are counted. Pair overlaps and the centre are excluded."
+            },
+            {
+                "type": "venn3",
+                "variant": "a_only",
+                "title": "A only",
+                "caption": "This is the part of A outside B and outside C: $A\\cap B'\\cap C'$."
+            },
+            {
+                "type": "venn3",
+                "variant": "neither_all",
+                "title": "None of the three: $(A\\cup B\\cup C)'$",
+                "caption": "This is everything in U outside A, B and C."
+            }
+        ],
         "formulas": [
             {
                 "name": "Three-set union",
@@ -275,6 +321,18 @@ SET_OPERATIONS_SECTIONS = [
                     "$11+9=20$.",
                 ],
                 "answer": "20 components pass test A only."
+            },
+            {
+                "level": "visual reasoning",
+                "title": "Interpreting exactly one",
+                "problem": "Explain the difference between 'at least one', 'at least two' and 'exactly one' in a three-set Venn diagram.",
+                "steps": [
+                    "At least one means every region inside any of the three circles.",
+                    "At least two means the pairwise overlap regions, including the centre.",
+                    "Exactly one means only A only, B only and C only.",
+                    "So exactly one excludes all overlaps, while at least two is made only of overlaps.",
+                ],
+                "answer": "At least one is the union; at least two is the overlap zone of two or more sets; exactly one is the three single-set-only regions."
             }
         ],
         "practice": [
@@ -287,6 +345,26 @@ SET_OPERATIONS_SECTIONS = [
     {
         "title": "De Morgan's Laws for Two and Three Sets",
         "intro": "De Morgan's Laws explain what happens when a complement is placed outside a union or intersection. They are also the set version of logic rules used in circuits and computer programs.",
+        "visual_blocks": [
+            {
+                "type": "venn3",
+                "variant": "neither_all",
+                "title": "$(A\\cup B\\cup C)'=A'\\cap B'\\cap C'$",
+                "caption": "Outside the union means outside A, outside B and outside C."
+            },
+            {
+                "type": "venn3",
+                "variant": "not_all_three",
+                "title": "$(A\\cap B\\cap C)'=A'\\cup B'\\cup C'$",
+                "caption": "Everything is shaded except the centre where all three sets meet."
+            },
+            {
+                "type": "venn3",
+                "variant": "a_complement_intersect_b_union_c",
+                "title": "$A'\\cap(B\\cup C)$",
+                "caption": "First take B or C, then keep only the parts outside A. This leaves B only, C only and the B-C overlap outside A."
+            }
+        ],
         "formulas": [
             {
                 "name": "Two sets: outside a union",
@@ -344,6 +422,19 @@ SET_OPERATIONS_SECTIONS = [
                     "So the device is accepted only if it passes all three tests.",
                 ],
                 "answer": "$T'\\cap P'\\cap V'$."
+            },
+            {
+                "level": "advanced visual",
+                "title": "Interpreting $A'\\cap(B\\cup C)$",
+                "problem": "Describe the region represented by $A'\\cap(B\\cup C)$.",
+                "steps": [
+                    "$B\\cup C$ means everything in B or C.",
+                    "$A'$ means outside A.",
+                    "The intersection $A'\\cap(B\\cup C)$ means keep only the parts that satisfy both conditions.",
+                    "So we shade the part of B outside A, the part of C outside A, and the B-C overlap that is still outside A.",
+                    "Any region inside A is excluded, even if it also belongs to B or C.",
+                ],
+                "answer": "$A'\\cap(B\\cup C)$ is the portion of B or C that lies outside A."
             }
         ],
         "applications": [

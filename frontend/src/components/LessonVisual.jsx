@@ -22,11 +22,10 @@ const VisualCaption = ({ title, caption }) => (
   ) : null
 );
 
-const RegionLabel = ({ x, y, children, width = 44 }) => (
-  <g>
-    <rect x={x - width / 2} y={y - 15} width={width} height="28" rx="14" fill="#FFFFFF" fillOpacity="0.96" stroke="#D8D0C3" />
-    <text x={x} y={y} textAnchor="middle" dominantBaseline="middle" fontSize="17" fontWeight="800" fill="#1A1C1A">{children}</text>
-  </g>
+const RegionLabel = ({ x, y, children }) => (
+  <text x={x} y={y} textAnchor="middle" dominantBaseline="middle" fontSize="18" fontWeight="800" fill="#1A1C1A">
+    {children}
+  </text>
 );
 
 const SingleSet = ({ title, caption }) => (
@@ -227,15 +226,15 @@ const ThreeSetVariables = ({ title, caption, labels = {} }) => (
       <SetLabel x={375} y={73}>{labels.rightSet || "C"}</SetLabel>
       <SetLabel x={260} y={345}>{labels.bottomSet || "B"}</SetLabel>
 
-      <RegionLabel x={165} y={158} width={54}>{labels.leftOnly || "x"}</RegionLabel>
-      <RegionLabel x={355} y={158} width={54}>{labels.rightOnly || "y"}</RegionLabel>
-      <RegionLabel x={260} y={296} width={54}>{labels.bottomOnly || "z"}</RegionLabel>
+      <RegionLabel x={165} y={158}>{labels.leftOnly || "x"}</RegionLabel>
+      <RegionLabel x={355} y={158}>{labels.rightOnly || "y"}</RegionLabel>
+      <RegionLabel x={260} y={296}>{labels.bottomOnly || "z"}</RegionLabel>
 
-      <RegionLabel x={260} y={132} width={54}>{labels.leftRight || "9"}</RegionLabel>
-      <RegionLabel x={216} y={217} width={54}>{labels.leftBottom || "11"}</RegionLabel>
-      <RegionLabel x={304} y={217} width={54}>{labels.rightBottom || "7"}</RegionLabel>
-      <RegionLabel x={260} y={192} width={54}>{labels.allThree || "5"}</RegionLabel>
-      {labels.outside && <RegionLabel x={440} y={314} width={58}>{labels.outside}</RegionLabel>}
+      <RegionLabel x={260} y={132}>{labels.leftRight || "9"}</RegionLabel>
+      <RegionLabel x={216} y={217}>{labels.leftBottom || "11"}</RegionLabel>
+      <RegionLabel x={304} y={217}>{labels.rightBottom || "7"}</RegionLabel>
+      <RegionLabel x={260} y={192}>{labels.allThree || "5"}</RegionLabel>
+      {labels.outside && <RegionLabel x={440} y={314}>{labels.outside}</RegionLabel>}
     </svg>
     <VisualCaption title={title} caption={caption} />
   </div>

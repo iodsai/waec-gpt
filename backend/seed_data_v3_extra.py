@@ -13,15 +13,20 @@ EXTRA_SUBTOPICS = {
         {"id": "set-operations", "name": "Set Operations"},
         {"id": "venn-diagrams", "name": "Venn Diagrams"},
         {"id": "subsets-power", "name": "Subsets & Power Sets"},
+        {"id": "binary-operations", "name": "Binary Operations"},
         {"id": "propositional-logic", "name": "Propositional Logic"},
         {"id": "truth-tables", "name": "Truth Tables"},
     ],
     "surds-polynomials": [
         {"id": "surd-simplification", "name": "Surd Simplification"},
         {"id": "indices-logs-fm", "name": "Indices & Logarithms"},
+        {"id": "functions-mappings", "name": "Functions & Mappings"},
         {"id": "polynomial-division", "name": "Polynomial Division"},
         {"id": "remainder-theorem", "name": "Remainder Theorem"},
         {"id": "partial-fractions", "name": "Partial Fractions"},
+    ],
+    "calculus": [
+        {"id": "trigonometry-fm", "name": "Trigonometry"},
     ],
     "sequences-binomial": [
         {"id": "ap-fm", "name": "Arithmetic Progression"},
@@ -67,6 +72,15 @@ EXTRA_LESSONS = {
             {"heading": "Number of Subsets", "body": "A set with $n$ elements has $2^n$ subsets."},
             {"heading": "Worked Example", "body": "$\\{a, b, c\\}$ has $2^3 = 8$ subsets including $\\emptyset$ and itself."},
         ]},
+    "binary-operations": {"title": "Binary Operations", "topic": "sets-logic",
+        "summary": "A binary operation combines two elements from a set to produce one result, often written as $a * b$ or $a \\circ b$.",
+        "notes": [
+            {"heading": "Meaning", "body": "A binary operation $*$ on a set $S$ takes any ordered pair $(a,b)$ from $S$ and gives a result $a*b$. WAEC may define a new operation such as $a*b = 2a + b$ and ask you to use or test it."},
+            {"heading": "Closure", "body": "A set is closed under $*$ if $a*b \\in S$ for every $a,b \\in S$. For example, integers are closed under addition because the sum of two integers is always an integer."},
+            {"heading": "Identity and Inverse", "body": "An identity element $e$ satisfies $a*e = e*a = a$. An inverse of $a$ is an element $b$ such that $a*b = b*a = e$."},
+            {"heading": "Commutative and Associative", "body": "$*$ is commutative if $a*b=b*a$. It is associative if $(a*b)*c=a*(b*c)$. Do not assume these are true for a newly defined operation; test them from the rule."},
+            {"heading": "Worked Example", "body": "If $a*b = 2a + b$, then $3*5 = 2(3)+5 = 11$. But $5*3 = 2(5)+3 = 13$, so the operation is not commutative."},
+        ]},
     "propositional-logic": {"title": "Propositional Logic", "topic": "sets-logic",
         "summary": "Logical statements connected by $\\land$ (and), $\\lor$ (or), $\\neg$ (not), $\\Rightarrow$ (implies).",
         "notes": [
@@ -91,6 +105,15 @@ EXTRA_LESSONS = {
         "notes": [
             {"heading": "Key Laws", "body": "$a^{m/n} = \\sqrt[n]{a^m}$. $\\log_b x = \\frac{\\log x}{\\log b}$ (change of base)."},
             {"heading": "Worked Example", "body": "$8^{2/3} = (\\sqrt[3]{8})^2 = 2^2 = 4$. $\\log_2 32 = \\log_2 2^5 = 5$."},
+        ]},
+    "functions-mappings": {"title": "Functions & Mappings", "topic": "surds-polynomials",
+        "summary": "A function maps each element in its domain to exactly one element in its co-domain.",
+        "notes": [
+            {"heading": "Domain, Co-domain and Range", "body": "The domain is the set of allowed inputs. The co-domain is the target set. The range is the set of outputs actually produced. For $f(x)=x^2$ with domain $\\{-2,-1,0,1,2\\}$, the range is $\\{0,1,4\\}$."},
+            {"heading": "Types of Functions", "body": "A function is one-to-one if different inputs give different outputs. It is onto if every element of the co-domain is reached. A constant function gives the same output for every input."},
+            {"heading": "Composite Functions", "body": "$(f \\circ g)(x)$ means $f(g(x))$: apply $g$ first, then apply $f$. The domain must allow both steps."},
+            {"heading": "Inverse Functions", "body": "$f^{-1}$ reverses $f$. To find it, write $y=f(x)$, make $x$ the subject, then swap $x$ and $y$. The inverse exists as a function only when $f$ is one-to-one on the chosen domain."},
+            {"heading": "Worked Example", "body": "Let $f(x)=2x+3$ and $g(x)=x^2$. Then $(f\\circ g)(x)=f(x^2)=2x^2+3$. Also $f^{-1}(x)=\\frac{x-3}{2}$."},
         ]},
     "polynomial-division": {"title": "Polynomial Division", "topic": "surds-polynomials",
         "summary": "Long division of polynomials: $P(x) = D(x)Q(x) + R(x)$.",
@@ -202,6 +225,17 @@ EXTRA_LESSONS = {
         "notes": [
             {"heading": "Energy Conservation", "body": "Total mechanical energy = KE + PE = constant (no friction)."},
             {"heading": "Worked Example", "body": "Lifting a 5 kg object 2 m: $W = mgh = 5 \\times 10 \\times 2 = 100$ J ($g \\approx 10$ m/s²)."},
+        ]},
+    # ---- TRIGONOMETRY ----
+    "trigonometry-fm": {"title": "Trigonometry", "topic": "calculus",
+        "summary": "WAEC Further Mathematics uses trigonometry for angles, identities, equations, graphs, bearings and calculus links.",
+        "notes": [
+            {"heading": "Ratios and Special Angles", "body": "For a right triangle, $\\sin\\theta = \\frac{opposite}{hypotenuse}$, $\\cos\\theta = \\frac{adjacent}{hypotenuse}$ and $\\tan\\theta = \\frac{opposite}{adjacent}$. Know exact values for $30^\\circ$, $45^\\circ$ and $60^\\circ$."},
+            {"heading": "Core Identities", "body": "$\\sin^2\\theta + \\cos^2\\theta = 1$, $1+\\tan^2\\theta = \\sec^2\\theta$, and $\\tan\\theta = \\frac{\\sin\\theta}{\\cos\\theta}$. Use identities to simplify expressions before solving."},
+            {"heading": "Compound and Multiple Angles", "body": "$\\sin(A+B)=\\sin A\\cos B+\\cos A\\sin B$, $\\cos(A+B)=\\cos A\\cos B-\\sin A\\sin B$, and $\\sin 2A=2\\sin A\\cos A$."},
+            {"heading": "Equations and Graphs", "body": "When solving trigonometric equations, find all angles in the required interval. For graphs, note amplitude, period and phase shift. For $y=a\\sin bx$, amplitude is $|a|$ and period is $\\frac{360^\\circ}{b}$ or $\\frac{2\\pi}{b}$."},
+            {"heading": "Bearings and Triangle Rules", "body": "Use the sine rule $\\frac{a}{\\sin A}=\\frac{b}{\\sin B}=\\frac{c}{\\sin C}$ and cosine rule $a^2=b^2+c^2-2bc\\cos A$ for non-right triangles, including bearings and heights-and-distances questions."},
+            {"heading": "Worked Example", "body": "Solve $2\\sin x = 1$ for $0^\\circ \\leq x \\leq 360^\\circ$. Then $\\sin x=\\frac{1}{2}$, so $x=30^\\circ$ or $150^\\circ$."},
         ]},
 }
 

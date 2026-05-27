@@ -11,6 +11,7 @@ import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Dashboard from "@/pages/Dashboard";
+import Syllabus from "@/pages/Syllabus";
 import Topics from "@/pages/Topics";
 import TopicDetail from "@/pages/TopicDetail";
 import Lessons from "@/pages/Lessons";
@@ -20,6 +21,7 @@ import Exams from "@/pages/Exams";
 import ExamRun from "@/pages/ExamRun";
 import ExamReport from "@/pages/ExamReport";
 import Admin from "@/pages/Admin";
+import LessonAudit from "@/pages/LessonAudit";
 import RevisionDeck from "@/pages/RevisionDeck";
 import FormulaSheet from "@/pages/FormulaSheet";
 import Playground from "@/pages/Playground";
@@ -41,6 +43,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/syllabus" element={<ProtectedRoute><Syllabus /></ProtectedRoute>} />
+            <Route path="/syllabus/:itemId" element={<ProtectedRoute><Syllabus /></ProtectedRoute>} />
             <Route path="/topics" element={<ProtectedRoute><Topics /></ProtectedRoute>} />
             <Route path="/topics/:topicId" element={<ProtectedRoute><TopicDetail /></ProtectedRoute>} />
             <Route path="/lessons" element={<ProtectedRoute><Lessons /></ProtectedRoute>} />
@@ -51,6 +55,7 @@ function App() {
             <Route path="/exams/:examId/run" element={<ProtectedRoute><ExamRun /></ProtectedRoute>} />
             <Route path="/exams/:examId/report" element={<ProtectedRoute><ExamReport /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+            <Route path="/admin/lesson-audit" element={<ProtectedRoute><LessonAudit /></ProtectedRoute>} />
             <Route path="/revision" element={<ProtectedRoute><RevisionDeck /></ProtectedRoute>} />
             <Route path="/formulas" element={<ProtectedRoute><FormulaSheet /></ProtectedRoute>} />
             <Route path="/playground" element={<ProtectedRoute><Playground /></ProtectedRoute>} />

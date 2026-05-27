@@ -31,6 +31,9 @@ const Navbar = () => {
               <NavLink to="/dashboard" className={linkCls} data-testid="nav-dashboard">
                 <LayoutDashboard size={16} /> Dashboard
               </NavLink>
+              <NavLink to="/syllabus" className={linkCls} data-testid="nav-syllabus">
+                <BookOpen size={16} /> Syllabus
+              </NavLink>
               <NavLink to="/topics" className={linkCls} data-testid="nav-topics">
                 <Compass size={16} /> Topics
               </NavLink>

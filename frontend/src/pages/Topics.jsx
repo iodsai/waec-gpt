@@ -16,9 +16,14 @@ const Topics = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-10" data-testid="topics-page">
-      <span className="overline">Syllabus</span>
+      <span className="overline">Course topics</span>
       <h1 className="font-heading text-4xl font-bold text-ink mt-2">All WAEC Math topics</h1>
-      <p className="text-muted2 mt-2">All 8 WAEC Further Maths syllabus topics now live — over 580 practice questions.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-2">
+        <p className="text-muted2">Course topics linked to the WAEC Further Mathematics syllabus and practice bank.</p>
+        <Link to="/syllabus" className="btn-ghost inline-flex items-center gap-2 text-sm self-start sm:self-auto">
+          View official syllabus <ChevronRight size={16} />
+        </Link>
+      </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-8">
         {topics.map((t) => {

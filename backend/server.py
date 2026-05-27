@@ -17,6 +17,7 @@ import uuid
 from datetime import datetime, timezone, timedelta
 import bcrypt
 import jwt as pyjwt
+from urllib.parse import urlencode
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
@@ -33,13 +34,17 @@ _EXTRA_TOPIC_IDS = set(EXTRA_SUBTOPICS.keys())
 for _t in TOPICS_V2:
     if _t["id"] in _EXTRA_TOPIC_IDS:
         _t["status"] = "available"
-SUBTOPICS_BY_TOPIC = {**SUBTOPICS_BY_TOPIC, **EXTRA_SUBTOPICS}
+for _tid, _subs in EXTRA_SUBTOPICS.items():
+    _existing = SUBTOPICS_BY_TOPIC.get(_tid, [])
+    _existing_ids = {s["id"] for s in _existing}
+    SUBTOPICS_BY_TOPIC[_tid] = _existing + [s for s in _subs if s["id"] not in _existing_ids]
 LESSONS_V2 = {**LESSONS_V2, **EXTRA_LESSONS}
 QUESTIONS_V3 = QUESTIONS_V3 + EXTRA_QUESTIONS
 from sympy_verify import verify as sympy_verify
 from playground_solver import solve_general, graph_function
 from ai_helpers import extract_question_from_image, generate_similar_questions
 from waec_scraper import WAEC_PAPERS, extract_paper
+from syllabus_data import COUNTRY_FILTERS, SYLLABUS_SECTIONS, SYLLABUS_SOURCE
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -48,6 +53,8 @@ MONGO_URL = os.environ['MONGO_URL']
 DB_NAME = os.environ['DB_NAME']
 JWT_SECRET = os.environ['JWT_SECRET']
 EMERGENT_LLM_KEY = os.environ['EMERGENT_LLM_KEY']
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 JWT_ALGO = "HS256"
 JWT_EXPIRY_DAYS = 7
 
@@ -95,6 +102,15 @@ class Lesson(BaseModel):
     title: str
     summary: str
     notes: List[LessonNote]
+    objectives: List[str] = Field(default_factory=list)
+    prerequisites: List[str] = Field(default_factory=list)
+    visual_blocks: List[dict] = Field(default_factory=list)
+    worked_examples: List[dict] = Field(default_factory=list)
+    word_problems: List[dict] = Field(default_factory=list)
+    applications: List[dict] = Field(default_factory=list)
+    common_mistakes: List[str] = Field(default_factory=list)
+    quick_checks: List[dict] = Field(default_factory=list)
+    standard: str = "legacy"
 
 class Question(BaseModel):
     id: str
@@ -302,6 +318,16 @@ async def lifespan(app: FastAPI):
         })
     else:
         await db.users.update_one({"email": "admin@waec.com"}, {"$set": {"is_admin": True}})
+    if ADMIN_EMAIL and ADMIN_PASSWORD:
+        custom_admin_email = ADMIN_EMAIL.lower()
+        if not await db.users.find_one({"email": custom_admin_email}):
+            await db.users.insert_one({
+                "id": str(uuid.uuid4()), "name": "Admin", "email": custom_admin_email,
+                "password_hash": hash_password(ADMIN_PASSWORD), "is_admin": True,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            })
+        else:
+            await db.users.update_one({"email": custom_admin_email}, {"$set": {"is_admin": True}})
     await db.users.update_many({"is_admin": {"$exists": False}}, {"$set": {"is_admin": False}})
 
     # Mark any orphaned 'running' import jobs as 'interrupted' (background tasks die on reload)
@@ -360,6 +386,139 @@ async def get_topics():
         enriched.append({**t, "subtopics": subs, "question_count": count})
     return {"topics": enriched}
 
+
+def _syllabus_course_link(item_doc: dict) -> dict:
+    topic_id = item_doc.get("course_topic")
+    subtopic_id = item_doc.get("course_subtopic")
+    related = item_doc.get("related_subtopics", [])
+    topic_name = TOPIC_NAME.get(topic_id, "") if topic_id else ""
+    subtopic_name = SUBTOPIC_NAME.get(subtopic_id, "") if subtopic_id else ""
+    has_lesson = bool(subtopic_id and subtopic_id in LESSONS_V2)
+
+    if has_lesson:
+        path = f"/lessons/{subtopic_id}"
+        status = "lesson_available"
+    elif topic_id and topic_id in TOPIC_NAME:
+        path = f"/topics/{topic_id}"
+        status = "topic_available"
+    else:
+        path = "/topics"
+        status = "needs_course_buildout"
+
+    practice_params = {}
+    if subtopic_id:
+        practice_params["subtopic"] = subtopic_id
+    elif topic_id:
+        practice_params["topic"] = topic_id
+
+    related_subtopics = [
+        {
+            "id": sid,
+            "name": SUBTOPIC_NAME.get(sid, sid),
+            "topic": SUBTOPIC_TOPIC.get(sid, topic_id),
+            "lesson_path": f"/lessons/{sid}" if sid in LESSONS_V2 else None,
+            "practice_path": f"/past-questions?subtopic={sid}",
+        }
+        for sid in related
+    ]
+
+    return {
+        "status": status,
+        "topic": topic_id,
+        "topic_name": topic_name,
+        "subtopic": subtopic_id,
+        "subtopic_name": subtopic_name,
+        "path": path,
+        "practice_path": f"/past-questions?{urlencode(practice_params)}" if practice_params else "/past-questions",
+        "related_subtopics": related_subtopics,
+    }
+
+
+@api.get("/syllabus")
+async def get_syllabus():
+    """Return the WAEC Further Mathematics syllabus mapped into the app courses."""
+    sections = []
+    total_items = 0
+    lesson_ready = 0
+    topic_ready = 0
+
+    for section in SYLLABUS_SECTIONS:
+        items = []
+        for syllabus_item in section["items"]:
+            total_items += 1
+            course = _syllabus_course_link(syllabus_item)
+            if course["status"] == "lesson_available":
+                lesson_ready += 1
+            elif course["status"] == "topic_available":
+                topic_ready += 1
+            items.append({**syllabus_item, "course": course})
+        sections.append({**section, "items": items})
+
+    return {
+        "source": SYLLABUS_SOURCE,
+        "countries": COUNTRY_FILTERS,
+        "sections": sections,
+        "stats": {
+            "total_items": total_items,
+            "lesson_ready": lesson_ready,
+            "topic_ready": topic_ready,
+            "needs_buildout": total_items - lesson_ready - topic_ready,
+        },
+    }
+
+
+def _lesson_audit_row(syllabus_item: dict, section: dict) -> dict:
+    course = _syllabus_course_link(syllabus_item)
+    subtopic_id = course.get("subtopic")
+    lesson = LESSONS_V2.get(subtopic_id) if subtopic_id else None
+    checks = {
+        "has_lesson": bool(lesson),
+        "has_objectives": bool(lesson and lesson.get("objectives")),
+        "has_prerequisites": bool(lesson and lesson.get("prerequisites")),
+        "has_visuals": bool(lesson and lesson.get("visual_blocks")),
+        "has_rich_examples": bool(lesson and lesson.get("worked_examples")),
+        "has_word_problems": bool(lesson and lesson.get("word_problems")),
+        "has_applications": bool(lesson and lesson.get("applications")),
+        "has_common_mistakes": bool(lesson and lesson.get("common_mistakes")),
+        "has_quick_checks": bool(lesson and lesson.get("quick_checks")),
+    }
+    readiness = round((sum(1 for ok in checks.values() if ok) / len(checks)) * 100)
+    return {
+        "section": section["name"],
+        "syllabus_id": syllabus_item["id"],
+        "title": syllabus_item["title"],
+        "topic": course.get("topic"),
+        "topic_name": course.get("topic_name"),
+        "subtopic": subtopic_id,
+        "subtopic_name": course.get("subtopic_name"),
+        "lesson_path": course.get("path"),
+        "practice_path": course.get("practice_path"),
+        "standard": lesson.get("standard", "missing") if lesson else "missing",
+        "readiness": readiness,
+        "checks": checks,
+    }
+
+
+@api.get("/admin/lesson-audit")
+async def lesson_audit(current=Depends(require_admin)):
+    rows = [
+        _lesson_audit_row(item, section)
+        for section in SYLLABUS_SECTIONS
+        for item in section["items"]
+    ]
+    total = len(rows)
+    return {
+        "summary": {
+            "total": total,
+            "full_standard": sum(1 for r in rows if r["readiness"] == 100),
+            "needs_visuals": sum(1 for r in rows if not r["checks"]["has_visuals"]),
+            "needs_word_problems": sum(1 for r in rows if not r["checks"]["has_word_problems"]),
+            "needs_applications": sum(1 for r in rows if not r["checks"]["has_applications"]),
+            "average_readiness": round(sum(r["readiness"] for r in rows) / total, 1) if total else 0,
+        },
+        "items": rows,
+    }
+
 @api.get("/lessons/{subtopic_id}", response_model=Lesson)
 async def get_lesson(subtopic_id: str):
     lesson = LESSONS_V2.get(subtopic_id)
@@ -367,9 +526,18 @@ async def get_lesson(subtopic_id: str):
         raise HTTPException(status_code=404, detail="Lesson not found")
     return Lesson(
         subtopic_id=subtopic_id,
-        topic=topic_of(subtopic_id),
+        topic=lesson.get("topic", topic_of(subtopic_id)),
         title=lesson["title"], summary=lesson["summary"],
-        notes=[LessonNote(**n) for n in lesson["notes"]],
+        notes=[LessonNote(**n) for n in lesson.get("notes", [])],
+        objectives=lesson.get("objectives", []),
+        prerequisites=lesson.get("prerequisites", []),
+        visual_blocks=lesson.get("visual_blocks", []),
+        worked_examples=lesson.get("worked_examples", []),
+        word_problems=lesson.get("word_problems", []),
+        applications=lesson.get("applications", []),
+        common_mistakes=lesson.get("common_mistakes", []),
+        quick_checks=lesson.get("quick_checks", []),
+        standard=lesson.get("standard", "legacy"),
     )
 
 def _qpublic(d: dict) -> Question:

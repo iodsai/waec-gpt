@@ -8,6 +8,24 @@ import { InlineMath, BlockMath } from "react-katex";
 const MathText = ({ text, className = "" }) => {
   if (!text) return null;
 
+  const renderPlain = (value, keyPrefix) => {
+    const lines = value.split("\n");
+    return lines.map((line, li) => {
+      const boldParts = line.split(/(\*\*[^*]+\*\*)/g);
+      return (
+        <React.Fragment key={`${keyPrefix}-line-${li}`}>
+          {boldParts.map((part, pi) => {
+            if (part.startsWith("**") && part.endsWith("**")) {
+              return <strong key={`${keyPrefix}-b-${li}-${pi}`}>{part.slice(2, -2)}</strong>;
+            }
+            return <React.Fragment key={`${keyPrefix}-t-${li}-${pi}`}>{part}</React.Fragment>;
+          })}
+          {li < lines.length - 1 ? <br /> : null}
+        </React.Fragment>
+      );
+    });
+  };
+
   // Split by $$...$$ blocks first
   const blockParts = text.split(/(\$\$[^$]+\$\$)/g);
   return (
@@ -34,13 +52,7 @@ const MathText = ({ text, className = "" }) => {
                   return <span key={`i-${bi}-${ii}`}>{ip}</span>;
                 }
               }
-              // Render plain text and preserve newlines
-              return ip.split("\n").map((line, li, arr) => (
-                <React.Fragment key={`t-${bi}-${ii}-${li}`}>
-                  {line}
-                  {li < arr.length - 1 ? <br /> : null}
-                </React.Fragment>
-              ));
+              return renderPlain(ip, `t-${bi}-${ii}`);
             })}
           </React.Fragment>
         );

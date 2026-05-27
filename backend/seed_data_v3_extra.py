@@ -91,6 +91,39 @@ SET_OPERATIONS_SECTIONS = [
     {
         "title": "The Two-Set Counting Formula",
         "intro": "The formula for two sets is not a trick. It corrects double-counting. If a student understands why the overlap is subtracted, most WAEC set word problems become easier.",
+        "key_points": [
+            "Imagine the Venn diagram has three inside regions: A only, A and B, and B only.",
+            "When you calculate $n(A)+n(B)$, the middle overlap $n(A\\cap B)$ is counted twice.",
+            "The union $n(A\\cup B)$ needs that overlap counted only once, so we subtract one copy of it.",
+            "Neither is outside both circles, so it is found by subtracting the union from the universal set.",
+            "Exactly one means the two non-overlapping side regions: A only plus B only."
+        ],
+        "visual_blocks": [
+            {
+                "type": "venn",
+                "variant": "union",
+                "title": "Union: $n(A\\cup B)$",
+                "caption": "All shaded regions inside A or B are counted. The overlap belongs to the union, but it must be counted once."
+            },
+            {
+                "type": "venn",
+                "variant": "intersection",
+                "title": "Overlap: $n(A\\cap B)$",
+                "caption": "This middle region is counted once inside A and once inside B. That is why the formula subtracts it once."
+            },
+            {
+                "type": "venn",
+                "variant": "neither",
+                "title": "Neither: $n((A\\cup B)')$",
+                "caption": "The shaded region outside both circles is everything in U that is not in A or B."
+            },
+            {
+                "type": "venn",
+                "variant": "exactly_one",
+                "title": "Exactly one",
+                "caption": "Only the two side regions are counted. The overlap is removed from both A and B."
+            }
+        ],
         "formulas": [
             {
                 "name": "Two-set union",
@@ -109,6 +142,19 @@ SET_OPERATIONS_SECTIONS = [
             }
         ],
         "examples": [
+            {
+                "level": "derivation",
+                "title": "Derive the formula from Venn regions",
+                "problem": "Suppose the Venn diagram has $a$ people in A only, $x$ people in both A and B, and $b$ people in B only. Show why $n(A\\cup B)=n(A)+n(B)-n(A\\cap B)$.",
+                "steps": [
+                    "A contains A only plus the overlap, so $n(A)=a+x$.",
+                    "B contains B only plus the overlap, so $n(B)=b+x$.",
+                    "Adding gives $n(A)+n(B)=a+b+2x$.",
+                    "But the union should be A only, overlap, and B only: $n(A\\cup B)=a+x+b$.",
+                    "The addition counted the overlap twice, so subtract one $x=n(A\\cap B)$.",
+                ],
+                "answer": "$n(A\\cup B)=n(A)+n(B)-n(A\\cap B)$."
+            },
             {
                 "level": "basic",
                 "title": "Why subtract the overlap?",
@@ -144,6 +190,19 @@ SET_OPERATIONS_SECTIONS = [
                     "$34+19=53$.",
                 ],
                 "answer": "53 students use exactly one of the apps."
+            },
+            {
+                "level": "conceptual",
+                "title": "Why exactly one subtracts twice",
+                "problem": "Explain why $n(A\\text{ only})+n(B\\text{ only})=n(A)+n(B)-2n(A\\cap B)$.",
+                "steps": [
+                    "Let the overlap be $x=n(A\\cap B)$.",
+                    "$n(A)$ includes A only and the overlap.",
+                    "$n(B)$ includes B only and the same overlap.",
+                    "So $n(A)+n(B)$ includes the overlap twice.",
+                    "Exactly one wants no overlap at all, so remove both copies: subtract $2x$.",
+                ],
+                "answer": "$n(A\\text{ only})+n(B\\text{ only})=n(A)+n(B)-2n(A\\cap B)$."
             }
         ],
         "applications": [

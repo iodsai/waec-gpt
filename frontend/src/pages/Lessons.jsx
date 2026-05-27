@@ -79,6 +79,17 @@ const LessonSection = ({ section, index }) => (
       </div>
     )}
 
+    {section.visual_blocks?.length > 0 && (
+      <div className="mt-5">
+        <h3 className="font-heading font-semibold text-ink">Visual guide</h3>
+        <div className="grid md:grid-cols-2 gap-4 mt-3">
+          {section.visual_blocks.map((block, i) => (
+            <LessonVisual key={`${block.type}-${block.variant}-${i}`} block={block} />
+          ))}
+        </div>
+      </div>
+    )}
+
     {section.formulas?.length > 0 && (
       <div className="mt-5 rounded-xl bg-ink text-white p-5 space-y-3">
         <h3 className="font-heading font-semibold">Formulas to know</h3>

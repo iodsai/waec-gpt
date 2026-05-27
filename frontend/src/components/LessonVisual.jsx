@@ -22,10 +22,10 @@ const VisualCaption = ({ title, caption }) => (
   ) : null
 );
 
-const RegionLabel = ({ x, y, children }) => (
+const RegionLabel = ({ x, y, children, width = 44 }) => (
   <g>
-    <rect x={x - 22} y={y - 17} width="44" height="26" rx="13" fill="#FFFFFF" fillOpacity="0.92" stroke="#E2DCD0" />
-    <text x={x} y={y + 1} textAnchor="middle" dominantBaseline="middle" fontSize="17" fontWeight="700" fill="#1A1C1A">{children}</text>
+    <rect x={x - width / 2} y={y - 15} width={width} height="28" rx="14" fill="#FFFFFF" fillOpacity="0.96" stroke="#D8D0C3" />
+    <text x={x} y={y} textAnchor="middle" dominantBaseline="middle" fontSize="17" fontWeight="800" fill="#1A1C1A">{children}</text>
   </g>
 );
 
@@ -133,8 +133,7 @@ const TripleIntersection = ({ uid, muted = false }) => (
 
 const SetLabel = ({ x, y, children }) => (
   <g>
-    <rect x={x - 13} y={y - 18} width="28" height="24" rx="12" fill="#F9F7F1" stroke="#E2DCD0" />
-    <text x={x} y={y} textAnchor="middle" fontSize="17" fontWeight="700" fill="#1A1C1A">{children}</text>
+    <text x={x} y={y} textAnchor="middle" fontSize="18" fontWeight="800" fill="#1A1C1A">{children}</text>
   </g>
 );
 
@@ -216,23 +215,27 @@ const ThreeSetVenn = ({ variant = "union_all", title, caption }) => {
 
 const ThreeSetVariables = ({ title, caption, labels = {} }) => (
   <div className="rounded-xl border border-edge bg-surface p-4">
-    <svg viewBox="0 0 420 300" className="w-full h-auto" role="img" aria-label={title || "Three-set variable Venn diagram"}>
-      <rect x="20" y="22" width="380" height="252" rx="14" fill="#F9F7F1" stroke="#E2DCD0" />
-      <text x="38" y="52" fontSize="17" fontWeight="700" fill="#1A1C1A">U</text>
-      <circle cx="160" cy="118" r="66" fill="#E8B253" fillOpacity="0.18" stroke="#1A1C1A" strokeWidth="2.2" />
-      <circle cx="260" cy="118" r="66" fill="#E8B253" fillOpacity="0.18" stroke="#1A1C1A" strokeWidth="2.2" />
-      <circle cx="210" cy="185" r="66" fill="#E8B253" fillOpacity="0.18" stroke="#1A1C1A" strokeWidth="2.2" />
-      <SetLabel x={118} y={62}>{labels.leftSet || "P"}</SetLabel>
-      <SetLabel x={302} y={62}>{labels.rightSet || "C"}</SetLabel>
-      <SetLabel x={210} y={270}>{labels.bottomSet || "B"}</SetLabel>
-      <RegionLabel x={137} y={121}>{labels.leftOnly || "x"}</RegionLabel>
-      <RegionLabel x={283} y={121}>{labels.rightOnly || "y"}</RegionLabel>
-      <RegionLabel x={210} y={221}>{labels.bottomOnly || "z"}</RegionLabel>
-      <RegionLabel x={210} y={111}>{labels.leftRight || "9"}</RegionLabel>
-      <RegionLabel x={176} y={166}>{labels.leftBottom || "11"}</RegionLabel>
-      <RegionLabel x={244} y={166}>{labels.rightBottom || "7"}</RegionLabel>
-      <RegionLabel x={210} y={155}>{labels.allThree || "5"}</RegionLabel>
-      {labels.outside && <RegionLabel x={352} y={236}>{labels.outside}</RegionLabel>}
+    <svg viewBox="0 0 520 390" className="w-full h-auto" role="img" aria-label={title || "Three-set variable Venn diagram"}>
+      <rect x="24" y="28" width="472" height="328" rx="16" fill="#F9F7F1" stroke="#E2DCD0" />
+      <text x="48" y="62" fontSize="18" fontWeight="800" fill="#1A1C1A">U</text>
+
+      <circle cx="205" cy="155" r="92" fill="#E8B253" fillOpacity="0.14" stroke="#1A1C1A" strokeWidth="2.4" />
+      <circle cx="315" cy="155" r="92" fill="#E8B253" fillOpacity="0.14" stroke="#1A1C1A" strokeWidth="2.4" />
+      <circle cx="260" cy="245" r="92" fill="#E8B253" fillOpacity="0.14" stroke="#1A1C1A" strokeWidth="2.4" />
+
+      <SetLabel x={145} y={73}>{labels.leftSet || "P"}</SetLabel>
+      <SetLabel x={375} y={73}>{labels.rightSet || "C"}</SetLabel>
+      <SetLabel x={260} y={345}>{labels.bottomSet || "B"}</SetLabel>
+
+      <RegionLabel x={165} y={158} width={54}>{labels.leftOnly || "x"}</RegionLabel>
+      <RegionLabel x={355} y={158} width={54}>{labels.rightOnly || "y"}</RegionLabel>
+      <RegionLabel x={260} y={296} width={54}>{labels.bottomOnly || "z"}</RegionLabel>
+
+      <RegionLabel x={260} y={132} width={54}>{labels.leftRight || "9"}</RegionLabel>
+      <RegionLabel x={216} y={217} width={54}>{labels.leftBottom || "11"}</RegionLabel>
+      <RegionLabel x={304} y={217} width={54}>{labels.rightBottom || "7"}</RegionLabel>
+      <RegionLabel x={260} y={192} width={54}>{labels.allThree || "5"}</RegionLabel>
+      {labels.outside && <RegionLabel x={440} y={314} width={58}>{labels.outside}</RegionLabel>}
     </svg>
     <VisualCaption title={title} caption={caption} />
   </div>

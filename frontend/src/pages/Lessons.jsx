@@ -41,7 +41,9 @@ const WorkedExamplePanel = ({ example, index }) => (
     {example.visual_blocks?.length > 0 && (
       <div className="grid md:grid-cols-2 gap-4 mt-4">
         {example.visual_blocks.map((block, i) => (
-          <LessonVisual key={`${block.type}-${block.variant || "example"}-${i}`} block={block} />
+          <div key={`${block.type}-${block.variant || "example"}-${i}`} className={block.type === "venn3_variables" ? "md:col-span-2 max-w-2xl mx-auto w-full" : ""}>
+            <LessonVisual block={block} />
+          </div>
         ))}
       </div>
     )}

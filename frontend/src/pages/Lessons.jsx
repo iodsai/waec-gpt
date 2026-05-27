@@ -5,6 +5,8 @@ import MathText from "@/components/MathText";
 import LessonVisual from "@/components/LessonVisual";
 import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Lightbulb, ListChecks, TriangleAlert } from "lucide-react";
 
+const sectionSlug = (value = "") => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
 const BulletList = ({ items = [] }) => {
   if (!items.length) return null;
   return (
@@ -137,7 +139,7 @@ const LessonSection = ({ section, index }) => (
 );
 
 const Lessons = () => {
-  const { subtopicId } = useParams();
+  const { subtopicId, sectionSlug: activeSectionSlug } = useParams();
   const [topics, setTopics] = useState(null);
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -188,10 +190,62 @@ const Lessons = () => {
   if (!lesson) return <div className="p-10 text-muted2" data-testid="lesson-not-found">Lesson not found.</div>;
 
   const topicName = (topics || []).find((t) => t.id === lesson.topic)?.name || lesson.topic || "Lesson";
+  const activeSection = activeSectionSlug
+    ? (lesson.lesson_sections || []).find((section) => sectionSlug(section.title) === activeSectionSlug)
+    : null;
   const hasRichContent = [
     "objectives", "prerequisites", "visual_blocks", "lesson_sections", "worked_examples",
     "word_problems", "applications", "common_mistakes", "quick_checks",
   ].some((key) => lesson[key]?.length);
+
+  if (activeSectionSlug) {
+    if (!activeSection) {
+      return (
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 py-10">
+          <Link to={`/lessons/${subtopicId}`} className="inline-flex items-center gap-2 text-sm text-muted2 hover:text-terracotta">
+            <ArrowLeft size={16} /> Back to {lesson.title}
+          </Link>
+          <div className="card-surface p-7 mt-8 text-muted2">Lesson section not found.</div>
+        </div>
+      );
+    }
+
+    const activeIndex = (lesson.lesson_sections || []).findIndex((section) => sectionSlug(section.title) === activeSectionSlug);
+    const previous = lesson.lesson_sections?.[activeIndex - 1];
+    const next = lesson.lesson_sections?.[activeIndex + 1];
+
+    return (
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 py-10" data-testid="lesson-section-detail">
+        <Link to={`/lessons/${subtopicId}`} className="inline-flex items-center gap-2 text-sm text-muted2 hover:text-terracotta">
+          <ArrowLeft size={16} /> Back to {lesson.title} sections
+        </Link>
+        <span className="overline mt-6 block">{topicName} - {lesson.title}</span>
+        <h1 className="font-heading text-4xl font-bold text-ink mt-2">{activeSection.title}</h1>
+        {activeSection.intro && <p className="text-lg text-muted2 mt-3 leading-relaxed"><MathText text={activeSection.intro} /></p>}
+
+        <div className="mt-8">
+          <LessonSection section={activeSection} index={activeIndex} />
+        </div>
+
+        <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+          {previous ? (
+            <Link className="btn-secondary inline-flex items-center gap-2 justify-center" to={`/lessons/${subtopicId}/sections/${sectionSlug(previous.title)}`}>
+              <ArrowLeft size={16} /> Previous
+            </Link>
+          ) : <div />}
+          {next ? (
+            <Link className="btn-primary inline-flex items-center gap-2 justify-center" to={`/lessons/${subtopicId}/sections/${sectionSlug(next.title)}`}>
+              Next section <ChevronRight size={16} />
+            </Link>
+          ) : (
+            <Link className="btn-primary inline-flex items-center gap-2 justify-center" to={`/past-questions?subtopic=${lesson.subtopic_id}`}>
+              Practise questions <ChevronRight size={16} />
+            </Link>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 py-10" data-testid="lesson-detail">
@@ -235,14 +289,40 @@ const Lessons = () => {
           <div>
             <span className="overline">Guided sections</span>
             <h2 className="font-heading text-2xl font-semibold text-ink mt-2">Learn this topic step by step</h2>
+            <p className="text-muted2 mt-2">Open one unit at a time. Each section has its own explanations, diagrams, examples and practice.</p>
           </div>
-          {lesson.lesson_sections.map((section, i) => (
-            <LessonSection key={`${section.title}-${i}`} section={section} index={i} />
-          ))}
+          <div className="grid gap-4">
+            {lesson.lesson_sections.map((section, i) => (
+              <Link
+                key={`${section.title}-${i}`}
+                to={`/lessons/${subtopicId}/sections/${sectionSlug(section.title)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="card-surface p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
+                data-testid={`lesson-section-link-${i}`}
+              >
+                <div className="flex gap-4">
+                  <span className="font-heading text-terracotta font-bold text-2xl">{String(i + 1).padStart(2, "0")}</span>
+                  <div>
+                    <h3 className="font-heading text-xl font-semibold text-ink group-hover:text-terracotta">{section.title}</h3>
+                    {section.intro && <p className="text-sm text-muted2 mt-1 line-clamp-2"><MathText text={section.intro} /></p>}
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {section.visual_blocks?.length > 0 && <span className="tag">{section.visual_blocks.length} visuals</span>}
+                      {section.examples?.length > 0 && <span className="tag">{section.examples.length} examples</span>}
+                      {section.practice?.length > 0 && <span className="tag">{section.practice.length} practice</span>}
+                    </div>
+                  </div>
+                </div>
+                <span className="btn-secondary inline-flex items-center gap-2 justify-center shrink-0">
+                  Open unit <ChevronRight size={16} />
+                </span>
+              </Link>
+            ))}
+          </div>
         </div>
       )}
 
-      <div className="mt-10 space-y-8">
+      {lesson.lesson_sections?.length ? null : <div className="mt-10 space-y-8">
         {lesson.notes.map((n, i) => (
           <div key={i} className="card-surface p-7" data-testid={`lesson-note-${i}`}>
             <div className="flex items-baseline gap-3">
@@ -254,9 +334,9 @@ const Lessons = () => {
             </div>
           </div>
         ))}
-      </div>
+      </div>}
 
-      {lesson.worked_examples?.length > 0 && (
+      {!lesson.lesson_sections?.length && lesson.worked_examples?.length > 0 && (
         <div className="mt-10">
           <h2 className="font-heading text-2xl font-semibold text-ink">Worked examples</h2>
           <div className="space-y-4 mt-4">
@@ -284,7 +364,7 @@ const Lessons = () => {
         </div>
       )}
 
-      {lesson.word_problems?.length > 0 && (
+      {!lesson.lesson_sections?.length && lesson.word_problems?.length > 0 && (
         <div className="mt-10">
           <h2 className="font-heading text-2xl font-semibold text-ink">Word problems</h2>
           <div className="grid gap-4 mt-4">

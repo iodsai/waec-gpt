@@ -453,6 +453,102 @@ SET_OPERATIONS_SECTIONS = [
         ]
     },
     {
+        "title": "Advanced Word Problems and Simultaneous Equations",
+        "intro": "Some harder set questions do not give every Venn region directly. Instead, they describe relationships between regions. In such questions, the Venn diagram becomes a system of equations.",
+        "key_points": [
+            "Name the unknown Venn regions with variables such as $x$, $y$ and $z$.",
+            "Translate words like 'twice', '8 more than', 'exactly one', 'at least one' and 'none' into equations.",
+            "Use the Venn diagram to check that every region has been counted once.",
+            "For two sets, common unknowns are A only, B only and both.",
+            "For three sets, common unknowns may be A only, B only and C only, or the pair-only overlap regions.",
+            "After solving the equations, return to the question and answer the exact region being asked for."
+        ],
+        "examples": [
+            {
+                "level": "advanced two-set",
+                "title": "Two unknown regions using simultaneous equations",
+                "problem": "In a class, 18 students study both Physics and Chemistry. The number who study Physics only and Chemistry only is 44 altogether. Physics has 8 more students than Chemistry. Find the number who study Physics only and Chemistry only.",
+                "steps": [
+                    "Let $x$ be Physics only and $y$ be Chemistry only.",
+                    "Exactly one subject gives $x+y=44$.",
+                    "Total Physics is $x+18$ and total Chemistry is $y+18$.",
+                    "Physics has 8 more than Chemistry, so $(x+18)-(y+18)=8$.",
+                    "This simplifies to $x-y=8$.",
+                    "Solve $x+y=44$ and $x-y=8$.",
+                    "Adding gives $2x=52$, so $x=26$.",
+                    "Then $y=44-26=18$.",
+                ],
+                "answer": "Physics only = 26 students; Chemistry only = 18 students."
+            },
+            {
+                "level": "advanced three-set",
+                "title": "Three unknown single regions",
+                "problem": "In a three-club survey, the numbers in Debate only, Science only and Music only are unknown. Exactly one club has 56 students. Debate only is 8 more than Science only, and Music only is twice Science only. Find the three numbers.",
+                "steps": [
+                    "Let Debate only be $x$, Science only be $y$, and Music only be $z$.",
+                    "Exactly one club gives $x+y+z=56$.",
+                    "Debate only is 8 more than Science only: $x-y=8$.",
+                    "Music only is twice Science only: $z=2y$.",
+                    "From $x-y=8$, $x=y+8$.",
+                    "Substitute into $x+y+z=56$: $(y+8)+y+2y=56$.",
+                    "$4y+8=56$, so $4y=48$ and $y=12$.",
+                    "$x=20$ and $z=24$.",
+                ],
+                "answer": "Debate only = 20, Science only = 12, Music only = 24."
+            },
+            {
+                "level": "complex WAEC-style",
+                "title": "Three unknowns from a full Venn description",
+                "problem": "In a school of 148 students, 12 take none of Physics, Chemistry and Biology. The pair-only regions are: Physics and Chemistry only = 9, Physics and Biology only = 11, Chemistry and Biology only = 7. All three = 5. Physics only is 6 more than Chemistry only, and Biology only is 4 less than Physics only. Find the three single-subject regions.",
+                "steps": [
+                    "At least one subject: $148-12=136$.",
+                    "Known overlap regions total $9+11+7+5=32$.",
+                    "So $x+y+z=136-32=104$.",
+                    "Let Physics only be $x$, Chemistry only be $y$, and Biology only be $z$.",
+                    "$x-y=6$, so $x=y+6$.",
+                    "$z=x-4=y+2$.",
+                    "Substitute: $(y+6)+y+(y+2)=104$.",
+                    "$3y+8=104$, so $3y=96$ and $y=32$.",
+                    "$x=38$ and $z=34$.",
+                ],
+                "answer": "Physics only = 38, Chemistry only = 32, Biology only = 34."
+            }
+        ],
+        "practice": [
+            {
+                "question": "In a two-set problem, A only and B only total 50. A only is 14 more than B only. Find A only and B only.",
+                "solution": [
+                    "Let A only be $x$ and B only be $y$.",
+                    "$x+y=50$ and $x-y=14$.",
+                    "Adding gives $2x=64$, so $x=32$.",
+                    "$y=18$."
+                ],
+                "answer": "A only = 32; B only = 18"
+            },
+            {
+                "question": "Exactly one of three clubs has 74 students. Drama only is twice Science only. Music only is 6 more than Science only. Find the three numbers.",
+                "solution": [
+                    "Let Science only be $y$.",
+                    "Drama only is $2y$ and Music only is $y+6$.",
+                    "$2y+y+(y+6)=74$.",
+                    "$4y=68$, so $y=17$.",
+                    "Drama only is $34$ and Music only is $23$."
+                ],
+                "answer": "Drama only = 34; Science only = 17; Music only = 23"
+            }
+        ],
+        "applications": [
+            {
+                "title": "Survey design",
+                "body": "Advanced survey questions often produce systems of equations. If the solution gives fractions of people, the survey data or copied question is faulty."
+            },
+            {
+                "title": "Engineering fault analysis",
+                "body": "When several fault categories overlap, unknown region counts can be solved by equations. This helps estimate how many devices need each repair path."
+            }
+        ]
+    },
+    {
         "title": "Problem-Solving Strategy for WAEC Set Questions",
         "intro": "The fastest students do not jump into formulas. They translate the words first, identify the universal set, and decide whether the question asks for union, intersection, only, exactly, neither or complement.",
         "key_points": [

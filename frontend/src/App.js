@@ -49,6 +49,7 @@ function App() {
             <Route path="/topics/:topicId" element={<ProtectedRoute><TopicDetail /></ProtectedRoute>} />
             <Route path="/lessons" element={<ProtectedRoute><Lessons /></ProtectedRoute>} />
             <Route path="/lessons/:subtopicId" element={<ProtectedRoute><Lessons /></ProtectedRoute>} />
+            <Route path="/lessons/:subtopicId/sections/:sectionSlug" element={<ProtectedRoute><Lessons /></ProtectedRoute>} />
             <Route path="/past-questions" element={<ProtectedRoute><PastQuestions /></ProtectedRoute>} />
             <Route path="/tutor" element={<ProtectedRoute><Tutor /></ProtectedRoute>} />
             <Route path="/exams" element={<ProtectedRoute><Exams /></ProtectedRoute>} />

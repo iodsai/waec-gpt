@@ -81,13 +81,13 @@ const Neither = ({ title, caption }) => (
 
 const ThreeSetMask = ({ id, include = [], exclude = [] }) => {
   const circles = {
-    a: { cx: 142, cy: 92, r: 58 },
-    b: { cx: 218, cy: 92, r: 58 },
-    c: { cx: 180, cy: 144, r: 58 },
+    a: { cx: 160, cy: 112, r: 64 },
+    b: { cx: 260, cy: 112, r: 64 },
+    c: { cx: 210, cy: 176, r: 64 },
   };
   return (
     <mask id={id}>
-      <rect x="0" y="0" width="420" height="260" fill="black" />
+      <rect x="0" y="0" width="420" height="290" fill="black" />
       {include.map((key) => <circle key={`inc-${key}`} {...circles[key]} fill="white" />)}
       {exclude.map((key) => <circle key={`exc-${key}`} {...circles[key]} fill="black" />)}
     </mask>
@@ -95,14 +95,21 @@ const ThreeSetMask = ({ id, include = [], exclude = [] }) => {
 };
 
 const ThreeSetRegion = ({ maskId }) => (
-  <rect x="10" y="10" width="400" height="230" rx="14" fill="#E8B253" fillOpacity="0.78" mask={`url(#${maskId})`} />
+  <rect x="20" y="22" width="380" height="242" rx="14" fill="#E8B253" fillOpacity="0.76" mask={`url(#${maskId})`} />
 );
 
 const TripleIntersection = ({ uid, muted = false }) => (
   <g clipPath={`url(#clip-3a-${uid})`}>
     <g clipPath={`url(#clip-3b-${uid})`}>
-      <circle cx="180" cy="144" r="58" fill={muted ? "#F9F7F1" : "#E8B253"} fillOpacity={muted ? "1" : "0.9"} />
+      <circle cx="210" cy="176" r="64" fill={muted ? "#F9F7F1" : "#E8B253"} fillOpacity={muted ? "1" : "0.92"} />
     </g>
+  </g>
+);
+
+const SetLabel = ({ x, y, children }) => (
+  <g>
+    <rect x={x - 13} y={y - 18} width="28" height="24" rx="12" fill="#F9F7F1" stroke="#E2DCD0" />
+    <text x={x} y={y} textAnchor="middle" fontSize="17" fontWeight="700" fill="#1A1C1A">{children}</text>
   </g>
 );
 
@@ -119,10 +126,10 @@ const ThreeSetVenn = ({ variant = "union_all", title, caption }) => {
 
   return (
     <div className="rounded-xl border border-edge bg-surface p-4">
-      <svg viewBox="0 0 420 260" className="w-full h-auto" role="img" aria-label={title || "Three-set Venn diagram"}>
+      <svg viewBox="0 0 420 290" className="w-full h-auto" role="img" aria-label={title || "Three-set Venn diagram"}>
         <defs>
-          <clipPath id={`clip-3a-${uid}`}><circle cx="142" cy="92" r="58" /></clipPath>
-          <clipPath id={`clip-3b-${uid}`}><circle cx="218" cy="92" r="58" /></clipPath>
+          <clipPath id={`clip-3a-${uid}`}><circle cx="160" cy="112" r="64" /></clipPath>
+          <clipPath id={`clip-3b-${uid}`}><circle cx="260" cy="112" r="64" /></clipPath>
           {Object.entries(regionMasks).map(([name, cfg]) => (
             <ThreeSetMask key={name} id={mask(name)} include={cfg.include} exclude={cfg.exclude} />
           ))}
@@ -131,21 +138,21 @@ const ThreeSetVenn = ({ variant = "union_all", title, caption }) => {
           <ThreeSetMask id={mask("exactly_one_all_c")} include={["c"]} exclude={["a", "b"]} />
         </defs>
 
-        <rect x="10" y="10" width="400" height="230" rx="14" fill="#F9F7F1" stroke="#E2DCD0" />
-        <text x="28" y="39" fontSize="18" fill="#1A1C1A">U</text>
+        <rect x="20" y="22" width="380" height="242" rx="14" fill="#F9F7F1" stroke="#E2DCD0" />
+        <text x="38" y="52" fontSize="17" fontWeight="700" fill="#1A1C1A">U</text>
 
         {variant === "neither_all" && (
           <>
-            <rect x="10" y="10" width="400" height="230" rx="14" fill="#E8B253" fillOpacity="0.55" />
-            <circle cx="142" cy="92" r="58" fill="#F9F7F1" />
-            <circle cx="218" cy="92" r="58" fill="#F9F7F1" />
-            <circle cx="180" cy="144" r="58" fill="#F9F7F1" />
+            <rect x="20" y="22" width="380" height="242" rx="14" fill="#E8B253" fillOpacity="0.5" />
+            <circle cx="160" cy="112" r="64" fill="#F9F7F1" />
+            <circle cx="260" cy="112" r="64" fill="#F9F7F1" />
+            <circle cx="210" cy="176" r="64" fill="#F9F7F1" />
           </>
         )}
 
         {variant === "not_all_three" && (
           <>
-            <rect x="10" y="10" width="400" height="230" rx="14" fill="#E8B253" fillOpacity="0.55" />
+            <rect x="20" y="22" width="380" height="242" rx="14" fill="#E8B253" fillOpacity="0.5" />
             <TripleIntersection uid={uid} muted />
           </>
         )}
@@ -154,9 +161,9 @@ const ThreeSetVenn = ({ variant = "union_all", title, caption }) => {
 
         {variant === "at_least_two" && (
           <>
-            <g clipPath={`url(#clip-3a-${uid})`}><circle cx="218" cy="92" r="58" fill="#E8B253" fillOpacity="0.78" /></g>
-            <g clipPath={`url(#clip-3a-${uid})`}><circle cx="180" cy="144" r="58" fill="#E8B253" fillOpacity="0.78" /></g>
-            <g clipPath={`url(#clip-3b-${uid})`}><circle cx="180" cy="144" r="58" fill="#E8B253" fillOpacity="0.78" /></g>
+            <g clipPath={`url(#clip-3a-${uid})`}><circle cx="260" cy="112" r="64" fill="#E8B253" fillOpacity="0.78" /></g>
+            <g clipPath={`url(#clip-3a-${uid})`}><circle cx="210" cy="176" r="64" fill="#E8B253" fillOpacity="0.78" /></g>
+            <g clipPath={`url(#clip-3b-${uid})`}><circle cx="210" cy="176" r="64" fill="#E8B253" fillOpacity="0.78" /></g>
           </>
         )}
 
@@ -170,12 +177,12 @@ const ThreeSetVenn = ({ variant = "union_all", title, caption }) => {
 
         {regionMasks[variant] && <ThreeSetRegion maskId={mask(variant)} />}
 
-        <circle cx="142" cy="92" r="58" fill="none" stroke="#1A1C1A" strokeWidth="2" />
-        <circle cx="218" cy="92" r="58" fill="none" stroke="#1A1C1A" strokeWidth="2" />
-        <circle cx="180" cy="144" r="58" fill="none" stroke="#1A1C1A" strokeWidth="2" />
-        <text x="105" y="58" fontSize="20" fill="#1A1C1A">A</text>
-        <text x="250" y="58" fontSize="20" fill="#1A1C1A">B</text>
-        <text x="180" y="219" fontSize="20" fill="#1A1C1A">C</text>
+        <circle cx="160" cy="112" r="64" fill="none" stroke="#1A1C1A" strokeWidth="2.2" />
+        <circle cx="260" cy="112" r="64" fill="none" stroke="#1A1C1A" strokeWidth="2.2" />
+        <circle cx="210" cy="176" r="64" fill="none" stroke="#1A1C1A" strokeWidth="2.2" />
+        <SetLabel x={119} y={58}>A</SetLabel>
+        <SetLabel x={301} y={58}>B</SetLabel>
+        <SetLabel x={210} y={258}>C</SetLabel>
       </svg>
       <VisualCaption title={title} caption={caption} />
     </div>

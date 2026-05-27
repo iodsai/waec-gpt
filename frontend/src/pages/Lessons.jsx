@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import http from "@/lib/api";
 import MathText from "@/components/MathText";
 import LessonVisual from "@/components/LessonVisual";
-import { ArrowLeft, CheckCircle2, ChevronRight, Lightbulb, ListChecks, TriangleAlert } from "lucide-react";
+import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Lightbulb, ListChecks, TriangleAlert } from "lucide-react";
 
 const BulletList = ({ items = [] }) => {
   if (!items.length) return null;
@@ -27,6 +27,102 @@ const RichCard = ({ title, children, icon: Icon = Lightbulb }) => (
     </div>
     <div className="mt-4">{children}</div>
   </div>
+);
+
+const WorkedExamplePanel = ({ example, index }) => (
+  <div className="rounded-xl border border-edge bg-sand/40 p-5">
+    <div className="flex items-center gap-2 flex-wrap">
+      <span className="tag">{example.level || `example ${index + 1}`}</span>
+      <h4 className="font-heading text-base font-semibold text-ink">{example.title}</h4>
+    </div>
+    {example.problem && <p className="text-sm text-ink mt-3"><MathText text={example.problem} /></p>}
+    {example.steps?.length > 0 && (
+      <ol className="mt-4 space-y-2">
+        {example.steps.map((step, idx) => (
+          <li key={`${step}-${idx}`} className="flex gap-3 text-sm text-ink">
+            <span className="font-heading text-terracotta font-bold">{idx + 1}</span>
+            <span><MathText text={step} /></span>
+          </li>
+        ))}
+      </ol>
+    )}
+    {example.answer && <div className="mt-4 rounded-lg bg-success/10 text-success px-4 py-2 text-sm font-medium"><MathText text={example.answer} /></div>}
+  </div>
+);
+
+const PracticePanel = ({ item, index }) => (
+  <div className="rounded-xl border border-edge bg-surface p-4">
+    <div className="text-xs uppercase tracking-[0.18em] text-terracotta font-bold">Practice {index + 1}</div>
+    <div className="text-sm font-medium text-ink mt-2"><MathText text={item.question || item.problem} /></div>
+    {item.solution?.length > 0 && <div className="mt-3"><BulletList items={item.solution} /></div>}
+    {item.answer && <div className="text-sm text-muted2 mt-3">Answer: <MathText text={item.answer} /></div>}
+  </div>
+);
+
+const LessonSection = ({ section, index }) => (
+  <section className="card-surface p-7" data-testid={`lesson-section-${index}`}>
+    <div className="flex items-start gap-4">
+      <span className="font-heading text-terracotta font-bold text-2xl">{String(index + 1).padStart(2, "0")}</span>
+      <div>
+        <div className="flex items-center gap-2">
+          <BookOpen size={18} className="text-terracotta" />
+          <h2 className="font-heading text-2xl font-semibold text-ink">{section.title}</h2>
+        </div>
+        {section.intro && <p className="text-muted2 mt-2 leading-relaxed"><MathText text={section.intro} /></p>}
+      </div>
+    </div>
+
+    {section.key_points?.length > 0 && (
+      <div className="mt-5">
+        <h3 className="font-heading font-semibold text-ink">Key ideas</h3>
+        <div className="mt-3"><BulletList items={section.key_points} /></div>
+      </div>
+    )}
+
+    {section.formulas?.length > 0 && (
+      <div className="mt-5 rounded-xl bg-ink text-white p-5 space-y-3">
+        <h3 className="font-heading font-semibold">Formulas to know</h3>
+        {section.formulas.map((formula, i) => (
+          <div key={`${formula.name}-${i}`} className="text-sm">
+            <div className="font-semibold text-warning">{formula.name}</div>
+            <div className="mt-1"><MathText text={formula.expression} /></div>
+            {formula.meaning && <div className="text-white/75 mt-1"><MathText text={formula.meaning} /></div>}
+          </div>
+        ))}
+      </div>
+    )}
+
+    {section.examples?.length > 0 && (
+      <div className="mt-5 space-y-4">
+        <h3 className="font-heading font-semibold text-ink">Solved examples</h3>
+        {section.examples.map((example, i) => (
+          <WorkedExamplePanel key={`${example.title}-${i}`} example={example} index={i} />
+        ))}
+      </div>
+    )}
+
+    {section.practice?.length > 0 && (
+      <div className="mt-5 grid md:grid-cols-2 gap-4">
+        {section.practice.map((item, i) => (
+          <PracticePanel key={`${item.question || item.problem}-${i}`} item={item} index={i} />
+        ))}
+      </div>
+    )}
+
+    {section.applications?.length > 0 && (
+      <div className="mt-5">
+        <h3 className="font-heading font-semibold text-ink">Applications</h3>
+        <div className="grid md:grid-cols-2 gap-3 mt-3">
+          {section.applications.map((app, i) => (
+            <div key={`${app.title}-${i}`} className="rounded-xl border border-edge bg-sand/40 p-4">
+              <div className="font-heading font-semibold text-ink">{app.title}</div>
+              <p className="text-sm text-muted2 mt-1"><MathText text={app.body} /></p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </section>
 );
 
 const Lessons = () => {
@@ -82,7 +178,7 @@ const Lessons = () => {
 
   const topicName = (topics || []).find((t) => t.id === lesson.topic)?.name || lesson.topic || "Lesson";
   const hasRichContent = [
-    "objectives", "prerequisites", "visual_blocks", "worked_examples",
+    "objectives", "prerequisites", "visual_blocks", "lesson_sections", "worked_examples",
     "word_problems", "applications", "common_mistakes", "quick_checks",
   ].some((key) => lesson[key]?.length);
 
@@ -120,6 +216,18 @@ const Lessons = () => {
               <LessonVisual key={`${block.type}-${block.variant}-${i}`} block={block} />
             ))}
           </div>
+        </div>
+      )}
+
+      {lesson.lesson_sections?.length > 0 && (
+        <div className="mt-10 space-y-6">
+          <div>
+            <span className="overline">Guided sections</span>
+            <h2 className="font-heading text-2xl font-semibold text-ink mt-2">Learn this topic step by step</h2>
+          </div>
+          {lesson.lesson_sections.map((section, i) => (
+            <LessonSection key={`${section.title}-${i}`} section={section} index={i} />
+          ))}
         </div>
       )}
 

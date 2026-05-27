@@ -51,6 +51,530 @@ EXTRA_SUBTOPICS = {
     ],
 }
 
+SET_OPERATIONS_SECTIONS = [
+    {
+        "title": "Set Language and Notation",
+        "intro": "Before formulas, students must first understand the language. A set is a well-defined collection, and the universal set $U$ fixes the boundary of the discussion.",
+        "key_points": [
+            "$x \\in A$ means x is an element of A; $x \\notin A$ means x is not an element of A.",
+            "$A \\cup B$ means A or B or both.",
+            "$A \\cap B$ means A and B at the same time.",
+            "$A'$ means everything in the universal set that is not in A.",
+            "$A-B$ means start with A and remove the elements that are also in B.",
+            "The same symbol can give different answers if the universal set changes.",
+        ],
+        "examples": [
+            {
+                "level": "foundation",
+                "title": "Reading the symbols correctly",
+                "problem": "Let $U=\\{1,2,3,4,5,6,7,8\\}$, $A=\\{2,4,6,8\\}$ and $B=\\{1,2,3,4\\}$. Find $A\\cup B$, $A\\cap B$, $A'$ and $A-B$.",
+                "steps": [
+                    "$A\\cup B$ contains everything that appears in A or B: $\\{1,2,3,4,6,8\\}$.",
+                    "$A\\cap B$ contains only elements common to both sets: $\\{2,4\\}$.",
+                    "$A'$ is found from U by removing A: $\\{1,3,5,7\\}$.",
+                    "$A-B$ is found from A by removing members of B: remove 2 and 4, leaving $\\{6,8\\}$.",
+                ],
+                "answer": "$A\\cup B=\\{1,2,3,4,6,8\\}$, $A\\cap B=\\{2,4\\}$, $A'=\\{1,3,5,7\\}$, $A-B=\\{6,8\\}$."
+            }
+        ],
+        "practice": [
+            {
+                "question": "If $U=\\{a,b,c,d,e\\}$ and $A=\\{a,c,e\\}$, find $A'$.",
+                "answer": "$\\{b,d\\}$"
+            },
+            {
+                "question": "If $A=\\{1,3,5,7\\}$ and $B=\\{3,4,5,6\\}$, find $A\\cap B$.",
+                "answer": "$\\{3,5\\}$"
+            }
+        ]
+    },
+    {
+        "title": "The Two-Set Counting Formula",
+        "intro": "The formula for two sets is not a trick. It corrects double-counting. If a student understands why the overlap is subtracted, most WAEC set word problems become easier.",
+        "formulas": [
+            {
+                "name": "Two-set union",
+                "expression": "$n(A\\cup B)=n(A)+n(B)-n(A\\cap B)$",
+                "meaning": "Add A and B, then subtract the overlap once because it was counted twice."
+            },
+            {
+                "name": "Neither of two sets",
+                "expression": "$n((A\\cup B)')=n(U)-n(A\\cup B)$",
+                "meaning": "Neither means outside the union."
+            },
+            {
+                "name": "Exactly one of two sets",
+                "expression": "$n(A\\text{ only})+n(B\\text{ only})=n(A)+n(B)-2n(A\\cap B)$",
+                "meaning": "Remove the common part from each set."
+            }
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Why subtract the overlap?",
+                "problem": "In a class, 18 students play football, 15 play basketball and 6 play both. How many play at least one of the two games?",
+                "steps": [
+                    "At least one means union.",
+                    "If we add 18 and 15, the 6 students who play both have been counted twice.",
+                    "Use $n(F\\cup B)=n(F)+n(B)-n(F\\cap B)$.",
+                    "$n(F\\cup B)=18+15-6=27$.",
+                ],
+                "answer": "27 students play at least one game."
+            },
+            {
+                "level": "intermediate",
+                "title": "Finding neither",
+                "problem": "Out of 70 students, 38 study Physics, 29 study Chemistry and 12 study both. How many study neither Physics nor Chemistry?",
+                "steps": [
+                    "First find those who study at least one.",
+                    "$n(P\\cup C)=38+29-12=55$.",
+                    "Neither means outside $P\\cup C$.",
+                    "$70-55=15$.",
+                ],
+                "answer": "15 students study neither subject."
+            },
+            {
+                "level": "WAEC-style",
+                "title": "Finding exactly one",
+                "problem": "In a school survey of 100 students, 62 use a calculator app, 47 use a graphing app and 28 use both. How many use exactly one of the two apps?",
+                "steps": [
+                    "Calculator only: $62-28=34$.",
+                    "Graphing only: $47-28=19$.",
+                    "Exactly one means calculator only plus graphing only.",
+                    "$34+19=53$.",
+                ],
+                "answer": "53 students use exactly one of the apps."
+            }
+        ],
+        "applications": [
+            {
+                "title": "Quality control",
+                "body": "A factory may classify devices with battery faults and screen faults. The overlap is devices with both faults; exactly one fault helps technicians decide the repair path."
+            },
+            {
+                "title": "Physics lab data",
+                "body": "Objects may be grouped by 'charged' and 'magnetic'. The intersection identifies objects with both properties, which often need special analysis."
+            }
+        ]
+    },
+    {
+        "title": "The Three-Set Counting Formula",
+        "intro": "Three-set questions are common in examinations because students often subtract too much or forget to add back the middle region. The safest method is to understand the seven regions of a three-circle Venn diagram.",
+        "formulas": [
+            {
+                "name": "Three-set union",
+                "expression": "$n(A\\cup B\\cup C)=n(A)+n(B)+n(C)-n(A\\cap B)-n(A\\cap C)-n(B\\cap C)+n(A\\cap B\\cap C)$",
+                "meaning": "Add the three single sets, subtract the pair overlaps, then add the triple overlap back once."
+            },
+            {
+                "name": "Neither of three sets",
+                "expression": "$n((A\\cup B\\cup C)')=n(U)-n(A\\cup B\\cup C)$",
+                "meaning": "First count everyone in at least one set, then subtract from the universal set."
+            },
+            {
+                "name": "Only A",
+                "expression": "$n(A\\text{ only})=n(A)-n(A\\cap B)-n(A\\cap C)+n(A\\cap B\\cap C)$",
+                "meaning": "Remove the A with B and A with C parts, then restore the triple intersection because it was removed twice."
+            }
+        ],
+        "examples": [
+            {
+                "level": "intermediate",
+                "title": "At least one of three subjects",
+                "problem": "In a class of 90 students, 45 study Physics, 40 study Chemistry and 35 study Biology. Also, 18 study Physics and Chemistry, 15 study Physics and Biology, 12 study Chemistry and Biology, and 5 study all three. How many study at least one of the subjects?",
+                "steps": [
+                    "Use the three-set formula.",
+                    "$n(P\\cup C\\cup B)=45+40+35-18-15-12+5$.",
+                    "Add the single sets: $45+40+35=120$.",
+                    "Subtract pair overlaps: $120-18-15-12=75$.",
+                    "Add the triple overlap back: $75+5=80$.",
+                ],
+                "answer": "80 students study at least one of the three subjects."
+            },
+            {
+                "level": "WAEC-style",
+                "title": "Finding neither from three sets",
+                "problem": "A survey of 120 students shows that 50 like Mathematics, 48 like Physics and 42 like Further Mathematics. 20 like Mathematics and Physics, 18 like Mathematics and Further Mathematics, 16 like Physics and Further Mathematics, and 8 like all three. How many like none of the three?",
+                "steps": [
+                    "Find the union first.",
+                    "$n(M\\cup P\\cup F)=50+48+42-20-18-16+8$.",
+                    "$50+48+42=140$.",
+                    "$140-20-18-16=86$.",
+                    "$86+8=94$.",
+                    "None means outside the union: $120-94=26$.",
+                ],
+                "answer": "26 students like none of the three subjects."
+            },
+            {
+                "level": "complex",
+                "title": "Only one of three engineering tests",
+                "problem": "Among 100 components, 52 pass test A, 46 pass test B and 39 pass test C. Also, 24 pass A and B, 17 pass A and C, 15 pass B and C, and 9 pass all three. How many pass test A only?",
+                "steps": [
+                    "Use $n(A\\text{ only})=n(A)-n(A\\cap B)-n(A\\cap C)+n(A\\cap B\\cap C)$.",
+                    "$n(A\\text{ only})=52-24-17+9$.",
+                    "$52-24-17=11$.",
+                    "$11+9=20$.",
+                ],
+                "answer": "20 components pass test A only."
+            }
+        ],
+        "practice": [
+            {
+                "question": "If $n(A)=30$, $n(B)=25$, $n(C)=20$, $n(A\\cap B)=10$, $n(A\\cap C)=8$, $n(B\\cap C)=6$, and $n(A\\cap B\\cap C)=3$, find $n(A\\cup B\\cup C)$.",
+                "answer": "$30+25+20-10-8-6+3=54$"
+            }
+        ]
+    },
+    {
+        "title": "De Morgan's Laws for Two and Three Sets",
+        "intro": "De Morgan's Laws explain what happens when a complement is placed outside a union or intersection. They are also the set version of logic rules used in circuits and computer programs.",
+        "formulas": [
+            {
+                "name": "Two sets: outside a union",
+                "expression": "$(A\\cup B)'=A'\\cap B'$",
+                "meaning": "Not in A or B means not in A and not in B."
+            },
+            {
+                "name": "Two sets: outside an intersection",
+                "expression": "$(A\\cap B)'=A'\\cup B'$",
+                "meaning": "Not in both means outside A or outside B."
+            },
+            {
+                "name": "Three sets: outside a union",
+                "expression": "$(A\\cup B\\cup C)'=A'\\cap B'\\cap C'$",
+                "meaning": "Not in any of A, B or C means outside all three."
+            },
+            {
+                "name": "Three sets: outside an intersection",
+                "expression": "$(A\\cap B\\cap C)'=A'\\cup B'\\cup C'$",
+                "meaning": "Not in all three means outside at least one of them."
+            }
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Verify De Morgan's Law with listed sets",
+                "problem": "Let $U=\\{1,2,3,4,5,6\\}$, $A=\\{1,2,3\\}$ and $B=\\{3,4\\}$. Verify that $(A\\cup B)'=A'\\cap B'$.",
+                "steps": [
+                    "$A\\cup B=\\{1,2,3,4\\}$, so $(A\\cup B)'=\\{5,6\\}$.",
+                    "$A'=\\{4,5,6\\}$ and $B'=\\{1,2,5,6\\}$.",
+                    "$A'\\cap B'=\\{5,6\\}$.",
+                    "Both sides are equal.",
+                ],
+                "answer": "$(A\\cup B)'=A'\\cap B'=\\{5,6\\}$."
+            },
+            {
+                "level": "intermediate",
+                "title": "Use the three-set law",
+                "problem": "Simplify $(P\\cup Q\\cup R)'$.",
+                "steps": [
+                    "The complement is outside a union of three sets.",
+                    "Change union to intersection.",
+                    "Complement each set separately.",
+                ],
+                "answer": "$(P\\cup Q\\cup R)'=P'\\cap Q'\\cap R'$."
+            },
+            {
+                "level": "application",
+                "title": "Logic interpretation",
+                "problem": "A device should be rejected if it fails temperature test T, pressure test P or vibration test V. Write the condition for a device that is not rejected.",
+                "steps": [
+                    "Rejected means $T\\cup P\\cup V$ where T, P and V are failure sets.",
+                    "Not rejected means outside that union: $(T\\cup P\\cup V)'$.",
+                    "By De Morgan's Law, $(T\\cup P\\cup V)'=T'\\cap P'\\cap V'$.",
+                    "So the device is accepted only if it passes all three tests.",
+                ],
+                "answer": "$T'\\cap P'\\cap V'$."
+            }
+        ],
+        "applications": [
+            {
+                "title": "Electrical and digital circuits",
+                "body": "De Morgan's Laws are used to convert OR gates with negation into AND gates with negated inputs, and vice versa. This is central in logic circuit simplification."
+            },
+            {
+                "title": "Search filters",
+                "body": "The instruction 'not red or heavy' can be rewritten as 'not red and not heavy' only when the complement is outside the whole union: $(R\\cup H)'=R'\\cap H'$."
+            },
+            {
+                "title": "Safety systems",
+                "body": "If failure means pressure fault or heat fault or vibration fault, then no failure means no pressure fault and no heat fault and no vibration fault."
+            }
+        ]
+    },
+    {
+        "title": "Problem-Solving Strategy for WAEC Set Questions",
+        "intro": "The fastest students do not jump into formulas. They translate the words first, identify the universal set, and decide whether the question asks for union, intersection, only, exactly, neither or complement.",
+        "key_points": [
+            "Underline the universal set: the total number being discussed.",
+            "Translate 'or' as union and 'and' as intersection, but check whether ordinary English is being used loosely.",
+            "Translate 'at least one' as union.",
+            "Translate 'neither' or 'none' as complement of the union.",
+            "Translate 'only A' as the part of A outside the other sets.",
+            "For three sets, start from the middle triple-overlap when filling a Venn diagram.",
+        ],
+        "examples": [
+            {
+                "level": "complex",
+                "title": "Three-club Venn diagram by regions",
+                "problem": "In a school of 100 students, 40 belong to Debate, 36 to Science and 30 to Music. 15 belong to Debate and Science, 12 to Debate and Music, 10 to Science and Music, and 6 belong to all three. Find how many belong to Debate only and how many belong to none.",
+                "steps": [
+                    "Start with the middle: all three = 6.",
+                    "Debate and Science only = $15-6=9$.",
+                    "Debate and Music only = $12-6=6$.",
+                    "Science and Music only = $10-6=4$.",
+                    "Debate only = $40-9-6-6=19$.",
+                    "Union = $40+36+30-15-12-10+6=75$.",
+                    "None = $100-75=25$.",
+                ],
+                "answer": "Debate only = 19 students; none = 25 students."
+            }
+        ],
+        "practice": [
+            {
+                "question": "A class has 80 students. 44 like Algebra, 38 like Geometry and 16 like both. How many like exactly one of Algebra and Geometry?",
+                "solution": [
+                    "Algebra only = $44-16=28$.",
+                    "Geometry only = $38-16=22$.",
+                    "Exactly one = $28+22=50$."
+                ],
+                "answer": "50"
+            },
+            {
+                "question": "In a group of 150 students, 70 study Physics, 60 Chemistry, 55 Biology, 30 Physics and Chemistry, 25 Physics and Biology, 20 Chemistry and Biology, and 10 all three. How many study at least one science?",
+                "solution": [
+                    "Use the three-set formula.",
+                    "$70+60+55-30-25-20+10=120$."
+                ],
+                "answer": "120"
+            }
+        ]
+    }
+]
+
+SUBSETS_POWER_SECTIONS = [
+    {
+        "title": "Subset Meaning, Notation and Equality",
+        "intro": "A subset is not just a smaller set. It is a set whose every element is already found inside another set.",
+        "key_points": [
+            "$A\\subseteq B$ means every element of A belongs to B.",
+            "$A\\subset B$ usually means A is a proper subset of B, so A is inside B but not equal to B.",
+            "If $A\\subseteq B$ and $B\\subseteq A$, then $A=B$.",
+            "A set can be a subset of another set even if the elements are written in a different order.",
+            "$\\{a\\}$ is a subset, but $a$ is an element. Do not confuse the object with the set containing the object."
+        ],
+        "examples": [
+            {
+                "level": "foundation",
+                "title": "Subset or not?",
+                "problem": "Let $A=\\{1,2\\}$ and $B=\\{1,2,3,4\\}$. Is $A\\subseteq B$?",
+                "steps": [
+                    "Check every element of A.",
+                    "1 is in B and 2 is in B.",
+                    "No element of A is outside B.",
+                ],
+                "answer": "Yes, $A\\subseteq B$."
+            },
+            {
+                "level": "common mistake",
+                "title": "Element versus subset",
+                "problem": "If $A=\\{2,4,6\\}$, decide whether $2\\in A$, $\\{2\\}\\subseteq A$ and $\\{2,5\\}\\subseteq A$ are true.",
+                "steps": [
+                    "$2\\in A$ is true because 2 is an element of A.",
+                    "$\\{2\\}\\subseteq A$ is true because every element of $\\{2\\}$ is in A.",
+                    "$\\{2,5\\}\\subseteq A$ is false because 5 is not in A.",
+                ],
+                "answer": "True, true, false."
+            }
+        ]
+    },
+    {
+        "title": "Empty Set and Self-Subset Rules",
+        "intro": "Two rules confuse many students at first: the empty set is a subset of every set, and every set is a subset of itself.",
+        "key_points": [
+            "$\\emptyset\\subseteq A$ for every set A.",
+            "$A\\subseteq A$ for every set A.",
+            "$A\\subset A$ is false if the symbol is being used for proper subset.",
+            "The empty set is counted when listing all subsets.",
+            "The whole set itself is counted when listing all subsets.",
+        ],
+        "examples": [
+            {
+                "level": "conceptual",
+                "title": "Why the empty set is a subset",
+                "problem": "Explain why $\\emptyset\\subseteq\\{3,5,7\\}$.",
+                "steps": [
+                    "To disprove a subset statement, we need to find an element in the smaller set that is not in the bigger set.",
+                    "The empty set has no element at all.",
+                    "So there is no element in $\\emptyset$ that can fail to belong to $\\{3,5,7\\}$.",
+                ],
+                "answer": "$\\emptyset$ is a subset of $\\{3,5,7\\}$."
+            },
+            {
+                "level": "WAEC-style",
+                "title": "Proper subset check",
+                "problem": "How many proper subsets does $A=\\{p,q,r\\}$ have?",
+                "steps": [
+                    "A set with 3 elements has $2^3=8$ subsets.",
+                    "Proper subsets exclude the whole set A itself.",
+                    "So proper subsets = $8-1=7$.",
+                ],
+                "answer": "7 proper subsets."
+            }
+        ]
+    },
+    {
+        "title": "Listing Subsets Systematically",
+        "intro": "When a set has few elements, students should be able to list every subset without missing one. The safest method is to list by size: zero-element, one-element, two-element and so on.",
+        "examples": [
+            {
+                "level": "basic",
+                "title": "List all subsets of a two-element set",
+                "problem": "List all subsets of $A=\\{a,b\\}$.",
+                "steps": [
+                    "Zero-element subset: $\\emptyset$.",
+                    "One-element subsets: $\\{a\\}$ and $\\{b\\}$.",
+                    "Two-element subset: $\\{a,b\\}$.",
+                    "The count is $2^2=4$, so the list is complete.",
+                ],
+                "answer": "$\\emptyset, \\{a\\}, \\{b\\}, \\{a,b\\}$."
+            },
+            {
+                "level": "intermediate",
+                "title": "List all subsets of a three-element set",
+                "problem": "List all subsets of $B=\\{x,y,z\\}$.",
+                "steps": [
+                    "Zero-element subset: $\\emptyset$.",
+                    "One-element subsets: $\\{x\\},\\{y\\},\\{z\\}$.",
+                    "Two-element subsets: $\\{x,y\\},\\{x,z\\},\\{y,z\\}$.",
+                    "Three-element subset: $\\{x,y,z\\}$.",
+                    "The count is $1+3+3+1=8=2^3$.",
+                ],
+                "answer": "$\\emptyset,\\{x\\},\\{y\\},\\{z\\},\\{x,y\\},\\{x,z\\},\\{y,z\\},\\{x,y,z\\}$."
+            }
+        ],
+        "practice": [
+            {
+                "question": "List the two-element subsets of $\\{1,2,3,4\\}$.",
+                "answer": "$\\{1,2\\},\\{1,3\\},\\{1,4\\},\\{2,3\\},\\{2,4\\},\\{3,4\\}$"
+            }
+        ]
+    },
+    {
+        "title": "Power Sets and Counting Formulas",
+        "intro": "The power set is the set of all subsets. Counting subsets is a bridge from sets into combinations, probability, computer science and experimental design.",
+        "formulas": [
+            {
+                "name": "All subsets",
+                "expression": "$n(\\mathcal{P}(A))=2^n$",
+                "meaning": "If A has n elements, each element has two choices: included or not included."
+            },
+            {
+                "name": "Proper subsets",
+                "expression": "$2^n-1$",
+                "meaning": "Exclude the whole set itself."
+            },
+            {
+                "name": "Non-empty subsets",
+                "expression": "$2^n-1$",
+                "meaning": "Exclude the empty set."
+            },
+            {
+                "name": "Non-empty proper subsets",
+                "expression": "$2^n-2$",
+                "meaning": "Exclude both the empty set and the whole set."
+            },
+            {
+                "name": "Subsets with exactly r elements",
+                "expression": "$\\binom{n}{r}$",
+                "meaning": "Choose r elements from n elements; order does not matter."
+            }
+        ],
+        "examples": [
+            {
+                "level": "intermediate",
+                "title": "Count all kinds of subsets",
+                "problem": "A set has 6 elements. Find the number of all subsets, proper subsets, non-empty subsets and non-empty proper subsets.",
+                "steps": [
+                    "All subsets: $2^6=64$.",
+                    "Proper subsets: $2^6-1=63$.",
+                    "Non-empty subsets: $2^6-1=63$.",
+                    "Non-empty proper subsets: $2^6-2=62$.",
+                ],
+                "answer": "64, 63, 63 and 62 respectively."
+            },
+            {
+                "level": "advanced",
+                "title": "Exactly three-element subsets",
+                "problem": "How many subsets of $\\{a,b,c,d,e\\}$ contain exactly 3 elements?",
+                "steps": [
+                    "There are 5 elements in the set.",
+                    "We need to choose exactly 3 elements.",
+                    "Use $\\binom{5}{3}=\\frac{5!}{3!2!}=10$.",
+                ],
+                "answer": "10 subsets."
+            }
+        ],
+        "applications": [
+            {
+                "title": "Engineering testing",
+                "body": "If 5 sensors are available, every possible sensor package is a subset of the 5-sensor set. There are $2^5=32$ packages if choosing no sensor is allowed."
+            },
+            {
+                "title": "Physics variables",
+                "body": "A student planning experiments may choose different subsets of variables such as mass, length, time and current. Counting subsets tells how many combinations are possible."
+            },
+            {
+                "title": "Computer science",
+                "body": "Feature selection in data science is a subset problem: from n possible features, there are $2^n$ possible feature groups."
+            }
+        ]
+    },
+    {
+        "title": "Exam-Level Subset Questions",
+        "intro": "WAEC-style subset questions often hide the formula inside words such as possible groups, selections, committees, experimental variables, signals or components.",
+        "examples": [
+            {
+                "level": "WAEC-style",
+                "title": "Find the number of elements from subsets",
+                "problem": "A set has 128 subsets. How many elements are in the set?",
+                "steps": [
+                    "Use $2^n=128$.",
+                    "Since $128=2^7$, $n=7$.",
+                ],
+                "answer": "The set has 7 elements."
+            },
+            {
+                "level": "application",
+                "title": "Component selection",
+                "problem": "An electronics student has 4 components: resistor, capacitor, diode and switch. How many non-empty component groups can be formed?",
+                "steps": [
+                    "There are 4 components.",
+                    "All possible groups = $2^4=16$.",
+                    "Non-empty groups exclude choosing nothing.",
+                    "$16-1=15$.",
+                ],
+                "answer": "15 non-empty groups."
+            }
+        ],
+        "practice": [
+            {
+                "question": "How many non-empty proper subsets does a 5-element set have?",
+                "answer": "$2^5-2=30$"
+            },
+            {
+                "question": "A set has 31 proper subsets. How many elements are in the set?",
+                "solution": [
+                    "Proper subsets = $2^n-1$.",
+                    "$2^n-1=31$.",
+                    "$2^n=32=2^5$."
+                ],
+                "answer": "5 elements"
+            }
+        ]
+    }
+]
+
 EXTRA_LESSONS = {
     # ---- SETS & LOGIC ----
     "set-operations": {"title": "Set Operations", "topic": "sets-logic",
@@ -77,6 +601,7 @@ EXTRA_LESSONS = {
             {"type": "venn", "variant": "disjoint", "title": "Disjoint sets", "caption": "A and B have no common element, so $A \\cap B = \\emptyset$."},
             {"type": "venn", "variant": "subset", "title": "Subset", "caption": "Every element of B is also inside A, so $B \\subset A$."},
         ],
+        "lesson_sections": SET_OPERATIONS_SECTIONS,
         "notes": [
             {"heading": "What Is a Set?",
              "body": "A **set** is a well-defined collection of objects. The objects are called **elements** or **members**. For example, $A=\\{2,4,6,8\\}$ is the set of even numbers shown. We write $4 \\in A$ to mean 4 is in A, and $5 \\notin A$ to mean 5 is not in A."},
@@ -91,7 +616,7 @@ EXTRA_LESSONS = {
             {"heading": "Difference: In A but Not in B",
              "body": "$A-B$ means elements that are in A after removing anything that also appears in B. If $A=\\{1,2,3,4\\}$ and $B=\\{3,4,5\\}$, then $A-B=\\{1,2\\}$."},
             {"heading": "De Morgan's Laws",
-             "body": "De Morgan's Laws connect complement with union and intersection: $(A\\cup B)'=A'\\cap B'$ and $(A\\cap B)'=A'\\cup B'$. In words: outside either group means outside both; outside the overlap means outside A or outside B."},
+             "body": "De Morgan's Laws connect complement with union and intersection. For two sets: $(A\\cup B)'=A'\\cap B'$ and $(A\\cap B)'=A'\\cup B'$. For three sets: $(A\\cup B\\cup C)'=A'\\cap B'\\cap C'$ and $(A\\cap B\\cap C)'=A'\\cup B'\\cup C'$. The guided sections below give examples, applications and practice."},
         ],
         "worked_examples": [
             {
@@ -222,6 +747,7 @@ EXTRA_LESSONS = {
         "visual_blocks": [
             {"type": "venn", "variant": "subset", "title": "Subset: $B \\subset A$", "caption": "Every element of B is inside A. B is smaller, but it belongs completely to A."},
         ],
+        "lesson_sections": SUBSETS_POWER_SECTIONS,
         "notes": [
             {"heading": "Meaning of a Subset",
              "body": "$A \\subseteq B$ means every element of A is also an element of B. In plain English: A is contained inside B. Example: if $A=\\{2,4\\}$ and $B=\\{1,2,3,4\\}$, then $A\\subseteq B$."},

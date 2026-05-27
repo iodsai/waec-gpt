@@ -102,6 +102,7 @@ class Lesson(BaseModel):
     title: str
     summary: str
     notes: List[LessonNote]
+    lesson_sections: List[dict] = Field(default_factory=list)
     objectives: List[str] = Field(default_factory=list)
     prerequisites: List[str] = Field(default_factory=list)
     visual_blocks: List[dict] = Field(default_factory=list)
@@ -529,6 +530,7 @@ async def get_lesson(subtopic_id: str):
         topic=lesson.get("topic", topic_of(subtopic_id)),
         title=lesson["title"], summary=lesson["summary"],
         notes=[LessonNote(**n) for n in lesson.get("notes", [])],
+        lesson_sections=lesson.get("lesson_sections", []),
         objectives=lesson.get("objectives", []),
         prerequisites=lesson.get("prerequisites", []),
         visual_blocks=lesson.get("visual_blocks", []),

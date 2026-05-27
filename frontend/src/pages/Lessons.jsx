@@ -38,6 +38,13 @@ const WorkedExamplePanel = ({ example, index }) => (
       <h4 className="font-heading text-base font-semibold text-ink">{example.title}</h4>
     </div>
     {example.problem && <p className="text-sm text-ink mt-3"><MathText text={example.problem} /></p>}
+    {example.visual_blocks?.length > 0 && (
+      <div className="grid md:grid-cols-2 gap-4 mt-4">
+        {example.visual_blocks.map((block, i) => (
+          <LessonVisual key={`${block.type}-${block.variant || "example"}-${i}`} block={block} />
+        ))}
+      </div>
+    )}
     {example.steps?.length > 0 && (
       <ol className="mt-4 space-y-2">
         {example.steps.map((step, idx) => (

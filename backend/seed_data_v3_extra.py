@@ -468,6 +468,20 @@ SET_OPERATIONS_SECTIONS = [
                 "level": "advanced two-set",
                 "title": "Two unknown regions using simultaneous equations",
                 "problem": "In a class, 18 students study both Physics and Chemistry. The number who study Physics only and Chemistry only is 44 altogether. Physics has 8 more students than Chemistry. Find the number who study Physics only and Chemistry only.",
+                "visual_blocks": [
+                    {
+                        "type": "venn_variables",
+                        "title": "Translate the story into Venn regions",
+                        "caption": "Physics only is $x$, Chemistry only is $y$, and the overlap is 18. The diagram makes the equations visible: exactly one gives $x+y=44$, while total Physics and Chemistry are $x+18$ and $y+18$.",
+                        "labels": {
+                            "leftSet": "P",
+                            "rightSet": "C",
+                            "leftOnly": "x",
+                            "overlap": "18",
+                            "rightOnly": "y"
+                        }
+                    }
+                ],
                 "steps": [
                     "Let $x$ be Physics only and $y$ be Chemistry only.",
                     "Exactly one subject gives $x+y=44$.",
@@ -484,6 +498,25 @@ SET_OPERATIONS_SECTIONS = [
                 "level": "advanced three-set",
                 "title": "Three unknown single regions",
                 "problem": "In a three-club survey, the numbers in Debate only, Science only and Music only are unknown. Exactly one club has 56 students. Debate only is 8 more than Science only, and Music only is twice Science only. Find the three numbers.",
+                "visual_blocks": [
+                    {
+                        "type": "venn3_variables",
+                        "title": "Use variables for the single-club regions",
+                        "caption": "Only the three outside regions are unknown here. The overlaps are not needed because the question is about exactly one club: $x+y+z=56$.",
+                        "labels": {
+                            "leftSet": "D",
+                            "rightSet": "S",
+                            "bottomSet": "M",
+                            "leftOnly": "x",
+                            "rightOnly": "y",
+                            "bottomOnly": "z",
+                            "leftRight": "-",
+                            "leftBottom": "-",
+                            "rightBottom": "-",
+                            "allThree": "-"
+                        }
+                    }
+                ],
                 "steps": [
                     "Let Debate only be $x$, Science only be $y$, and Music only be $z$.",
                     "Exactly one club gives $x+y+z=56$.",
@@ -500,6 +533,26 @@ SET_OPERATIONS_SECTIONS = [
                 "level": "complex WAEC-style",
                 "title": "Three unknowns from a full Venn description",
                 "problem": "In a school of 148 students, 12 take none of Physics, Chemistry and Biology. The pair-only regions are: Physics and Chemistry only = 9, Physics and Biology only = 11, Chemistry and Biology only = 7. All three = 5. Physics only is 6 more than Chemistry only, and Biology only is 4 less than Physics only. Find the three single-subject regions.",
+                "visual_blocks": [
+                    {
+                        "type": "venn3_variables",
+                        "title": "Place known and unknown regions first",
+                        "caption": "The diagram separates known overlaps from unknown single-subject regions. The known inside total is $9+11+7+5$, while the unknown single regions are $x+y+z$.",
+                        "labels": {
+                            "leftSet": "P",
+                            "rightSet": "C",
+                            "bottomSet": "B",
+                            "leftOnly": "x",
+                            "rightOnly": "y",
+                            "bottomOnly": "z",
+                            "leftRight": "9",
+                            "leftBottom": "11",
+                            "rightBottom": "7",
+                            "allThree": "5",
+                            "outside": "12"
+                        }
+                    }
+                ],
                 "steps": [
                     "At least one subject: $148-12=136$.",
                     "Known overlap regions total $9+11+7+5=32$.",

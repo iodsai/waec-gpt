@@ -22,6 +22,13 @@ const VisualCaption = ({ title, caption }) => (
   ) : null
 );
 
+const RegionLabel = ({ x, y, children }) => (
+  <g>
+    <rect x={x - 22} y={y - 17} width="44" height="26" rx="13" fill="#FFFFFF" fillOpacity="0.92" stroke="#E2DCD0" />
+    <text x={x} y={y + 1} textAnchor="middle" dominantBaseline="middle" fontSize="17" fontWeight="700" fill="#1A1C1A">{children}</text>
+  </g>
+);
+
 const SingleSet = ({ title, caption }) => (
   <div className="rounded-xl border border-edge bg-surface p-4">
     <svg viewBox="0 0 360 200" className="w-full h-auto" role="img" aria-label={title || "Set diagram"}>
@@ -74,6 +81,24 @@ const Neither = ({ title, caption }) => (
       <circle cx="206" cy="106" r="56" fill="none" stroke="#1A1C1A" strokeWidth="2" />
       <text x="149" y="179" fontSize="20" fill="#1A1C1A">A</text>
       <text x="204" y="179" fontSize="20" fill="#1A1C1A">B</text>
+    </svg>
+    <VisualCaption title={title} caption={caption} />
+  </div>
+);
+
+const TwoSetVariables = ({ title, caption, labels = {} }) => (
+  <div className="rounded-xl border border-edge bg-surface p-4">
+    <svg viewBox="0 0 420 230" className="w-full h-auto" role="img" aria-label={title || "Two-set variable Venn diagram"}>
+      <rect x="14" y="14" width="392" height="190" rx="14" fill="#F9F7F1" stroke="#E2DCD0" />
+      <text x="34" y="44" fontSize="17" fontWeight="700" fill="#1A1C1A">U</text>
+      <circle cx="178" cy="112" r="70" fill="#E8B253" fillOpacity="0.28" stroke="#1A1C1A" strokeWidth="2.2" />
+      <circle cx="242" cy="112" r="70" fill="#E8B253" fillOpacity="0.28" stroke="#1A1C1A" strokeWidth="2.2" />
+      <SetLabel x={128} y={55}>{labels.leftSet || "A"}</SetLabel>
+      <SetLabel x={292} y={55}>{labels.rightSet || "B"}</SetLabel>
+      <RegionLabel x={158} y={114}>{labels.leftOnly || "x"}</RegionLabel>
+      <RegionLabel x={210} y={114}>{labels.overlap || "18"}</RegionLabel>
+      <RegionLabel x={262} y={114}>{labels.rightOnly || "y"}</RegionLabel>
+      {labels.outside && <RegionLabel x={348} y={174}>{labels.outside}</RegionLabel>}
     </svg>
     <VisualCaption title={title} caption={caption} />
   </div>
@@ -189,6 +214,30 @@ const ThreeSetVenn = ({ variant = "union_all", title, caption }) => {
   );
 };
 
+const ThreeSetVariables = ({ title, caption, labels = {} }) => (
+  <div className="rounded-xl border border-edge bg-surface p-4">
+    <svg viewBox="0 0 420 300" className="w-full h-auto" role="img" aria-label={title || "Three-set variable Venn diagram"}>
+      <rect x="20" y="22" width="380" height="252" rx="14" fill="#F9F7F1" stroke="#E2DCD0" />
+      <text x="38" y="52" fontSize="17" fontWeight="700" fill="#1A1C1A">U</text>
+      <circle cx="160" cy="118" r="66" fill="#E8B253" fillOpacity="0.18" stroke="#1A1C1A" strokeWidth="2.2" />
+      <circle cx="260" cy="118" r="66" fill="#E8B253" fillOpacity="0.18" stroke="#1A1C1A" strokeWidth="2.2" />
+      <circle cx="210" cy="185" r="66" fill="#E8B253" fillOpacity="0.18" stroke="#1A1C1A" strokeWidth="2.2" />
+      <SetLabel x={118} y={62}>{labels.leftSet || "P"}</SetLabel>
+      <SetLabel x={302} y={62}>{labels.rightSet || "C"}</SetLabel>
+      <SetLabel x={210} y={270}>{labels.bottomSet || "B"}</SetLabel>
+      <RegionLabel x={137} y={121}>{labels.leftOnly || "x"}</RegionLabel>
+      <RegionLabel x={283} y={121}>{labels.rightOnly || "y"}</RegionLabel>
+      <RegionLabel x={210} y={221}>{labels.bottomOnly || "z"}</RegionLabel>
+      <RegionLabel x={210} y={111}>{labels.leftRight || "9"}</RegionLabel>
+      <RegionLabel x={176} y={166}>{labels.leftBottom || "11"}</RegionLabel>
+      <RegionLabel x={244} y={166}>{labels.rightBottom || "7"}</RegionLabel>
+      <RegionLabel x={210} y={155}>{labels.allThree || "5"}</RegionLabel>
+      {labels.outside && <RegionLabel x={352} y={236}>{labels.outside}</RegionLabel>}
+    </svg>
+    <VisualCaption title={title} caption={caption} />
+  </div>
+);
+
 const TwoSetVenn = ({ variant = "union", title, caption }) => {
   const uid = useId().replace(/:/g, "");
   const cfg = vennConfig[variant] || vennConfig.union;
@@ -243,6 +292,12 @@ const LessonVisual = ({ block }) => {
   }
   if (block.type === "venn3") {
     return <ThreeSetVenn variant={block.variant} title={block.title} caption={block.caption} />;
+  }
+  if (block.type === "venn_variables") {
+    return <TwoSetVariables title={block.title} caption={block.caption} labels={block.labels || {}} />;
+  }
+  if (block.type === "venn3_variables") {
+    return <ThreeSetVariables title={block.title} caption={block.caption} labels={block.labels || {}} />;
   }
   return (
     <div className="rounded-xl border border-edge bg-sand/50 p-4">

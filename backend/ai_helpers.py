@@ -33,6 +33,8 @@ Rules:
 - If the source question is on Sets, every generated question must also be on Sets.
 - If the source question is on set intersection, generate set intersection questions only.
 - If the source question is on set union, complement, subsets, Venn cardinality, De Morgan's Laws or combinatorial sets, stay within that exact skill.
+- If the source question is on Logic, every generated question must stay inside Logic.
+- If the source question is on implication, truth tables, negation, connectives, converse/contrapositive, equivalence, argument validity or fallacies, stay within that exact skill.
 - Never generate statistics questions such as mean, median, mode, range or probability unless the source question itself is statistics.
 - Include 4 plausible options and full step-by-step solutions.
 
@@ -88,6 +90,8 @@ MANDATORY CONTEXT:
 - Lesson title: {source_question.get('lesson_title', '?')}
 - Required skill: {source_question.get('skill', 'same skill as source')}
 - Difficulty: {source_question.get('difficulty','medium')}
+- Diagnostic tags: {source_question.get('feedback_tags', [])}
+- Remediation target: {source_question.get('recommendation', '')}
 
 You must stay inside the exact lesson/subtopic and required skill above.
 

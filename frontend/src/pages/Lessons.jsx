@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import http from "@/lib/api";
 import MathText from "@/components/MathText";
 import LessonVisual from "@/components/LessonVisual";
-import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Lightbulb, ListChecks, Target, TriangleAlert } from "lucide-react";
+import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Lightbulb, ListChecks, Lock, Target, TriangleAlert } from "lucide-react";
 
 const sectionSlug = (value = "") => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
@@ -30,6 +30,107 @@ const RichCard = ({ title, children, icon: Icon = Lightbulb }) => (
     <div className="mt-4">{children}</div>
   </div>
 );
+
+const normalizeAnswer = (value = "") => String(value)
+  .toLowerCase()
+  .replace(/\$|\\|\{|\}|\(|\)|\.|,/g, "")
+  .replace(/\s+/g, " ")
+  .trim();
+
+const answerMatches = (student, expected) => {
+  const s = normalizeAnswer(student);
+  const e = normalizeAnswer(expected);
+  if (!s || !e) return false;
+  if (s === e) return true;
+  return e.length > 12 && (s.includes(e) || e.includes(s));
+};
+
+const progressKey = (sectionKey, item, index) => `waec_lesson_checkpoint:${sectionKey}:${index}:${item.question || item.problem || item.title || "item"}`;
+
+const InteractivePracticePanel = ({ item, index, sectionKey, label = "Checkpoint", onAnswered }) => {
+  const key = progressKey(sectionKey, item, index);
+  const [value, setValue] = useState("");
+  const [state, setState] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(key) || "null");
+    } catch {
+      return null;
+    }
+  });
+  const options = item.options || [];
+  const expected = item.answer || (item.solution || []).join(" ");
+  const isObjective = options.length > 0;
+  const isLongAnswer = !isObjective && normalizeAnswer(expected).length > 42;
+
+  const submit = () => {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    const correct = isLongAnswer ? null : answerMatches(trimmed, expected);
+    const payload = { submitted: true, value: trimmed, correct, at: new Date().toISOString() };
+    setState(payload);
+    localStorage.setItem(key, JSON.stringify(payload));
+    onAnswered?.(payload);
+  };
+
+  const reset = () => {
+    setValue("");
+    setState(null);
+    localStorage.removeItem(key);
+    onAnswered?.(null);
+  };
+
+  return (
+    <div className="rounded-xl border border-edge bg-surface p-4" data-testid={`interactive-checkpoint-${index}`}>
+      <div className="text-xs uppercase tracking-[0.18em] text-terracotta font-bold">{label} {index + 1}</div>
+      <div className="text-sm font-medium text-ink mt-2"><MathText text={item.question || item.problem} /></div>
+
+      {!state?.submitted && (
+        <div className="mt-3 space-y-3">
+          {isObjective ? (
+            <div className="grid gap-2">
+              {options.map((option, oi) => (
+                <button
+                  key={`${option}-${oi}`}
+                  type="button"
+                  onClick={() => setValue(option)}
+                  className={`text-left rounded-lg border px-3 py-2 text-sm ${value === option ? "border-terracotta bg-terracotta/5 text-ink" : "border-edge bg-paper text-muted2 hover:text-ink"}`}
+                >
+                  <span className="font-heading font-bold mr-2">{String.fromCharCode(65 + oi)}</span>
+                  <MathText text={option} />
+                </button>
+              ))}
+            </div>
+          ) : (
+            <textarea
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              rows={3}
+              className="w-full rounded-lg border border-edge bg-paper px-3 py-2 text-sm text-ink outline-none focus:border-terracotta"
+              placeholder="Type your answer before revealing the model solution..."
+            />
+          )}
+          <button type="button" onClick={submit} disabled={!value.trim()} className="btn-primary text-sm disabled:opacity-50">
+            Check answer
+          </button>
+        </div>
+      )}
+
+      {state?.submitted && (
+        <div className="mt-3 rounded-lg border border-edge bg-sand/40 p-3">
+          <div className={`text-sm font-heading font-semibold ${state.correct === true ? "text-success" : state.correct === false ? "text-error" : "text-terracotta"}`}>
+            {state.correct === true ? "Correct. Move forward." : state.correct === false ? "Not quite. Compare your answer and try again." : "Submitted. Compare your reasoning with the model answer."}
+          </div>
+          <div className="text-sm text-muted2 mt-2">Your answer: <MathText text={state.value} /></div>
+          {expected && <div className="text-sm text-ink mt-2">Model answer: <MathText text={expected} /></div>}
+          {item.solution?.length > 0 && <div className="mt-3"><BulletList items={item.solution} /></div>}
+          <div className="flex flex-wrap gap-2 mt-3">
+            <button type="button" onClick={reset} className="btn-ghost text-sm">Try again</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const WorkedExamplePanel = ({ example, index }) => (
   <div className="rounded-xl border border-edge bg-sand/40 p-5">
@@ -73,6 +174,13 @@ const PracticePanel = ({ item, index }) => (
     <div className="text-sm font-medium text-ink mt-2"><MathText text={item.question || item.problem} /></div>
     {item.solution?.length > 0 && <div className="mt-3"><BulletList items={item.solution} /></div>}
     {item.answer && <div className="text-sm text-muted2 mt-3">Answer: <MathText text={item.answer} /></div>}
+  </div>
+);
+
+const LockedBlock = ({ children }) => (
+  <div className="mt-5 rounded-xl border border-edge bg-sand/40 p-5 text-muted2 flex items-start gap-3">
+    <Lock size={18} className="text-terracotta shrink-0 mt-0.5" />
+    <div className="text-sm">{children}</div>
   </div>
 );
 
@@ -192,7 +300,33 @@ const SetsLearningEngine = ({ mastery, courseName = "Sets", testId = "sets-learn
   );
 };
 
-const LessonSection = ({ section, index }) => (
+const LessonSection = ({ section, index, sectionKey, onCompletionChange }) => {
+  const requiredStart = useMemo(() => section.diagnostic_checks || [], [section]);
+  const requiredQuiz = useMemo(() => section.module_quiz || [], [section]);
+  const checkpointComplete = useCallback((items, prefix) => items.length === 0 || items.every((item, i) => {
+    try {
+      return JSON.parse(localStorage.getItem(progressKey(`${sectionKey}:${prefix}`, item, i)) || "null")?.submitted;
+    } catch {
+      return false;
+    }
+  }), [sectionKey]);
+  const [startUnlocked, setStartUnlocked] = useState(() => checkpointComplete(requiredStart, "start"));
+  const [quizComplete, setQuizComplete] = useState(() => checkpointComplete(requiredQuiz, "quiz"));
+  const refresh = useCallback(() => {
+    const start = checkpointComplete(requiredStart, "start");
+    const quiz = checkpointComplete(requiredQuiz, "quiz");
+    setStartUnlocked(start);
+    setQuizComplete(quiz);
+    onCompletionChange?.(requiredQuiz.length ? quiz : start);
+  }, [checkpointComplete, onCompletionChange, requiredQuiz, requiredStart]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  const contentUnlocked = startUnlocked;
+
+  return (
   <section className="card-surface p-7" data-testid={`lesson-section-${index}`}>
     <div className="flex items-start gap-4">
       <span className="font-heading text-terracotta font-bold text-2xl">{String(index + 1).padStart(2, "0")}</span>
@@ -211,20 +345,24 @@ const LessonSection = ({ section, index }) => (
         <h3 className="font-heading font-semibold text-ink">Before you start</h3>
         <div className="grid md:grid-cols-2 gap-3 mt-3">
           {section.diagnostic_checks.map((item, i) => (
-            <PracticePanel key={`${item.question}-${i}`} item={item} index={i} />
+            <InteractivePracticePanel key={`${item.question}-${i}`} item={item} index={i} sectionKey={`${sectionKey}:start`} label="Start check" onAnswered={refresh} />
           ))}
         </div>
       </div>
     )}
 
-    {section.key_points?.length > 0 && (
+    {!contentUnlocked && (
+      <LockedBlock>Answer the start check above to unlock the explanation, examples and practice for this unit.</LockedBlock>
+    )}
+
+    {contentUnlocked && section.key_points?.length > 0 && (
       <div className="mt-5">
         <h3 className="font-heading font-semibold text-ink">Key ideas</h3>
         <div className="mt-3"><BulletList items={section.key_points} /></div>
       </div>
     )}
 
-    {section.visual_blocks?.length > 0 && (
+    {contentUnlocked && section.visual_blocks?.length > 0 && (
       <div className="mt-5">
         <h3 className="font-heading font-semibold text-ink">Visual guide</h3>
         <div className="grid md:grid-cols-2 gap-4 mt-3">
@@ -235,7 +373,7 @@ const LessonSection = ({ section, index }) => (
       </div>
     )}
 
-    {section.formulas?.length > 0 && (
+    {contentUnlocked && section.formulas?.length > 0 && (
       <div className="mt-5 rounded-xl bg-ink text-white p-5 space-y-3">
         <h3 className="font-heading font-semibold">Formulas to know</h3>
         {section.formulas.map((formula, i) => (
@@ -248,7 +386,7 @@ const LessonSection = ({ section, index }) => (
       </div>
     )}
 
-    {section.examples?.length > 0 && (
+    {contentUnlocked && section.examples?.length > 0 && (
       <div className="mt-5 space-y-4">
         <h3 className="font-heading font-semibold text-ink">Solved examples</h3>
         {section.examples.map((example, i) => (
@@ -257,27 +395,28 @@ const LessonSection = ({ section, index }) => (
       </div>
     )}
 
-    {section.practice?.length > 0 && (
+    {contentUnlocked && section.practice?.length > 0 && (
       <div className="mt-5 grid md:grid-cols-2 gap-4">
         {section.practice.map((item, i) => (
-          <PracticePanel key={`${item.question || item.problem}-${i}`} item={item} index={i} />
+          <InteractivePracticePanel key={`${item.question || item.problem}-${i}`} item={item} index={i} sectionKey={`${sectionKey}:practice`} label="Practice" />
         ))}
       </div>
     )}
 
-    {section.module_quiz?.length > 0 && (
+    {contentUnlocked && section.module_quiz?.length > 0 && (
       <div className="mt-5 rounded-xl border border-edge bg-surface p-5">
         <h3 className="font-heading font-semibold text-ink">Module mastery check</h3>
-        <p className="text-sm text-muted2 mt-1">Try these before moving on. If you miss two or more, review the examples above.</p>
+        <p className="text-sm text-muted2 mt-1">Answer these to unlock the next section. If you miss two or more, review the examples above before continuing.</p>
         <div className="grid md:grid-cols-2 gap-3 mt-3">
           {section.module_quiz.map((item, i) => (
-            <PracticePanel key={`${item.question}-${i}`} item={item} index={i} />
+            <InteractivePracticePanel key={`${item.question}-${i}`} item={item} index={i} sectionKey={`${sectionKey}:quiz`} label="Mastery check" onAnswered={refresh} />
           ))}
         </div>
+        {quizComplete && <div className="mt-4 rounded-lg bg-success/10 text-success px-4 py-2 text-sm font-medium">Section unlocked. You can move to the next unit.</div>}
       </div>
     )}
 
-    {section.practice_ladder?.length > 0 && (
+    {contentUnlocked && section.practice_ladder?.length > 0 && (
       <div className="mt-5 space-y-4">
         <h3 className="font-heading font-semibold text-ink">Challenge ladder</h3>
         {section.practice_ladder.map((group, i) => (
@@ -286,7 +425,7 @@ const LessonSection = ({ section, index }) => (
             {group.description && <p className="text-sm text-muted2 mt-1"><MathText text={group.description} /></p>}
             <div className="grid md:grid-cols-2 gap-3 mt-3">
               {(group.items || []).map((item, idx) => (
-                <PracticePanel key={`${item.question}-${idx}`} item={item} index={idx} />
+                <InteractivePracticePanel key={`${item.question}-${idx}`} item={item} index={idx} sectionKey={`${sectionKey}:ladder:${i}`} label={group.level || "Challenge"} />
               ))}
             </div>
           </div>
@@ -294,14 +433,14 @@ const LessonSection = ({ section, index }) => (
       </div>
     )}
 
-    {section.examiner_notes?.length > 0 && (
+    {contentUnlocked && section.examiner_notes?.length > 0 && (
       <div className="mt-5 rounded-xl border border-terracotta/30 bg-terracotta/5 p-5">
         <h3 className="font-heading font-semibold text-ink">Examiner notes</h3>
         <div className="mt-3"><BulletList items={section.examiner_notes} /></div>
       </div>
     )}
 
-    {section.applications?.length > 0 && (
+    {contentUnlocked && section.applications?.length > 0 && (
       <div className="mt-5">
         <h3 className="font-heading font-semibold text-ink">Applications</h3>
         <div className="grid md:grid-cols-2 gap-3 mt-3">
@@ -315,13 +454,15 @@ const LessonSection = ({ section, index }) => (
       </div>
     )}
   </section>
-);
+  );
+};
 
 const Lessons = () => {
   const { subtopicId, sectionSlug: activeSectionSlug } = useParams();
   const [topics, setTopics] = useState(null);
   const [lesson, setLesson] = useState(null);
   const [masteryEngine, setMasteryEngine] = useState(null);
+  const [activeComplete, setActiveComplete] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -347,6 +488,31 @@ const Lessons = () => {
       setMasteryEngine(null);
     }
   }, [subtopicId]);
+
+  const activeSectionForProgress = activeSectionSlug
+    ? (lesson?.lesson_sections || []).find((section) => sectionSlug(section.title) === activeSectionSlug)
+    : null;
+
+  useEffect(() => {
+    if (!activeSectionSlug || !activeSectionForProgress) {
+      setActiveComplete(true);
+      return;
+    }
+    const quiz = activeSectionForProgress.module_quiz || [];
+    if (!quiz.length) {
+      setActiveComplete(true);
+      return;
+    }
+    const key = `${subtopicId}:${activeSectionSlug}:quiz`;
+    const done = quiz.every((item, i) => {
+      try {
+        return JSON.parse(localStorage.getItem(progressKey(key, item, i)) || "null")?.submitted;
+      } catch {
+        return false;
+      }
+    });
+    setActiveComplete(done);
+  }, [activeSectionSlug, activeSectionForProgress, subtopicId]);
 
   if (!subtopicId) {
     const availableTopics = (topics || []).filter((t) => t.status === "available");
@@ -381,9 +547,7 @@ const Lessons = () => {
   if (!lesson) return <div className="p-10 text-muted2" data-testid="lesson-not-found">Lesson not found.</div>;
 
   const topicName = (topics || []).find((t) => t.id === lesson.topic)?.name || lesson.topic || "Lesson";
-  const activeSection = activeSectionSlug
-    ? (lesson.lesson_sections || []).find((section) => sectionSlug(section.title) === activeSectionSlug)
-    : null;
+  const activeSection = activeSectionForProgress;
   const coreSections = (lesson.lesson_sections || []).filter((section) => section.track !== "challenge");
   const challengeSections = (lesson.lesson_sections || []).filter((section) => section.track === "challenge");
   const hasRichContent = [
@@ -417,7 +581,12 @@ const Lessons = () => {
         {activeSection.intro && <p className="text-lg text-muted2 mt-3 leading-relaxed"><MathText text={activeSection.intro} /></p>}
 
         <div className="mt-8">
-          <LessonSection section={activeSection} index={activeIndex} />
+          <LessonSection
+            section={activeSection}
+            index={activeIndex}
+            sectionKey={`${subtopicId}:${activeSectionSlug}`}
+            onCompletionChange={setActiveComplete}
+          />
         </div>
 
         <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
@@ -427,9 +596,15 @@ const Lessons = () => {
             </Link>
           ) : <div />}
           {next ? (
+            activeComplete ? (
             <Link className="btn-primary inline-flex items-center gap-2 justify-center" to={`/lessons/${subtopicId}/sections/${sectionSlug(next.title)}`}>
               Next section <ChevronRight size={16} />
             </Link>
+            ) : (
+              <button type="button" disabled className="btn-primary inline-flex items-center gap-2 justify-center opacity-50 cursor-not-allowed">
+                Complete mastery check to unlock <ChevronRight size={16} />
+              </button>
+            )
           ) : (
             <Link className="btn-primary inline-flex items-center gap-2 justify-center" to={`/past-questions?subtopic=${lesson.subtopic_id}`}>
               Practise questions <ChevronRight size={16} />

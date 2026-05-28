@@ -838,6 +838,27 @@ def _similar_skill(qdoc: dict) -> str:
         " ".join(qdoc.get("feedback_tags", []) or []),
     ]).lower()
     if qdoc.get("topic") == "sets-logic":
+        if qdoc.get("subtopic") in LOGIC_LEARNING_SUBTOPICS:
+            if "truth table" in text or "rows" in text or "row count" in text:
+                return "truth table construction"
+            if "tautology" in text or "contradiction" in text or "contingency" in text or "classify" in text:
+                return "truth table classification"
+            if "de morgan" in text or "equivalent" in text or "equivalence" in text or "simplify" in text:
+                return "logical equivalence"
+            if "contrapositive" in text or "converse" in text or "inverse" in text:
+                return "converse inverse contrapositive"
+            if "modus ponens" in text or "modus tollens" in text or "therefore" in text or "valid" in text or "argument" in text:
+                return "argument validity"
+            if "fallacy" in text or "affirming" in text or "denying" in text or "invalid" in text:
+                return "logic fallacies"
+            if "negation" in text or "negate" in text or "\\neg" in text or "not " in text:
+                return "logical negation"
+            if "\\land" in text or "\\lor" in text or "conjunction" in text or "disjunction" in text or " and " in text or " or " in text:
+                return "logical connectives"
+            if "\\right" in text or "implies" in text or "implication" in text or "if " in text or "only false" in text:
+                return "logical implication"
+            if "statement" in text or "open sentence" in text or "truth value" in text:
+                return "logical statements"
         if "\\cap" in text or "intersection" in text or "common" in text or "both" in text:
             return "set intersection"
         if "\\cup" in text or "union" in text or "at least one" in text:
@@ -866,6 +887,36 @@ def _similar_matches_source(source: dict, item: dict) -> bool:
         forbidden = ["mean", "median", "mode", "range", "standard deviation", "probability", "histogram"]
         if any(word in text for word in forbidden):
             return False
+        logic_skills = {
+            "logical statements", "logical negation", "logical connectives", "logical implication",
+            "converse inverse contrapositive", "truth table construction", "truth table classification",
+            "logical equivalence", "argument validity", "logic fallacies",
+        }
+        if source.get("subtopic") in LOGIC_LEARNING_SUBTOPICS or skill in logic_skills:
+            set_only_terms = ["venn", "\\cap", "\\cup", "subset", "power set", "cardinality", "students like", "survey of"]
+            if any(term in text for term in set_only_terms) and skill not in {"logical equivalence"}:
+                return False
+            if skill == "logical statements":
+                return "statement" in text or "open sentence" in text or "true or false" in text
+            if skill == "logical negation":
+                return "negation" in text or "negate" in text or "\\neg" in text or "not " in text
+            if skill == "logical connectives":
+                return "\\land" in text or "\\lor" in text or "and" in text or "or" in text or "conjunction" in text or "disjunction" in text
+            if skill == "logical implication":
+                return "\\right" in text or "implies" in text or "implication" in text or "if " in text or "only false" in text
+            if skill == "converse inverse contrapositive":
+                return "converse" in text or "inverse" in text or "contrapositive" in text
+            if skill == "truth table construction":
+                return "truth table" in text or "rows" in text or "row count" in text
+            if skill == "truth table classification":
+                return "tautology" in text or "contradiction" in text or "contingency" in text or "classify" in text
+            if skill == "logical equivalence":
+                return "equivalent" in text or "equivalence" in text or "de morgan" in text or "simplify" in text
+            if skill == "argument validity":
+                return "valid" in text or "argument" in text or "therefore" in text or "modus" in text
+            if skill == "logic fallacies":
+                return "invalid" in text or "fallacy" in text or "affirming" in text or "denying" in text or "consequent" in text
+            return True
         if "set" not in text and "\\{" not in text and "\\cap" not in text and "\\cup" not in text and "venn" not in text and "subset" not in text:
             return False
         if skill == "set intersection":
@@ -885,6 +936,39 @@ def _similar_matches_source(source: dict, item: dict) -> bool:
 
 def _fallback_similar_for_source(source: dict, n: int) -> list[dict]:
     skill = source.get("skill", "")
+    if source.get("topic") == "sets-logic" and source.get("subtopic") in LOGIC_LEARNING_SUBTOPICS:
+        logic_templates = {
+            "logical implication": [
+                ("If p is true and q is false, what is the truth value of $p\\Rightarrow q$?", ["True", "False", "Cannot tell", "Both true and false"], "False", ["An implication is false only when p is true and q is false."]),
+                ("Which case makes 'If a student registers, then the student pays fees' false?", ["Registers and pays", "Registers and does not pay", "Does not register and pays", "Does not register and does not pay"], "Registers and does not pay", ["The rule is broken only when the condition happens but the result fails."]),
+                ("Rewrite $p\\Rightarrow q$ using OR.", ["$p\\lor q$", "$\\neg p\\lor q$", "$p\\land q$", "$\\neg q\\lor p$"], "$\\neg p\\lor q$", ["The implication law is $p\\Rightarrow q\\equiv \\neg p\\lor q$."]),
+            ],
+            "truth table construction": [
+                ("How many rows are needed for a truth table with p, q and r?", ["3", "6", "8", "9"], "8", ["There are 3 variables, so rows $=2^3=8$."]),
+                ("How many rows are needed for a truth table with four statement letters?", ["4", "8", "12", "16"], "16", ["There are 4 variables, so rows $=2^4=16$."]),
+                ("For two variables p and q, which row order is standard?", ["TT, TF, FT, FF", "TT, FF, TF, FT", "TF, TT, FF, FT", "FF, FT, TF, TT"], "TT, TF, FT, FF", ["Use the systematic order TT, TF, FT, FF."]),
+            ],
+            "argument validity": [
+                ("Which rule is $p\\Rightarrow q$, p, therefore q?", ["Modus ponens", "Modus tollens", "Affirming consequent", "Denying antecedent"], "Modus ponens", ["The hypothesis p is affirmed, so q follows."]),
+                ("Complete: $p\\Rightarrow q$, $\\neg q$, therefore ____.", ["p", "q", "$\\neg p$", "$p\\land q$"], "$\\neg p$", ["This is modus tollens."]),
+                ("If $p\\Rightarrow q$, $q\\Rightarrow r$ and p are true, what follows?", ["$\\neg p$", "r", "$\\neg r$", "nothing"], "r", ["Chain the implications: p gives q, and q gives r."]),
+            ],
+            "logical connectives": [
+                ("If p is true and q is false, what is $p\\land q$?", ["True", "False", "Cannot tell", "Both"], "False", ["Conjunction is true only when both p and q are true."]),
+                ("If p is false and q is true, what is $p\\lor q$?", ["True", "False", "$\\neg p$", "$\\neg q$"], "True", ["Disjunction is true when at least one statement is true."]),
+                ("In mathematics, $p\\lor q$ usually means:", ["p only", "q only", "p or q or both", "neither p nor q"], "p or q or both", ["Mathematical OR is inclusive unless 'exactly one' is stated."]),
+            ],
+            "logic fallacies": [
+                ("The argument $p\\Rightarrow q$, q, therefore p is:", ["Valid", "Affirming the consequent", "Modus tollens", "Contrapositive"], "Affirming the consequent", ["q may be true for another reason, so p does not follow."]),
+                ("The argument $p\\Rightarrow q$, $\\neg p$, therefore $\\neg q$ is:", ["Modus ponens", "Denying the antecedent", "Modus tollens", "Valid chain"], "Denying the antecedent", ["q can still be true even if p is false."]),
+                ("Which is circular reasoning?", ["$p\\Rightarrow q$, p, therefore q", "This proof is correct because it is correct", "$p\\Rightarrow q$, $\\neg q$, therefore $\\neg p$", "p or q"], "This proof is correct because it is correct", ["The reason repeats the conclusion."]),
+            ],
+        }
+        templates = logic_templates.get(skill) or logic_templates.get("logical implication", [])
+        return [
+            {"question": q, "options": opts, "answer": ans, "solution_steps": steps, "skill": skill}
+            for q, opts, ans, steps in templates[:n]
+        ]
     if source.get("topic") == "sets-logic" and skill == "set intersection":
         templates = [
             (
@@ -1832,6 +1916,8 @@ async def similar_questions(qid: str, req: SimilarReq, current=Depends(get_curre
         "question": q["question"], "options": q.get("options", []),
         "answer": q["answer"],
         "solution_steps": q.get("solution_steps", []),
+        "feedback_tags": q.get("feedback_tags", []),
+        "recommendation": q.get("recommendation"),
         "difficulty": q["difficulty"],
     }
     n = max(1, min(req.n, 5))

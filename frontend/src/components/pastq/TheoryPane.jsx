@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import http from "@/lib/api";
 import { toast } from "sonner";
 import MathText from "@/components/MathText";
-import { Send, Wand2 } from "lucide-react";
+import { Brain, Send, Wand2 } from "lucide-react";
 
 const TheoryPane = ({ question, onGenerateSimilar, similarLoading }) => {
   const [answer, setAnswer] = useState("");
@@ -56,6 +56,41 @@ const TheoryPane = ({ question, onGenerateSimilar, similarLoading }) => {
             <div className="text-sm font-semibold text-ink">Your submitted answer</div>
             <p className="text-sm text-muted2 whitespace-pre-wrap mt-2">{answer}</p>
           </div>
+          {result.theory_feedback && (
+            <div className="mt-4 rounded-lg border border-moss/25 bg-moss/5 p-4" data-testid="theory-ai-feedback">
+              <div className="flex items-center justify-between gap-3">
+                <div className="font-heading font-semibold text-ink inline-flex items-center gap-2">
+                  <Brain size={16} className="text-moss" /> AI examiner feedback
+                </div>
+                {result.theory_score !== null && result.theory_score !== undefined && (
+                  <span className="tag !bg-moss/10 !text-moss">
+                    {result.theory_score}/{result.theory_max_score || 10}
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-ink/80 mt-2"><MathText text={result.theory_feedback} /></p>
+              {(result.theory_strengths?.length > 0 || result.theory_gaps?.length > 0) && (
+                <div className="grid md:grid-cols-2 gap-3 mt-3">
+                  {result.theory_strengths?.length > 0 && (
+                    <div>
+                      <div className="text-xs uppercase tracking-[0.18em] text-success font-bold">Strengths</div>
+                      <ul className="text-sm text-muted2 mt-1 list-disc pl-4">
+                        {result.theory_strengths.map((item) => <li key={item}>{item}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                  {result.theory_gaps?.length > 0 && (
+                    <div>
+                      <div className="text-xs uppercase tracking-[0.18em] text-error font-bold">Gaps</div>
+                      <ul className="text-sm text-muted2 mt-1 list-disc pl-4">
+                        {result.theory_gaps.map((item) => <li key={item}>{item}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           <div className="text-sm text-muted2 mt-4">Final answer:</div>
           <div className="font-heading text-lg text-success mt-1">
             <MathText text={result.correct_answer} />

@@ -14,8 +14,8 @@ const Navbar = () => {
 
   return (
     <header className="bg-paper border-b border-edge sticky top-0 z-40" data-testid="app-navbar">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-16 flex items-center justify-between">
-        <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2" data-testid="nav-logo">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-16 flex items-center justify-between gap-4">
+        <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2 shrink-0" data-testid="nav-logo">
           <div className="w-9 h-9 rounded-xl bg-terracotta grid place-items-center text-white font-heading font-bold text-lg">
             W
           </div>
@@ -27,7 +27,7 @@ const Navbar = () => {
 
         {user ? (
           <>
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-1 min-w-0">
               <NavLink to="/dashboard" className={linkCls} data-testid="nav-dashboard">
                 <LayoutDashboard size={16} /> Dashboard
               </NavLink>
@@ -61,8 +61,8 @@ const Navbar = () => {
                 </NavLink>
               )}
             </nav>
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:flex flex-col items-end leading-tight">
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="hidden 2xl:flex flex-col items-end leading-tight">
                 <span className="text-sm font-medium text-ink">{user.name}</span>
                 <span className="text-xs text-muted2">{user.email}</span>
               </div>

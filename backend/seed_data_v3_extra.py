@@ -1239,6 +1239,191 @@ _sets_module("Module 12: Combinatorial Set Problems")["module_quiz"] = [
     {"question": "If $|A|=7$, how many ordered pairs satisfy $B\\subseteq C\\subseteq A$?", "answer": "$3^7=2187$."},
 ]
 
+_sets_module("Module 2: Types of Sets")["examples"].extend([
+    {
+        "level": "foundation",
+        "title": "Classify set types from school examples",
+        "problem": "Classify each set: $A=\\{2,4,6,8\\}$, $B=\\{x:x\\text{ is a natural number}\\}$, $C=\\{x:x\\text{ is a month with 32 days}\\}$, and $D=\\{a,e,i,o,u\\}$.",
+        "steps": [
+            "A is finite because its elements can be counted and the list ends.",
+            "B is infinite because natural numbers continue without end.",
+            "C is empty because no month has 32 days.",
+            "D is finite and also a well-defined set because the vowels are known.",
+        ],
+        "answer": "A and D are finite sets, B is infinite, and C is the empty set."
+    },
+    {
+        "level": "WAEC trap",
+        "title": "Equal sets versus equivalent sets",
+        "problem": "Let $P=\\{1,3,5\\}$, $Q=\\{5,1,3\\}$ and $R=\\{a,b,c\\}$. Decide whether the sets are equal or equivalent.",
+        "steps": [
+            "P and Q contain exactly the same elements; order does not matter in a set.",
+            "So $P=Q$.",
+            "R has the same number of elements as P and Q, but different elements.",
+            "So R is equivalent to P and Q, but not equal to them.",
+        ],
+        "answer": "$P=Q$; R is equivalent to P and Q but not equal to them.",
+        "examiner_tip": "WAEC often tests this language. Equal means same elements; equivalent means same number of elements."
+    },
+])
+
+_sets_module("Module 4: Venn Diagrams and Regions")["examples"].extend([
+    {
+        "level": "visual interpretation",
+        "title": "Read A only, B only, both and neither",
+        "problem": "In a class of 50 students, 30 study French, 24 study Spanish and 10 study both. Represent the information by regions and find French only, Spanish only and neither.",
+        "visual_blocks": [
+            {
+                "type": "venn_variables",
+                "title": "Two-language Venn regions",
+                "caption": "The overlap is 10. French only is $30-10$, Spanish only is $24-10$, and neither is outside both circles.",
+                "labels": {"leftSet": "F", "rightSet": "S", "leftOnly": "20", "overlap": "10", "rightOnly": "14", "outside": "6"}
+            }
+        ],
+        "steps": [
+            "French only $=30-10=20$.",
+            "Spanish only $=24-10=14$.",
+            "At least one language $=20+10+14=44$.",
+            "Neither $=50-44=6$.",
+        ],
+        "answer": "French only = 20, Spanish only = 14, neither = 6.",
+        "examiner_tip": "Do not put the pair total directly into the overlap after subtracting when the question says 'both'. For two sets, 'both' is the overlap itself."
+    },
+    {
+        "level": "three-set regions",
+        "title": "Identify exactly two from a three-set diagram",
+        "problem": "In a three-set Venn diagram for Physics P, Chemistry C and Biology B, explain the region for students who take exactly two subjects.",
+        "visual_blocks": [
+            {"type": "venn3", "variant": "at_least_two", "title": "At least two includes the centre", "caption": "This shaded guide shows pair overlaps and the centre. Exactly two uses the pair-only parts but excludes the centre."},
+            {
+                "type": "venn3_variables",
+                "title": "Exactly-two regions by values",
+                "caption": "Exactly two would add the pair-only regions 9, 11 and 7, but exclude the centre 5.",
+                "labels": {"leftSet": "P", "rightSet": "C", "bottomSet": "B", "leftOnly": "-", "rightOnly": "-", "bottomOnly": "-", "leftRight": "9", "leftBottom": "11", "rightBottom": "7", "allThree": "5"}
+            }
+        ],
+        "steps": [
+            "Exactly two means the student is in two sets but not in the third.",
+            "So add P and C only, P and B only, and C and B only.",
+            "Do not include the centre because the centre represents all three subjects.",
+            "For the shown values, exactly two $=9+11+7=27$.",
+        ],
+        "answer": "Exactly two = pair-only regions, excluding the all-three region.",
+        "examiner_tip": "At least two includes the centre; exactly two excludes it. This single word changes the answer."
+    },
+])
+
+_sets_module("Module 6: Laws of Sets")["examples"].extend([
+    {
+        "level": "law application",
+        "title": "Simplify using absorption and identity laws",
+        "problem": "Simplify $A\\cap(A\\cup B)$ and $A\\cup(A\\cap B')$.",
+        "steps": [
+            "$A\\cap(A\\cup B)=A$ by the absorption law.",
+            "For $A\\cup(A\\cap B')$, the smaller part $A\\cap B'$ is already inside A.",
+            "So $A\\cup(A\\cap B')=A$.",
+        ],
+        "answer": "Both expressions simplify to A.",
+        "examiner_tip": "Absorption means a larger set swallows a part already contained inside it."
+    },
+    {
+        "level": "De Morgan with three sets",
+        "title": "Apply De Morgan's Law to three sets",
+        "problem": "Simplify $(A\\cap B\\cap C)'$ and explain it in words.",
+        "visual_blocks": [
+            {"type": "venn3", "variant": "not_all_three", "title": "$(A\\cap B\\cap C)'$", "caption": "Everything except the centre where A, B and C all overlap."}
+        ],
+        "steps": [
+            "The complement of an intersection changes to a union of complements.",
+            "$(A\\cap B\\cap C)'=A'\\cup B'\\cup C'$.",
+            "In words, an element is not in all three sets if it is outside A or outside B or outside C.",
+        ],
+        "answer": "$(A\\cap B\\cap C)'=A'\\cup B'\\cup C'$."
+    },
+])
+
+_sets_module("Module 9: Complement of a Set")["examples"].extend([
+    {
+        "level": "universal set trap",
+        "title": "Complement depends on the universal set",
+        "problem": "Find $A'$ if $A=\\{2,4,6\\}$ under each universal set: (i) $U_1=\\{1,2,3,4,5,6\\}$, (ii) $U_2=\\{2,4,6,8,10\\}$.",
+        "visual_blocks": [
+            {"type": "venn", "variant": "complement_a", "title": "Complement is measured inside U", "caption": "Changing U changes what is outside A."}
+        ],
+        "steps": [
+            "Under $U_1$, remove 2, 4 and 6 from $\\{1,2,3,4,5,6\\}$ to get $\\{1,3,5\\}$.",
+            "Under $U_2$, remove 2, 4 and 6 from $\\{2,4,6,8,10\\}$ to get $\\{8,10\\}$.",
+            "The same set A can have different complements when U changes.",
+        ],
+        "answer": "For $U_1$, $A'=\\{1,3,5\\}$; for $U_2$, $A'=\\{8,10\\}$.",
+        "examiner_tip": "Never find a complement before identifying the universal set. The universal set is the boundary of the question."
+    },
+    {
+        "level": "word problem",
+        "title": "Neither as complement of a union",
+        "problem": "Out of 90 students, 52 like Algebra, 43 like Geometry and 18 like both. How many like neither Algebra nor Geometry?",
+        "visual_blocks": [
+            {
+                "type": "venn_variables",
+                "title": "Neither is outside the union",
+                "caption": "Algebra only is 34, Geometry only is 25, both is 18, and neither is the outside region.",
+                "labels": {"leftSet": "A", "rightSet": "G", "leftOnly": "34", "overlap": "18", "rightOnly": "25", "outside": "13"}
+            }
+        ],
+        "steps": [
+            "At least one subject $=52+43-18=77$.",
+            "Neither means outside $A\\cup G$.",
+            "Neither $=90-77=13$.",
+        ],
+        "answer": "13 students like neither Algebra nor Geometry."
+    },
+])
+
+_sets_module("Module 10: Practical WAEC Problem Solving")["examples"].extend([
+    {
+        "level": "WAEC strategy",
+        "title": "Choose the correct formula before calculating",
+        "problem": "In a class of 120 students, 65 take Economics, 58 take Geography, 42 take Government, 30 take Economics and Geography, 25 take Economics and Government, 20 take Geography and Government, and 12 take all three. How many take at least one subject and how many take none?",
+        "visual_blocks": [
+            {
+                "type": "venn3_variables",
+                "title": "Three-subject WAEC layout",
+                "caption": "Pair-only regions are found by subtracting the centre 12 from each pair total before finding single-only regions.",
+                "labels": {"leftSet": "E", "rightSet": "G", "bottomSet": "Gov", "leftOnly": "22", "rightOnly": "20", "bottomOnly": "9", "leftRight": "18", "leftBottom": "13", "rightBottom": "8", "allThree": "12", "outside": "18"}
+            }
+        ],
+        "steps": [
+            "At least one $=65+58+42-30-25-20+12$.",
+            "Compute carefully: $65+58+42=165$ and $30+25+20=75$.",
+            "$165-75+12=102$.",
+            "None $=120-102=18$.",
+            "If filling regions: pair-only values are 18, 13 and 8; then singles are 22, 20 and 9, giving inside total 102.",
+        ],
+        "answer": "At least one = 102; none = 18.",
+        "examiner_tip": "A formula answer and a region-filled diagram must agree. If they differ, recheck whether your pair values are pair totals or pair-only values."
+    },
+    {
+        "level": "error analysis",
+        "title": "Spot the wrong WAEC solution",
+        "problem": "A student computes $n(A\\cup B)=42+35+12=89$ when $n(A)=42$, $n(B)=35$ and $n(A\\cap B)=12$. Explain the error and correct the answer.",
+        "visual_blocks": [
+            {
+                "type": "venn_variables",
+                "title": "The overlap was counted twice already",
+                "caption": "The 12 in the overlap is already included inside both 42 and 35, so it must be subtracted, not added.",
+                "labels": {"leftSet": "A", "rightSet": "B", "leftOnly": "30", "overlap": "12", "rightOnly": "23"}
+            }
+        ],
+        "steps": [
+            "The student added the overlap instead of subtracting it.",
+            "Correct formula: $n(A\\cup B)=n(A)+n(B)-n(A\\cap B)$.",
+            "$n(A\\cup B)=42+35-12=65$.",
+        ],
+        "answer": "The correct union is 65.",
+        "examiner_tip": "Error-analysis questions reward explanation, not only the final number. Say exactly what was counted twice."
+    },
+])
+
 SUBSETS_POWER_SECTIONS = [
     {
         "title": "Subset Meaning, Notation and Equality",
@@ -2033,6 +2218,20 @@ Q("sets-logic", "subsets-power", 2026, "hard", "How many subsets of a 10-element
 Q("sets-logic", "subsets-power", 2026, "hard", "If $|A|=5$, how many ordered pairs $(B,C)$ satisfy $B\\subseteq C\\subseteq A$?", ["25", "32", "125", "243"], "243", ["Each element has three statuses: outside C, in C only, or in B and C.", "So the number is $3^5=243$."], feedback_tags=["nested subset pairs"], recommendation="Review Module 12.")
 Q("sets-logic", "subsets-power", 2026, "hard", "If $|A|=6$, how many ordered pairs $(B,C)$ satisfy $B\\cap C=\\emptyset$?", ["64", "216", "729", "4096"], "729", ["Each element may enter B, enter C, or enter neither.", "So the number is $3^6=729$."], feedback_tags=["disjoint subset pairs"], recommendation="Review Module 12.")
 Q("sets-logic", "subsets-power", 2026, "hard", "A set has n elements and exactly 256 subsets. Find n.", ["6", "7", "8", "9"], "8", ["$2^n=256$.", "Since $256=2^8$, $n=8$."], feedback_tags=["power set count"], recommendation="Review Module 3 and Module 12.")
+
+# Additional WAEC-style spread by year and difficulty for premium diagnostic coverage.
+Q("sets-logic", "set-operations", 2014, "easy", "Which of these is the empty set?", ["$\\{0\\}$", "$\\emptyset$", "$\\{\\emptyset\\}$", "$\\{1\\}$"], "$\\emptyset$", ["The empty set has no element. $\\{0\\}$ has one element, 0."], feedback_tags=["empty set"], recommendation="Review Module 2: Types of Sets.")
+Q("sets-logic", "set-operations", 2015, "easy", "If $U=\\{a,b,c,d,e\\}$ and $A=\\{a,c,e\\}$, find $A'$.", ["$\\{b,d\\}$", "$\\{a,c,e\\}$", "$\\{a,b,c,d,e\\}$", "$\\emptyset$"], "$\\{b,d\\}$", ["Remove the elements of A from U."], feedback_tags=["complement", "universal set"], recommendation="Review Module 9: Complement of a Set.")
+Q("sets-logic", "subsets-power", 2016, "medium", "How many non-empty subsets does a set with 4 elements have?", ["8", "15", "16", "31"], "15", ["All subsets $=2^4=16$.", "Non-empty subsets exclude $\\emptyset$, so $16-1=15$."], feedback_tags=["non-empty subset"], recommendation="Review Module 3: Subsets and Power Sets.")
+Q("sets-logic", "set-operations", 2017, "medium", "If $A\\subseteq B$, which statement is always true?", ["$A\\cap B=A$", "$A\\cup B=A$", "$A-B=B$", "$B-A=\\emptyset$"], "$A\\cap B=A$", ["Every element of A is already in B, so their intersection is A."], feedback_tags=["subset operation"], recommendation="Review Module 3 and Module 5.")
+Q("sets-logic", "venn-diagrams", 2018, "medium", "In a class of 75 students, 40 like History, 38 like Literature and 15 like both. How many like exactly one?", ["33", "48", "63", "93"], "48", ["History only $=40-15=25$.", "Literature only $=38-15=23$.", "Exactly one $=25+23=48$."], feedback_tags=["exactly one", "overlap"], recommendation="Review Module 7: Cardinality of Sets.")
+Q("sets-logic", "set-operations", 2019, "medium", "Simplify $(A\\cup B)'\\cup(A\\cap B)$ when describing regions.", ["outside both or inside both", "A only", "B only", "all of U"], "outside both or inside both", ["$(A\\cup B)'$ means neither A nor B.", "$A\\cap B$ means both.", "The union gives elements in neither or in both."], feedback_tags=["region interpretation", "de morgan"], recommendation="Review Module 4 and Module 6.")
+Q("sets-logic", "venn-diagrams", 2020, "hard", "In a group of 100, 48 like Tea, 44 like Coffee and x like both. If 20 like neither, find x.", ["8", "12", "16", "20"], "12", ["At least one $=100-20=80$.", "$48+44-x=80$.", "$92-x=80$, so $x=12$."], feedback_tags=["find overlap", "neither"], recommendation="Review Module 7: Cardinality of Sets.")
+Q("sets-logic", "set-operations", 2021, "hard", "Which expression represents students who are in A or B but not both?", ["$A\\cap B$", "$A\\cup B$", "$(A\\cap B')\\cup(A'\\cap B)$", "$A'\\cap B'$"], "$(A\\cap B')\\cup(A'\\cap B)$", ["A only is $A\\cap B'$.", "B only is $A'\\cap B$.", "Exactly one is their union."], feedback_tags=["symmetric difference"], recommendation="Review Module 11: Advanced Logical and Set Interpretation.")
+Q("sets-logic", "venn-diagrams", 2022, "hard", "A survey has $n(A)=36$, $n(B)=32$, $n(C)=30$, pair intersections 14, 12 and 10, and all three 5. Find $n(A\\cup B\\cup C)$.", ["57", "62", "67", "72"], "67", ["Use inclusion-exclusion.", "$36+32+30-14-12-10+5=67$."], feedback_tags=["three-set inclusion-exclusion"], recommendation="Review Module 7: Cardinality of Sets.")
+Q("sets-logic", "set-operations", 2023, "hard", "If $A\\cap B=\\emptyset$ and $n(A)=18$, $n(B)=27$, find $n(A\\cup B)$.", ["9", "27", "45", "486"], "45", ["Disjoint sets have zero overlap.", "$n(A\\cup B)=18+27=45$."], feedback_tags=["disjoint sets"], recommendation="Review Module 4 and Module 7.")
+Q("sets-logic", "subsets-power", 2024, "hard", "A set has 7 elements. How many subsets contain exactly 5 elements?", ["21", "35", "42", "128"], "21", ["Use $\\binom{7}{5}=21$."], feedback_tags=["combination subset count"], recommendation="Review Module 12: Combinatorial Set Problems.")
+Q("sets-logic", "set-operations", 2025, "hard", "Simplify $A\\cap(B\\cup B')$.", ["$A$", "$B$", "$A\\cap B$", "$U$"], "$A$", ["$B\\cup B'=U$.", "Then $A\\cap U=A$."], feedback_tags=["complement law", "identity law"], recommendation="Review Module 6: Laws of Sets.")
 
 _SETS_FEEDBACK_RULES = [
     (

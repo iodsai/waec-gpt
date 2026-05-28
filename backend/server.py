@@ -10,6 +10,7 @@ import logging
 import base64
 import random
 import hashlib
+import json
 from pathlib import Path
 from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional, Literal, Any
@@ -139,6 +140,12 @@ class AttemptResp(BaseModel):
     solution_steps: List[str]
     feedback_tags: List[str] = Field(default_factory=list)
     recommendation: Optional[str] = None
+    theory_score: Optional[int] = None
+    theory_max_score: Optional[int] = None
+    theory_feedback: Optional[str] = None
+    theory_strengths: List[str] = Field(default_factory=list)
+    theory_gaps: List[str] = Field(default_factory=list)
+    theory_grade_source: Optional[str] = None
 
 class ChatReq(BaseModel):
     session_id: str
@@ -774,8 +781,83 @@ async def _update_srs_card(user_id: str, question_id: str, correct: bool, is_rev
                 "next_due": next_due.isoformat(),
                 "last_seen": now.isoformat(),
                 "lapses": 0,
-                "created_at": now.isoformat(),
-            })
+            "created_at": now.isoformat(),
+        })
+
+
+async def _grade_theory_answer(qdoc: dict, student_answer: str) -> dict:
+    """Ask the LLM to mark a theory answer; return a deterministic fallback if unavailable."""
+    fallback = {
+        "score": None,
+        "max_score": 10,
+        "feedback": "AI marking is temporarily unavailable. Compare your work with the examiner solution and use the self-marking guide.",
+        "strengths": [],
+        "gaps": ["AI grading unavailable"],
+        "source": "fallback",
+    }
+    if not student_answer.strip():
+        return {
+            **fallback,
+            "score": 0,
+            "feedback": "No written answer was submitted.",
+            "gaps": ["No answer submitted"],
+        }
+    prompt = f"""
+You are a strict but helpful WAEC Further Mathematics chief examiner.
+Mark this student's theory answer out of 10.
+
+Return ONLY valid JSON with this exact shape:
+{{
+  "score": 0,
+  "max_score": 10,
+  "feedback": "short examiner feedback",
+  "strengths": ["..."],
+  "gaps": ["..."]
+}}
+
+Question:
+{qdoc.get('question', '')}
+
+Official final answer:
+{qdoc.get('answer', '')}
+
+Official solution steps:
+{chr(10).join(qdoc.get('solution_steps', []))}
+
+Student answer:
+{student_answer}
+
+Marking rules:
+- Give high credit for correct final answer with valid reasoning.
+- Give partial credit for correct method even if arithmetic or notation has minor errors.
+- Penalize wrong set notation, missing universal set/complement reasoning, wrong Venn regions, or unsupported final answers.
+- Keep feedback concise and useful for a secondary-school student.
+"""
+    try:
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"theory-grade::{qdoc.get('id', str(uuid.uuid4()))}::{uuid.uuid4()}",
+            system_message="You are a WAEC Further Mathematics examiner. Return strict JSON only.",
+        ).with_model("gemini", "gemini-3-flash-preview")
+        raw = await chat.send_message(UserMessage(text=prompt))
+        start = raw.find("{")
+        end = raw.rfind("}")
+        if start == -1 or end == -1:
+            raise ValueError("No JSON object returned")
+        data = json.loads(raw[start:end + 1])
+        score = data.get("score")
+        max_score = data.get("max_score", 10)
+        return {
+            "score": max(0, min(int(score), int(max_score))) if score is not None else None,
+            "max_score": int(max_score),
+            "feedback": str(data.get("feedback") or fallback["feedback"]),
+            "strengths": [str(x) for x in data.get("strengths", [])][:4],
+            "gaps": [str(x) for x in data.get("gaps", [])][:4],
+            "source": "ai",
+        }
+    except Exception:
+        logging.exception("Theory grading failed")
+        return fallback
 
 
 @api.post("/attempts", response_model=AttemptResp)
@@ -785,6 +867,7 @@ async def submit_attempt(req: AttemptReq, current=Depends(get_current_user)):
         raise HTTPException(status_code=404, detail="Question not found")
     is_theory = qdoc.get("question_type") == "theory"
     correct = (not is_theory) and req.selected.strip() == qdoc["answer"].strip()
+    theory_grade = await _grade_theory_answer(qdoc, req.selected) if is_theory else None
     await db.attempts.insert_one({
         "id": str(uuid.uuid4()), "user_id": current["id"], "question_id": req.question_id,
         "topic": qdoc.get("topic", topic_of(qdoc["subtopic"])),
@@ -793,6 +876,7 @@ async def submit_attempt(req: AttemptReq, current=Depends(get_current_user)):
         "recommendation": qdoc.get("recommendation") if not correct else None,
         "sets_module": _sets_module_for_question(qdoc) if qdoc.get("topic") == "sets-logic" else None,
         "difficulty": qdoc.get("difficulty"),
+        "theory_grade": theory_grade,
         "is_reveal": is_theory,  # theory reveals don't count toward accuracy
         "created_at": datetime.now(timezone.utc).isoformat(),
     })
@@ -805,6 +889,12 @@ async def submit_attempt(req: AttemptReq, current=Depends(get_current_user)):
         solution_steps=qdoc["solution_steps"],
         feedback_tags=qdoc.get("feedback_tags", []),
         recommendation=qdoc.get("recommendation"),
+        theory_score=theory_grade.get("score") if theory_grade else None,
+        theory_max_score=theory_grade.get("max_score") if theory_grade else None,
+        theory_feedback=theory_grade.get("feedback") if theory_grade else None,
+        theory_strengths=theory_grade.get("strengths", []) if theory_grade else [],
+        theory_gaps=theory_grade.get("gaps", []) if theory_grade else [],
+        theory_grade_source=theory_grade.get("source") if theory_grade else None,
     )
 
 @api.get("/progress")

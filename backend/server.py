@@ -307,6 +307,34 @@ async def lifespan(app: FastAPI):
                 } for q in topic_qs])
                 logging.info(f"Top-up seeded {len(topic_qs)} questions for topic '{_tid}'")
 
+    seeded_existing = await db.questions.find(
+        {"source": "seed"},
+        {"_id": 0, "topic": 1, "subtopic": 1, "question": 1}
+    ).to_list(20000)
+    seeded_keys = {
+        (d.get("topic"), d.get("subtopic"), d.get("question"))
+        for d in seeded_existing
+    }
+    new_seed_docs = []
+    for q in QUESTIONS_V3:
+        key = (q["topic"], q["subtopic"], q["question"])
+        if key in seeded_keys:
+            continue
+        new_seed_docs.append({
+            "id": str(uuid.uuid4()),
+            "topic": q["topic"], "subtopic": q["subtopic"],
+            "year": q["year"], "difficulty": q["difficulty"],
+            "question": q["question"], "options": q["options"],
+            "answer": q["answer"], "solution_steps": q["solution_steps"],
+            "question_type": q.get("question_type", "objective"), "source": "seed",
+            "feedback_tags": q.get("feedback_tags", []),
+            "recommendation": q.get("recommendation"),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
+    if new_seed_docs:
+        await db.questions.insert_many(new_seed_docs)
+        logging.info(f"Backfilled {len(new_seed_docs)} newly added seed questions")
+
     # Backfill question_type if missing
     await db.questions.update_many({"question_type": {"$exists": False}}, {"$set": {"question_type": "objective"}})
     seeded_feedback = {

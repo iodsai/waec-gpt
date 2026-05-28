@@ -70,6 +70,36 @@ const PracticePanel = ({ item, index }) => (
   </div>
 );
 
+const SectionCard = ({ section, index, subtopicId, challenge = false }) => (
+  <Link
+    to={`/lessons/${subtopicId}/sections/${sectionSlug(section.title)}`}
+    target="_blank"
+    rel="noreferrer"
+    className={`card-surface p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group ${challenge ? "border-terracotta/40 bg-sand/50" : ""}`}
+    data-testid={`lesson-section-link-${index}`}
+  >
+    <div className="flex gap-4">
+      <span className="font-heading text-terracotta font-bold text-2xl">{String(index + 1).padStart(2, "0")}</span>
+      <div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <h3 className="font-heading text-xl font-semibold text-ink group-hover:text-terracotta">{section.title}</h3>
+          {challenge && <span className="tag !text-terracotta">WAEC+ challenge</span>}
+        </div>
+        {section.intro && <p className="text-sm text-muted2 mt-1 line-clamp-2"><MathText text={section.intro} /></p>}
+        <div className="flex flex-wrap gap-2 mt-3">
+          {section.visual_blocks?.length > 0 && <span className="tag">{section.visual_blocks.length} visuals</span>}
+          {section.examples?.length > 0 && <span className="tag">{section.examples.length} examples</span>}
+          {section.practice?.length > 0 && <span className="tag">{section.practice.length} practice</span>}
+          {section.diagnostic_checks?.length > 0 && <span className="tag">{section.diagnostic_checks.length} diagnostics</span>}
+        </div>
+      </div>
+    </div>
+    <span className="btn-secondary inline-flex items-center gap-2 justify-center shrink-0">
+      Open unit <ChevronRight size={16} />
+    </span>
+  </Link>
+);
+
 const LessonSection = ({ section, index }) => (
   <section className="card-surface p-7" data-testid={`lesson-section-${index}`}>
     <div className="flex items-start gap-4">
@@ -78,10 +108,22 @@ const LessonSection = ({ section, index }) => (
         <div className="flex items-center gap-2">
           <BookOpen size={18} className="text-terracotta" />
           <h2 className="font-heading text-2xl font-semibold text-ink">{section.title}</h2>
+          {section.track === "challenge" && <span className="tag !text-terracotta">WAEC+ challenge</span>}
         </div>
         {section.intro && <p className="text-muted2 mt-2 leading-relaxed"><MathText text={section.intro} /></p>}
       </div>
     </div>
+
+    {section.diagnostic_checks?.length > 0 && (
+      <div className="mt-5 rounded-xl border border-edge bg-surface p-5">
+        <h3 className="font-heading font-semibold text-ink">Before you start</h3>
+        <div className="grid md:grid-cols-2 gap-3 mt-3">
+          {section.diagnostic_checks.map((item, i) => (
+            <PracticePanel key={`${item.question}-${i}`} item={item} index={i} />
+          ))}
+        </div>
+      </div>
+    )}
 
     {section.key_points?.length > 0 && (
       <div className="mt-5">
@@ -128,6 +170,30 @@ const LessonSection = ({ section, index }) => (
         {section.practice.map((item, i) => (
           <PracticePanel key={`${item.question || item.problem}-${i}`} item={item} index={i} />
         ))}
+      </div>
+    )}
+
+    {section.practice_ladder?.length > 0 && (
+      <div className="mt-5 space-y-4">
+        <h3 className="font-heading font-semibold text-ink">Challenge ladder</h3>
+        {section.practice_ladder.map((group, i) => (
+          <div key={`${group.level}-${i}`} className="rounded-xl border border-edge bg-sand/40 p-4">
+            <div className="font-heading font-semibold text-ink">{group.level}</div>
+            {group.description && <p className="text-sm text-muted2 mt-1"><MathText text={group.description} /></p>}
+            <div className="grid md:grid-cols-2 gap-3 mt-3">
+              {(group.items || []).map((item, idx) => (
+                <PracticePanel key={`${item.question}-${idx}`} item={item} index={idx} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    {section.examiner_notes?.length > 0 && (
+      <div className="mt-5 rounded-xl border border-terracotta/30 bg-terracotta/5 p-5">
+        <h3 className="font-heading font-semibold text-ink">Examiner notes</h3>
+        <div className="mt-3"><BulletList items={section.examiner_notes} /></div>
       </div>
     )}
 
@@ -202,6 +268,8 @@ const Lessons = () => {
   const activeSection = activeSectionSlug
     ? (lesson.lesson_sections || []).find((section) => sectionSlug(section.title) === activeSectionSlug)
     : null;
+  const coreSections = (lesson.lesson_sections || []).filter((section) => section.track !== "challenge");
+  const challengeSections = (lesson.lesson_sections || []).filter((section) => section.track === "challenge");
   const hasRichContent = [
     "objectives", "prerequisites", "visual_blocks", "lesson_sections", "worked_examples",
     "word_problems", "applications", "common_mistakes", "quick_checks",
@@ -301,33 +369,33 @@ const Lessons = () => {
             <p className="text-muted2 mt-2">Open one unit at a time. Each section has its own explanations, diagrams, examples and practice.</p>
           </div>
           <div className="grid gap-4">
-            {lesson.lesson_sections.map((section, i) => (
-              <Link
-                key={`${section.title}-${i}`}
-                to={`/lessons/${subtopicId}/sections/${sectionSlug(section.title)}`}
-                target="_blank"
-                rel="noreferrer"
-                className="card-surface p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
-                data-testid={`lesson-section-link-${i}`}
-              >
-                <div className="flex gap-4">
-                  <span className="font-heading text-terracotta font-bold text-2xl">{String(i + 1).padStart(2, "0")}</span>
-                  <div>
-                    <h3 className="font-heading text-xl font-semibold text-ink group-hover:text-terracotta">{section.title}</h3>
-                    {section.intro && <p className="text-sm text-muted2 mt-1 line-clamp-2"><MathText text={section.intro} /></p>}
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {section.visual_blocks?.length > 0 && <span className="tag">{section.visual_blocks.length} visuals</span>}
-                      {section.examples?.length > 0 && <span className="tag">{section.examples.length} examples</span>}
-                      {section.practice?.length > 0 && <span className="tag">{section.practice.length} practice</span>}
-                    </div>
-                  </div>
-                </div>
-                <span className="btn-secondary inline-flex items-center gap-2 justify-center shrink-0">
-                  Open unit <ChevronRight size={16} />
-                </span>
-              </Link>
+            {coreSections.map((section) => (
+              <SectionCard
+                key={section.title}
+                section={section}
+                index={(lesson.lesson_sections || []).findIndex((item) => item.title === section.title)}
+                subtopicId={subtopicId}
+              />
             ))}
           </div>
+          {challengeSections.length > 0 && (
+            <div className="mt-10">
+              <span className="overline">Optional track</span>
+              <h2 className="font-heading text-2xl font-semibold text-ink mt-2">WAEC+ Challenge Track</h2>
+              <p className="text-muted2 mt-2">For highly motivated students: proof, logic, combinatorial counting and examiner-level reasoning beyond ordinary textbook drills.</p>
+              <div className="grid gap-4 mt-4">
+                {challengeSections.map((section) => (
+                  <SectionCard
+                    key={section.title}
+                    section={section}
+                    index={(lesson.lesson_sections || []).findIndex((item) => item.title === section.title)}
+                    subtopicId={subtopicId}
+                    challenge
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

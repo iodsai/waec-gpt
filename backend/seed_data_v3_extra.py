@@ -912,7 +912,13 @@ SET_OPERATIONS_SECTIONS = [
 SET_OPERATIONS_SECTIONS.extend([
     {
         "title": "Module 11: Advanced Logical and Set Interpretation",
+        "track": "challenge",
         "intro": "This examiner-extension module uses set regions to explain implication, exclusive membership and disjointness. These questions are beyond ordinary textbook drills but useful for top WAEC Further Mathematics candidates.",
+        "diagnostic_checks": [
+            {"question": "Which region makes the statement 'if A then B' false?", "answer": "$A\\cap B'$"},
+            {"question": "What does it mean if $x\\in A\\cap B'$?", "answer": "x is in A but not in B."},
+            {"question": "If A and B are disjoint, what is $A\\cap B$?", "answer": "$\\emptyset$"},
+        ],
         "key_points": [
             "In set logic, an implication $A\\Rightarrow B$ means every element in A must also be in B.",
             "The statement $A\\Rightarrow B$ fails only in the region $A\\cap B'$: in A but not in B.",
@@ -975,6 +981,37 @@ SET_OPERATIONS_SECTIONS.extend([
             {"question": "Explain why $A\\Rightarrow B$ fails in the region $A\\cap B'$.", "answer": "Because an element there is in A but not in B, contradicting 'if A then B'."},
             {"question": "Describe $(A\\cup B) - (A\\cap B)$ in words.", "answer": "Elements in exactly one of A and B."},
         ],
+        "practice_ladder": [
+            {
+                "level": "Level 1: Interpret the region",
+                "description": "Translate symbols into ordinary language before trying to prove anything.",
+                "items": [
+                    {"question": "Describe $A'\\cap B$ in words.", "answer": "Elements in B but not in A."},
+                    {"question": "Describe $A\\cup B'$ in words.", "answer": "Elements that are in A or outside B."},
+                ],
+            },
+            {
+                "level": "Level 2: Simplify with laws",
+                "description": "Use De Morgan, distributive and absorption laws.",
+                "items": [
+                    {"question": "Simplify $(A\\cap B')'$.", "answer": "$A'\\cup B$"},
+                    {"question": "Simplify $(A\\cup B)\\cap(A\\cup B')$.", "answer": "$A$"},
+                ],
+            },
+            {
+                "level": "Level 3: Prove like an examiner",
+                "description": "Use element-by-element reasoning.",
+                "items": [
+                    {"question": "Prove that $A\\subseteq B\\Rightarrow A\\cup B=B$.", "answer": "Every element in A is already in B, so adding A to B changes nothing."},
+                    {"question": "Prove that $(A-B)\\cap B=\\emptyset$.", "answer": "An element of $A-B$ is not in B, so it cannot also belong to B."},
+                ],
+            },
+        ],
+        "examiner_notes": [
+            "When proving set identities, do not rely only on formulas; explain what happens to an arbitrary element x.",
+            "The expression $(A\\cap B')\\cup(A'\\cap B)$ is the symmetric difference: exactly one set, not both.",
+            "For implication, remember the only forbidden region is 'inside A but outside B'.",
+        ],
         "applications": [
             {"title": "Logic gates and rules", "body": "Implication and complement rules are used in digital logic, database filters and rule-based expert systems."},
             {"title": "Classification systems", "body": "Exactly-one membership helps classify objects that satisfy one condition but not both, such as materials that are conductive or magnetic, but not both."},
@@ -982,7 +1019,13 @@ SET_OPERATIONS_SECTIONS.extend([
     },
     {
         "title": "Module 12: Combinatorial Set Problems",
+        "track": "challenge",
         "intro": "This examiner-extension module treats counting subsets and pairs of subsets. It turns set theory into combinatorics, helping strong students handle questions they rarely see in ordinary textbooks.",
+        "diagnostic_checks": [
+            {"question": "How many subsets does a set with n elements have?", "answer": "$2^n$"},
+            {"question": "How many 3-element subsets can be chosen from 8 elements?", "answer": "$\\binom{8}{3}$"},
+            {"question": "If $B\\subseteq C$, can an element be in B but outside C?", "answer": "No. Every element of B must also be in C."},
+        ],
         "key_points": [
             "To count subsets with exactly r elements from an n-element set, use $\\binom{n}{r}$.",
             "At most 3 elements means 0, 1, 2 or 3 elements.",
@@ -1038,6 +1081,37 @@ SET_OPERATIONS_SECTIONS.extend([
         "practice": [
             {"question": "How many subsets of a 7-element set contain exactly 2 elements?", "answer": "$\\binom{7}{2}=21$"},
             {"question": "How many ordered pairs $(B,C)$ satisfy $B\\subseteq C\\subseteq A$ if $|A|=4$?", "answer": "$3^4=81$"},
+        ],
+        "practice_ladder": [
+            {
+                "level": "Level 1: Exact-size subsets",
+                "description": "Use combinations when the question says exactly r elements.",
+                "items": [
+                    {"question": "How many subsets of a 9-element set contain exactly 4 elements?", "answer": "$\\binom{9}{4}=126$"},
+                    {"question": "How many subsets of a 6-element set contain at most 2 elements?", "answer": "$\\binom{6}{0}+\\binom{6}{1}+\\binom{6}{2}=1+6+15=22$"},
+                ],
+            },
+            {
+                "level": "Level 2: Membership-choice method",
+                "description": "Assign each element a small number of possible statuses.",
+                "items": [
+                    {"question": "If $|A|=5$, how many ordered pairs satisfy $B\\subseteq C\\subseteq A$?", "answer": "$3^5=243$"},
+                    {"question": "If $|A|=4$, how many ordered pairs satisfy $B\\cap C=\\emptyset$?", "answer": "$3^4=81$"},
+                ],
+            },
+            {
+                "level": "Level 3: Examiner challenge",
+                "description": "Recognise when the count changes because the pair is ordered or unordered.",
+                "items": [
+                    {"question": "If $|A|=3$, list the three statuses used to count $B\\subseteq C\\subseteq A$.", "answer": "Outside C; in C only; in B and C."},
+                    {"question": "Why is the answer for disjoint ordered pairs $(B,C)$ not $2^n$?", "answer": "Each element has three choices, not two: B, C, or neither."},
+                ],
+            },
+        ],
+        "examiner_notes": [
+            "The phrase 'ordered pairs' means $(B,C)$ and $(C,B)$ may count differently.",
+            "For nested subsets $B\\subseteq C\\subseteq A$, do not choose B and C independently; the nesting condition restricts choices.",
+            "When counting disjoint subset pairs, think element by element: B, C or neither.",
         ],
         "applications": [
             {"title": "Feature selection", "body": "Choosing subsets of variables is central in computing and data science. Restrictions such as nested or disjoint choices lead to combinatorial counts."},

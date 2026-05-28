@@ -83,6 +83,15 @@ const ObjectivePane = ({ question, onTryAgain, onGenerateSimilar, similarLoading
               </li>
             ))}
           </ol>
+          {!result.correct && result.feedback_tags?.length > 0 && (
+            <div className="mt-4 rounded-lg border border-error/20 bg-error/5 p-4">
+              <div className="font-heading font-semibold text-ink">Likely mistake pattern</div>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {result.feedback_tags.map((tag) => <span key={tag} className="tag !text-error">{tag}</span>)}
+              </div>
+              {result.recommendation && <p className="text-sm text-muted2 mt-2"><MathText text={result.recommendation} /></p>}
+            </div>
+          )}
           <button onClick={onTryAgain} className="btn-ghost mt-5 text-sm" data-testid="try-again-btn">
             Try this question again
           </button>

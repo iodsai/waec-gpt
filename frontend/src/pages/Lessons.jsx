@@ -58,6 +58,12 @@ const WorkedExamplePanel = ({ example, index }) => (
       </ol>
     )}
     {example.answer && <div className="mt-4 rounded-lg bg-success/10 text-success px-4 py-2 text-sm font-medium"><MathText text={example.answer} /></div>}
+    {example.examiner_tip && (
+      <div className="mt-4 rounded-lg border border-terracotta/30 bg-terracotta/5 px-4 py-3 text-sm text-ink">
+        <div className="font-heading font-semibold text-terracotta">Chief Examiner Tip</div>
+        <div className="mt-1"><MathText text={example.examiner_tip} /></div>
+      </div>
+    )}
   </div>
 );
 
@@ -170,6 +176,18 @@ const LessonSection = ({ section, index }) => (
         {section.practice.map((item, i) => (
           <PracticePanel key={`${item.question || item.problem}-${i}`} item={item} index={i} />
         ))}
+      </div>
+    )}
+
+    {section.module_quiz?.length > 0 && (
+      <div className="mt-5 rounded-xl border border-edge bg-surface p-5">
+        <h3 className="font-heading font-semibold text-ink">Module mastery check</h3>
+        <p className="text-sm text-muted2 mt-1">Try these before moving on. If you miss two or more, review the examples above.</p>
+        <div className="grid md:grid-cols-2 gap-3 mt-3">
+          {section.module_quiz.map((item, i) => (
+            <PracticePanel key={`${item.question}-${i}`} item={item} index={i} />
+          ))}
+        </div>
       </div>
     )}
 

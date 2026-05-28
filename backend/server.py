@@ -137,6 +137,8 @@ class AttemptResp(BaseModel):
     correct: bool
     correct_answer: str
     solution_steps: List[str]
+    feedback_tags: List[str] = Field(default_factory=list)
+    recommendation: Optional[str] = None
 
 class ChatReq(BaseModel):
     session_id: str
@@ -279,6 +281,8 @@ async def lifespan(app: FastAPI):
             "question": q["question"], "options": q["options"],
             "answer": q["answer"], "solution_steps": q["solution_steps"],
             "question_type": q.get("question_type", "objective"), "source": "seed",
+            "feedback_tags": q.get("feedback_tags", []),
+            "recommendation": q.get("recommendation"),
             "created_at": datetime.now(timezone.utc).isoformat(),
         } for q in QUESTIONS_V3]
         if docs:
@@ -297,12 +301,27 @@ async def lifespan(app: FastAPI):
                     "question": q["question"], "options": q["options"],
                     "answer": q["answer"], "solution_steps": q["solution_steps"],
                     "question_type": q.get("question_type", "objective"), "source": "seed",
+                    "feedback_tags": q.get("feedback_tags", []),
+                    "recommendation": q.get("recommendation"),
                     "created_at": datetime.now(timezone.utc).isoformat(),
                 } for q in topic_qs])
                 logging.info(f"Top-up seeded {len(topic_qs)} questions for topic '{_tid}'")
 
     # Backfill question_type if missing
     await db.questions.update_many({"question_type": {"$exists": False}}, {"$set": {"question_type": "objective"}})
+    seeded_feedback = {
+        q["question"]: {
+            "feedback_tags": q.get("feedback_tags", []),
+            "recommendation": q.get("recommendation"),
+        }
+        for q in QUESTIONS_V3
+        if q.get("feedback_tags") or q.get("recommendation")
+    }
+    for question_text, feedback in seeded_feedback.items():
+        await db.questions.update_many(
+            {"source": "seed", "question": question_text},
+            {"$set": feedback},
+        )
 
     # Seed demo student + admin
     if not await db.users.find_one({"email": "student@waec.com"}):
@@ -658,7 +677,13 @@ async def submit_attempt(req: AttemptReq, current=Depends(get_current_user)):
     # SRS update (only for objective questions, not theory reveals)
     if not is_theory:
         await _update_srs_card(current["id"], req.question_id, correct, is_review=False)
-    return AttemptResp(correct=correct, correct_answer=qdoc["answer"], solution_steps=qdoc["solution_steps"])
+    return AttemptResp(
+        correct=correct,
+        correct_answer=qdoc["answer"],
+        solution_steps=qdoc["solution_steps"],
+        feedback_tags=qdoc.get("feedback_tags", []),
+        recommendation=qdoc.get("recommendation"),
+    )
 
 @api.get("/progress")
 async def get_progress(current=Depends(get_current_user)):

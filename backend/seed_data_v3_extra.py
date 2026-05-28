@@ -1120,6 +1120,113 @@ SET_OPERATIONS_SECTIONS.extend([
     },
 ])
 
+def _sets_module(title):
+    return next(section for section in SET_OPERATIONS_SECTIONS if section["title"] == title)
+
+def _add_examiner_tip(module_title, example_title, tip):
+    for example in _sets_module(module_title).get("examples", []):
+        if example.get("title") == example_title:
+            example["examiner_tip"] = tip
+            return
+
+_add_examiner_tip(
+    "Module 3: Subsets and Power Sets",
+    "Counting subsets",
+    "WAEC candidates often forget that the empty set and the whole set are both counted as subsets. Subtract only when the question says proper, non-empty, or non-empty proper.",
+)
+_add_examiner_tip(
+    "Module 5: Set Operations",
+    "Compute operations from listed sets",
+    "When writing a union, list each element once. Repetition such as $\\{1,3,3,5\\}$ is not a correct set notation answer.",
+)
+_add_examiner_tip(
+    "Module 7: Cardinality of Sets",
+    "Why subtract the overlap?",
+    "The overlap has already been included inside both totals. Subtract it once in a two-set union; do not subtract it twice unless the question asks for exactly one.",
+)
+_add_examiner_tip(
+    "Module 7: Cardinality of Sets",
+    "At least one of three subjects",
+    "For three sets, the middle region is counted three times in the single totals, removed three times through pair overlaps, and must be added back once.",
+)
+_add_examiner_tip(
+    "Module 7: Cardinality of Sets",
+    "Finding exactly one",
+    "Exactly one is not the same as at least one. Remove the overlap from each set before adding the single-only regions.",
+)
+_add_examiner_tip(
+    "Module 8: Application of Sets to Word Problems",
+    "Two unknown regions using simultaneous equations",
+    "Always name the diagram regions before forming equations. If the unknowns are region values, the equations become much cleaner.",
+)
+_add_examiner_tip(
+    "Module 8: Application of Sets to Word Problems",
+    "Three unknown single regions",
+    "When three unknown single regions are used, subtract the known overlaps from each subject total first. The remaining equations are usually simultaneous equations in the single-only regions.",
+)
+_add_examiner_tip(
+    "Module 10: Practical WAEC Problem Solving",
+    "Three-club Venn diagram by regions",
+    "Begin from the centre, then calculate pair-only regions, then single-only regions, then the outside region. This order prevents most WAEC Venn diagram errors.",
+)
+_add_examiner_tip(
+    "Module 11: Advanced Logical and Set Interpretation",
+    "Show that implication is $A'\\cup B$",
+    "In proof questions, identify the forbidden region first. For implication, the forbidden region is always 'inside A but outside B'.",
+)
+_add_examiner_tip(
+    "Module 11: Advanced Logical and Set Interpretation",
+    "Disjointness and complement proof",
+    "A strong proof should work in both directions. Proving only one direction does not prove an 'if and only if' statement.",
+)
+_add_examiner_tip(
+    "Module 12: Combinatorial Set Problems",
+    "Counting nested subset pairs",
+    "Do not choose B and C independently. The condition $B\\subseteq C$ links them, so count possible statuses for each element instead.",
+)
+_add_examiner_tip(
+    "Module 12: Combinatorial Set Problems",
+    "Counting disjoint subset pairs",
+    "The answer is $3^n$, not $2^n$, because each element has three choices: B, C, or neither.",
+)
+
+_sets_module("Module 1: Introduction to Sets")["module_quiz"] = [
+    {"question": "Why is 'the set of brilliant students' not a well-defined set unless a rule is given?", "answer": "Because people may disagree about who is brilliant; a precise rule is needed."},
+    {"question": "Write the set of factors of 12 in roster notation.", "answer": "$\\{1,2,3,4,6,12\\}$"},
+]
+_sets_module("Module 3: Subsets and Power Sets")["module_quiz"] = [
+    {"question": "A set has 6 elements. Find the number of subsets, proper subsets and non-empty proper subsets.", "solution": ["All subsets: $2^6=64$.", "Proper subsets: $64-1=63$.", "Non-empty proper subsets: $64-2=62$."], "answer": "64, 63 and 62."},
+    {"question": "If $\\mathcal{P}(A)$ has 128 elements, find $n(A)$.", "solution": ["$2^n=128$.", "Since $128=2^7$, $n=7$."], "answer": "$n(A)=7$."},
+]
+_sets_module("Module 5: Set Operations")["module_quiz"] = [
+    {"question": "Let $U=\\{1,2,3,4,5,6\\}$, $A=\\{1,2,5\\}$ and $B=\\{2,3,5,6\\}$. Find $A\\cap B$ and $A-B$.", "answer": "$A\\cap B=\\{2,5\\}$ and $A-B=\\{1\\}$."},
+    {"question": "In words, what does $A'\\cap B$ mean?", "answer": "Elements that are in B but not in A."},
+]
+_sets_module("Module 7: Cardinality of Sets")["module_quiz"] = [
+    {"question": "If $n(A)=32$, $n(B)=27$ and $n(A\\cap B)=11$, find $n(A\\cup B)$.", "solution": ["Use $n(A\\cup B)=n(A)+n(B)-n(A\\cap B)$.", "$32+27-11=48$."], "answer": "48"},
+    {"question": "In a three-set formula, why is $n(A\\cap B\\cap C)$ added at the end?", "answer": "The middle region is counted three times in the single totals and subtracted three times in pair overlaps, so it must be restored once."},
+]
+_sets_module("Module 8: Application of Sets to Word Problems")["module_quiz"] = [
+    {"question": "A only and B only total 58. A only is 12 more than B only. Find both values.", "solution": ["Let $x$ be A only and $y$ be B only.", "$x+y=58$ and $x-y=12$.", "Adding gives $2x=70$, so $x=35$.", "$y=58-35=23$."], "answer": "A only = 35, B only = 23."},
+    {"question": "In a class of 90 students, 50 offer Economics, 42 offer Geography and 18 offer both. How many offer neither?", "solution": ["At least one = $50+42-18=74$.", "Neither = $90-74=16$."], "answer": "16"},
+]
+_sets_module("Module 9: Complement of a Set")["module_quiz"] = [
+    {"question": "If $n(U)=120$ and $n(A\\cup B)=86$, find $n((A\\cup B)')$.", "answer": "$120-86=34$."},
+    {"question": "Use De Morgan's Law to rewrite $(A\\cup B\\cup C)'$.", "answer": "$A'\\cap B'\\cap C'$."},
+]
+_sets_module("Module 10: Practical WAEC Problem Solving")["module_quiz"] = [
+    {"question": "In a three-set Venn problem, list the safest order for filling the diagram.", "answer": "All three first, pair-only regions next, single-only regions next, then the outside/none region."},
+    {"question": "What common error happens if a student uses pair totals as pair-only regions?", "answer": "The all-three region is counted twice or placed incorrectly, making the single-only regions wrong."},
+]
+_sets_module("Module 11: Advanced Logical and Set Interpretation")["module_quiz"] = [
+    {"question": "Which region disproves $A\\Rightarrow B$?", "answer": "$A\\cap B'$."},
+    {"question": "Simplify $(A\\cap B')'$ using De Morgan's Law.", "solution": ["$(A\\cap B')'=A'\\cup(B')'$.", "So $(A\\cap B')'=A'\\cup B$."], "answer": "$A'\\cup B$."},
+]
+_sets_module("Module 12: Combinatorial Set Problems")["module_quiz"] = [
+    {"question": "How many subsets of a 9-element set have at least 7 elements?", "solution": ["At least 7 means 7, 8 or 9 elements.", "$\\binom{9}{7}+\\binom{9}{8}+\\binom{9}{9}=36+9+1=46$."], "answer": "46"},
+    {"question": "If $|A|=7$, how many ordered pairs satisfy $B\\subseteq C\\subseteq A$?", "answer": "$3^7=2187$."},
+]
+
 SUBSETS_POWER_SECTIONS = [
     {
         "title": "Subset Meaning, Notation and Equality",
@@ -1777,11 +1884,13 @@ EXTRA_LESSONS = {
 
 EXTRA_QUESTIONS = []
 
-def Q(topic, subtopic, year, difficulty, question, options, answer, steps, question_type="objective"):
+def Q(topic, subtopic, year, difficulty, question, options, answer, steps, question_type="objective", feedback_tags=None, recommendation=None):
     EXTRA_QUESTIONS.append({
         "topic": topic, "subtopic": subtopic, "year": year, "difficulty": difficulty,
         "question": question, "options": options, "answer": answer, "solution_steps": steps,
         "question_type": question_type,
+        "feedback_tags": feedback_tags or [],
+        "recommendation": recommendation,
     })
 
 def TQ(topic, subtopic, year, difficulty, question, answer, steps):
@@ -1876,6 +1985,53 @@ for yr, diff, q, ans, st in [
     (2026, "hard", "Let A be a set with 10 elements. Find the number of pairs of subsets $(B,C)$ such that $B\\cap C=\\emptyset$.", "$3^{10}=59049$ pairs.", ["Each element of A has three choices: enter B, enter C, or enter neither.", "It cannot enter both because $B\\cap C=\\emptyset$.", "The choices are independent for all 10 elements.", "Therefore the number of pairs is $3^{10}=59049$."]),
 ]:
     TQ("sets-logic", "subsets-power", yr, diff, q, ans, st)
+
+_SETS_FEEDBACK_RULES = [
+    (
+        "$n(A)=15$, $n(B)=10$, $n(A\\cap B)=4$",
+        ["double-counted overlap", "two-set union formula"],
+        "Review Module 7: Cardinality of Sets, especially why the overlap is subtracted once.",
+    ),
+    (
+        "$A\\cup A'",
+        ["complement rule", "universal set"],
+        "Review Module 9: Complement of a Set. A set together with its complement fills the universal set.",
+    ),
+    (
+        "Subsets of $\\{a,b\\}$",
+        ["subset count", "empty set included"],
+        "Review Module 3: Subsets and Power Sets. A two-element set has $2^2$ subsets, including $\\emptyset$ and the whole set.",
+    ),
+    (
+        "Proper subsets of $\\{1,2,3\\}$",
+        ["proper subset", "subtract the whole set"],
+        "Review Module 3. Proper subsets exclude the original set itself.",
+    ),
+    (
+        "Three sets: $n(A\\cup B\\cup C)",
+        ["three-set inclusion-exclusion", "restore the centre"],
+        "Review Module 7. In three-set counting, add the all-three region at the end.",
+    ),
+    (
+        "If $A$ and $B$ are disjoint",
+        ["disjoint sets", "zero intersection"],
+        "Review Module 4 and Module 7. Disjoint sets have no overlap, so the union count is just the sum.",
+    ),
+    (
+        "$\\emptyset$ is a subset",
+        ["empty set subset rule"],
+        "Review Module 3. The empty set is a subset of every set because it has no element that can fail the test.",
+    ),
+]
+
+for _question in EXTRA_QUESTIONS:
+    if _question.get("topic") != "sets-logic" or _question.get("question_type") != "objective":
+        continue
+    for _needle, _tags, _recommendation in _SETS_FEEDBACK_RULES:
+        if _needle in _question["question"]:
+            _question["feedback_tags"] = _tags
+            _question["recommendation"] = _recommendation
+            break
 
 # ============ SURDS & POLYNOMIALS — 50 Q ============
 for yr, diff, q, opts, ans, st in [

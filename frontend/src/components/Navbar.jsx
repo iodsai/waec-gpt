@@ -8,13 +8,13 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const linkCls = ({ isActive }) =>
-    `px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+    `px-2 xl:px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 xl:gap-2 ${
       isActive ? "bg-sand text-ink" : "text-muted2 hover:text-ink hover:bg-sand/60"
     }`;
 
   return (
     <header className="bg-paper border-b border-edge sticky top-0 z-40" data-testid="app-navbar">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-16 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2 shrink-0" data-testid="nav-logo">
           <div className="w-9 h-9 rounded-xl bg-terracotta grid place-items-center text-white font-heading font-bold text-lg">
             W

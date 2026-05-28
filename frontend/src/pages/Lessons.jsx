@@ -113,24 +113,25 @@ const statusStyle = {
   not_started: "",
 };
 
-const SetsLearningEngine = ({ mastery }) => {
+const SetsLearningEngine = ({ mastery, courseName = "Sets", testId = "sets-learning-engine" }) => {
+  const courseLower = courseName.toLowerCase();
   if (!mastery) {
     return (
-      <div className="card-surface p-6 flex items-center gap-3 text-muted2" data-testid="sets-engine-loading">
-        <Target size={18} className="text-terracotta" /> Loading Sets mastery engine...
+      <div className="card-surface p-6 flex items-center gap-3 text-muted2" data-testid={`${testId}-loading`}>
+        <Target size={18} className="text-terracotta" /> Loading {courseName} mastery engine...
       </div>
     );
   }
   const next = mastery.summary?.next_module;
   const modules = mastery.modules || [];
   return (
-    <div className="card-surface p-6" data-testid="sets-learning-engine">
+    <div className="card-surface p-6" data-testid={testId}>
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5">
         <div>
           <span className="overline">Learning engine</span>
           <h2 className="font-heading text-2xl font-semibold text-ink mt-2">Teach, diagnose, remediate, retest</h2>
           <p className="text-sm text-muted2 mt-2 max-w-2xl">
-            This panel watches your Sets attempts, finds weak modules and mistake patterns, then sends you back to the right lesson section and a fresh retest.
+            This panel watches your {courseName} attempts, finds weak modules and mistake patterns, then sends you back to the right lesson section and a fresh retest.
           </p>
         </div>
         <div className="rounded-xl border border-edge bg-sand/40 p-4 min-w-[220px]">
@@ -149,7 +150,7 @@ const SetsLearningEngine = ({ mastery }) => {
         </Link>
         <Link to={mastery.diagnostic.path} className="rounded-xl border border-edge bg-surface p-4 hover:border-terracotta/40">
           <div className="font-heading font-semibold text-ink">2. Diagnose</div>
-          <p className="text-sm text-muted2 mt-1">Take a mixed Sets diagnostic.</p>
+          <p className="text-sm text-muted2 mt-1">Take a mixed {courseName} diagnostic.</p>
         </Link>
         <Link to={next?.lesson_path || "#guided-sections"} className="rounded-xl border border-edge bg-surface p-4 hover:border-terracotta/40">
           <div className="font-heading font-semibold text-ink">3. Remediate</div>
@@ -163,7 +164,7 @@ const SetsLearningEngine = ({ mastery }) => {
 
       <div className="mt-5 grid md:grid-cols-2 gap-3">
         {modules.map((module) => (
-          <div key={module.module} className="rounded-xl border border-edge bg-surface p-4" data-testid={`sets-module-mastery-${module.module}`}>
+          <div key={module.module} className="rounded-xl border border-edge bg-surface p-4" data-testid={`${courseLower}-module-mastery-${module.module}`}>
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="text-xs uppercase tracking-[0.18em] text-terracotta font-bold">Module {module.module}</div>
@@ -320,7 +321,7 @@ const Lessons = () => {
   const { subtopicId, sectionSlug: activeSectionSlug } = useParams();
   const [topics, setTopics] = useState(null);
   const [lesson, setLesson] = useState(null);
-  const [setsMastery, setSetsMastery] = useState(null);
+  const [masteryEngine, setMasteryEngine] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -336,10 +337,14 @@ const Lessons = () => {
       .finally(() => setLoading(false));
     if (subtopicId === "set-operations") {
       http.get("/sets/mastery")
-        .then((r) => setSetsMastery(r.data))
-        .catch(() => setSetsMastery(null));
+        .then((r) => setMasteryEngine({ data: r.data, courseName: "Sets", testId: "sets-learning-engine" }))
+        .catch(() => setMasteryEngine(null));
+    } else if (subtopicId === "propositional-logic" || subtopicId === "truth-tables") {
+      http.get("/logic/mastery")
+        .then((r) => setMasteryEngine({ data: r.data, courseName: "Logic", testId: "logic-learning-engine" }))
+        .catch(() => setMasteryEngine(null));
     } else {
-      setSetsMastery(null);
+      setMasteryEngine(null);
     }
   }, [subtopicId]);
 
@@ -461,9 +466,9 @@ const Lessons = () => {
         </div>
       )}
 
-      {subtopicId === "set-operations" && (
+      {(subtopicId === "set-operations" || subtopicId === "propositional-logic" || subtopicId === "truth-tables") && (
         <div className="mt-8">
-          <SetsLearningEngine mastery={setsMastery} />
+          <SetsLearningEngine mastery={masteryEngine?.data} courseName={masteryEngine?.courseName || "Course"} testId={masteryEngine?.testId || "learning-engine"} />
         </div>
       )}
 

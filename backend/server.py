@@ -669,6 +669,27 @@ SETS_MODULES = [
     {"module": 12, "title": "Combinatorial Set Problems", "slug": "module-12-combinatorial-set-problems"},
 ]
 SETS_MODULE_BY_NUM = {m["module"]: m for m in SETS_MODULES}
+SETS_LEARNING_SUBTOPICS = ["set-operations", "venn-diagrams", "subsets-power"]
+LOGIC_LEARNING_SUBTOPICS = ["propositional-logic", "truth-tables"]
+
+LOGIC_MODULES = [
+    {"module": 1, "title": "Statements and Truth Values", "slug": "logic-module-1-statements-and-truth-values"},
+    {"module": 2, "title": "Statement Symbols and Translation", "slug": "logic-module-2-statement-symbols-and-translation"},
+    {"module": 3, "title": "Negation", "slug": "logic-module-3-negation"},
+    {"module": 4, "title": "Conjunction and Disjunction", "slug": "logic-module-4-conjunction-and-disjunction"},
+    {"module": 5, "title": "Implication", "slug": "logic-module-5-implication"},
+    {"module": 6, "title": "Converse, Inverse and Contrapositive", "slug": "logic-module-6-converse-inverse-and-contrapositive"},
+    {"module": 7, "title": "Truth Table Construction", "slug": "logic-module-7-truth-table-construction"},
+    {"module": 8, "title": "Evaluating Compound Statements", "slug": "logic-module-8-evaluating-compound-statements"},
+    {"module": 9, "title": "Tautology, Contradiction and Contingency", "slug": "logic-module-9-tautology-contradiction-and-contingency"},
+    {"module": 10, "title": "Logical Equivalence and Laws", "slug": "logic-module-10-logical-equivalence-and-laws"},
+    {"module": 11, "title": "Arguments, Premises and Conclusions", "slug": "logic-module-11-arguments-premises-and-conclusions"},
+    {"module": 12, "title": "Valid Deduction Patterns", "slug": "logic-module-12-valid-deduction-patterns"},
+    {"module": 13, "title": "Invalid Arguments and Fallacies", "slug": "logic-module-13-invalid-arguments-and-fallacies"},
+    {"module": 14, "title": "Applications of Logic", "slug": "logic-module-14-applications-of-logic"},
+    {"module": 15, "title": "WAEC Mixed Strategy and Challenge Track", "slug": "logic-module-15-waec-mixed-strategy-and-challenge-track"},
+]
+LOGIC_MODULE_BY_NUM = {m["module"]: m for m in LOGIC_MODULES}
 
 
 def _extract_module_from_text(text: str) -> Optional[int]:
@@ -722,19 +743,90 @@ def _sets_module_for_question(qdoc: dict) -> int:
     return 5
 
 
+def _logic_module_from_text(text: str) -> Optional[int]:
+    marker = "Logic Module "
+    idx = (text or "").find(marker)
+    if idx < 0:
+        return None
+    digits = ""
+    for ch in text[idx + len(marker):]:
+        if ch.isdigit():
+            digits += ch
+        else:
+            break
+    if not digits:
+        return None
+    value = int(digits)
+    return value if value in LOGIC_MODULE_BY_NUM else None
+
+
+def _logic_module_for_question(qdoc: dict) -> int:
+    module = _logic_module_from_text(qdoc.get("recommendation") or "")
+    if module:
+        return module
+    text = " ".join([
+        qdoc.get("question", ""),
+        qdoc.get("subtopic", ""),
+        " ".join(qdoc.get("feedback_tags", []) or []),
+    ]).lower()
+    module_keywords = [
+        (15, ["waec mixed", "counterexample", "challenge"]),
+        (14, ["circuit", "program", "set logic", "logic and sets", "applications"]),
+        (13, ["fallacy", "affirming consequent", "denying antecedent", "invalid"]),
+        (12, ["modus ponens", "modus tollens", "deduction", "syllogism"]),
+        (11, ["premise", "conclusion", "argument"]),
+        (10, ["equivalent", "equivalence", "de morgan", "simplify", "\\neg(p\\land", "\\neg(p\\lor"]),
+        (9, ["tautology", "contradiction", "contingency", "classify"]),
+        (8, ["evaluate", "compound"]),
+        (7, ["truth table", "row count", "rows"]),
+        (6, ["converse", "inverse", "contrapositive"]),
+        (5, ["implication", "\\rightarrow", "\\Rightarrow", "false only"]),
+        (4, ["conjunction", "disjunction", "\\land", "\\lor", "and", "or"]),
+        (3, ["negation", "negate", "not", "\\neg", "inequality"]),
+        (2, ["translate", "symbol", "english"]),
+        (1, ["statement", "open sentence", "truth value"]),
+    ]
+    for mod, keywords in module_keywords:
+        if any(keyword in text for keyword in keywords):
+            return mod
+    if qdoc.get("subtopic") == "truth-tables":
+        return 7
+    return 2
+
+
 def _sets_module_path(module: int) -> str:
     meta = SETS_MODULE_BY_NUM[module]
     return f"/lessons/set-operations/sections/{meta['slug']}"
 
 
+def _logic_module_path(module: int) -> str:
+    meta = LOGIC_MODULE_BY_NUM[module]
+    return f"/lessons/propositional-logic/sections/{meta['slug']}"
+
+
 async def _sets_question_pool() -> list[dict]:
     docs = await db.questions.find(
-        {"topic": "sets-logic", "question_type": "objective"},
+        {"topic": "sets-logic", "subtopic": {"$in": SETS_LEARNING_SUBTOPICS}, "question_type": "objective"},
         {"_id": 0, "id": 1, "topic": 1, "subtopic": 1, "question": 1, "difficulty": 1,
          "feedback_tags": 1, "recommendation": 1}
     ).to_list(500)
     for d in docs:
         d["sets_module"] = _sets_module_for_question(d)
+    return docs
+
+
+async def _logic_question_pool() -> list[dict]:
+    docs = await db.questions.find(
+        {
+            "topic": "sets-logic",
+            "subtopic": {"$in": LOGIC_LEARNING_SUBTOPICS},
+            "question_type": "objective",
+        },
+        {"_id": 0, "id": 1, "topic": 1, "subtopic": 1, "question": 1, "difficulty": 1,
+         "feedback_tags": 1, "recommendation": 1}
+    ).to_list(500)
+    for d in docs:
+        d["logic_module"] = _logic_module_for_question(d)
     return docs
 
 
@@ -985,7 +1077,8 @@ async def submit_attempt(req: AttemptReq, current=Depends(get_current_user)):
         "subtopic": qdoc["subtopic"], "selected": req.selected, "correct": correct,
         "feedback_tags": qdoc.get("feedback_tags", []) if not correct else [],
         "recommendation": qdoc.get("recommendation") if not correct else None,
-        "sets_module": _sets_module_for_question(qdoc) if qdoc.get("topic") == "sets-logic" else None,
+        "sets_module": _sets_module_for_question(qdoc) if qdoc.get("subtopic") in SETS_LEARNING_SUBTOPICS else None,
+        "logic_module": _logic_module_for_question(qdoc) if qdoc.get("subtopic") in LOGIC_LEARNING_SUBTOPICS else None,
         "difficulty": qdoc.get("difficulty"),
         "theory_grade": theory_grade,
         "is_reveal": is_theory,  # theory reveals don't count toward accuracy
@@ -1218,11 +1311,36 @@ def _pick_sets_ids(pool: list[dict], module: Optional[int] = None, limit: int = 
     return [q["id"] for q in picked[:limit]]
 
 
+def _pick_logic_ids(pool: list[dict], module: Optional[int] = None, limit: int = 8, exclude_ids: Optional[set] = None) -> list[str]:
+    exclude_ids = exclude_ids or set()
+    items = [q for q in pool if q["id"] not in exclude_ids and (module is None or q.get("logic_module") == module)]
+    buckets = {"easy": [], "medium": [], "hard": []}
+    for q in items:
+        buckets.setdefault(q.get("difficulty", "medium"), []).append(q)
+    picked: list[dict] = []
+    pattern = ["easy", "medium", "medium", "hard", "easy", "medium", "hard", "hard"]
+    for difficulty in pattern:
+        if len(picked) >= limit:
+            break
+        bucket = buckets.get(difficulty) or []
+        if bucket:
+            picked.append(bucket.pop(0))
+    if len(picked) < limit:
+        picked_ids = {q["id"] for q in picked}
+        picked.extend([q for q in items if q["id"] not in picked_ids][:limit - len(picked)])
+    return [q["id"] for q in picked[:limit]]
+
+
 @api.get("/sets/mastery")
 async def sets_mastery(current=Depends(get_current_user)):
     """Teach -> diagnose -> remediate -> retest -> mastery loop for the Sets course."""
     attempts = await db.attempts.find(
-        {"user_id": current["id"], "topic": "sets-logic", "$or": [{"is_reveal": {"$exists": False}}, {"is_reveal": False}]},
+        {
+            "user_id": current["id"],
+            "topic": "sets-logic",
+            "subtopic": {"$in": SETS_LEARNING_SUBTOPICS},
+            "$or": [{"is_reveal": {"$exists": False}}, {"is_reveal": False}],
+        },
         {"_id": 0}
     ).to_list(5000)
     qids = list({a["question_id"] for a in attempts})
@@ -1327,6 +1445,127 @@ async def sets_mastery(current=Depends(get_current_user)):
         "diagnostic": {
             "label": "Diagnose",
             "message": "Take a mixed Sets diagnostic. Your missed tags will drive the review plan.",
+            "question_ids": diagnostic_ids,
+            "path": diagnostic_path,
+        },
+        "modules": modules,
+    }
+
+
+@api.get("/logic/mastery")
+async def logic_mastery(current=Depends(get_current_user)):
+    """Teach -> diagnose -> remediate -> retest -> mastery loop for WAEC Logic."""
+    attempts = await db.attempts.find(
+        {
+            "user_id": current["id"],
+            "topic": "sets-logic",
+            "subtopic": {"$in": LOGIC_LEARNING_SUBTOPICS},
+            "$or": [{"is_reveal": {"$exists": False}}, {"is_reveal": False}],
+        },
+        {"_id": 0}
+    ).to_list(5000)
+    qids = list({a["question_id"] for a in attempts})
+    qmap: dict = {}
+    if qids:
+        async for qd in db.questions.find(
+            {"id": {"$in": qids}},
+            {"_id": 0, "id": 1, "topic": 1, "subtopic": 1, "question": 1, "difficulty": 1,
+             "feedback_tags": 1, "recommendation": 1}
+        ):
+            qmap[qd["id"]] = qd
+
+    stats = {
+        m["module"]: {"attempts": 0, "correct": 0, "wrong": 0, "weak_tags": {}, "last_attempt_at": None}
+        for m in LOGIC_MODULES
+    }
+    attempted_ids = set()
+    for attempt in attempts:
+        qdoc = qmap.get(attempt["question_id"], {})
+        module = attempt.get("logic_module") or _logic_module_for_question(qdoc)
+        attempted_ids.add(attempt["question_id"])
+        row = stats[module]
+        row["attempts"] += 1
+        if attempt.get("correct"):
+            row["correct"] += 1
+        else:
+            row["wrong"] += 1
+            tags = attempt.get("feedback_tags") or qdoc.get("feedback_tags") or []
+            for tag in tags:
+                row["weak_tags"][tag] = row["weak_tags"].get(tag, 0) + 1
+        created = attempt.get("created_at")
+        if created and (row["last_attempt_at"] is None or created > row["last_attempt_at"]):
+            row["last_attempt_at"] = created
+
+    pool = await _logic_question_pool()
+    modules = []
+    for meta in LOGIC_MODULES:
+        module = meta["module"]
+        row = stats[module]
+        attempts_count = row["attempts"]
+        accuracy = round((row["correct"] / attempts_count) * 100, 1) if attempts_count else None
+        if attempts_count >= 4 and accuracy is not None and accuracy >= 80:
+            status = "mastered"
+        elif attempts_count >= 2 and accuracy is not None and accuracy < 60:
+            status = "review"
+        elif attempts_count:
+            status = "developing"
+        else:
+            status = "not_started"
+        weak_tags = sorted(
+            [{"tag": tag, "count": count} for tag, count in row["weak_tags"].items()],
+            key=lambda x: x["count"],
+            reverse=True,
+        )[:4]
+        retest_ids = _pick_logic_ids(pool, module=module, limit=6, exclude_ids=attempted_ids)
+        if len(retest_ids) < 3:
+            retest_ids = _pick_logic_ids(pool, module=module, limit=6)
+        query = urlencode({"ids": ",".join(retest_ids)}) if retest_ids else urlencode({"subtopic": "propositional-logic"})
+        if weak_tags:
+            remediation = f"You missed {weak_tags[0]['tag']}. Review Logic Module {module}, then retest with fresh questions."
+        elif status == "not_started":
+            remediation = f"Start Logic Module {module}, then take the diagnostic questions."
+        elif status == "mastered":
+            remediation = "Mastery shown. Keep it alive with mixed WAEC logic drills."
+        else:
+            remediation = f"Keep practising Logic Module {module} until you can score at least 80% twice."
+        modules.append({
+            "module": module,
+            "title": meta["title"],
+            "status": status,
+            "attempts": attempts_count,
+            "correct": row["correct"],
+            "accuracy": accuracy,
+            "weak_tags": weak_tags,
+            "lesson_path": _logic_module_path(module),
+            "diagnostic_path": f"/past-questions?{query}",
+            "retest_path": f"/past-questions?{query}",
+            "retest_question_ids": retest_ids,
+            "remediation": remediation,
+        })
+
+    review_modules = [m for m in modules if m["status"] == "review"]
+    developing_modules = [m for m in modules if m["status"] == "developing"]
+    not_started_modules = [m for m in modules if m["status"] == "not_started"]
+    next_module = (review_modules or developing_modules or not_started_modules or modules)[0]
+    diagnostic_ids = _pick_logic_ids(pool, limit=10, exclude_ids=attempted_ids)
+    if len(diagnostic_ids) < 5:
+        diagnostic_ids = _pick_logic_ids(pool, limit=10)
+    diagnostic_path = f"/past-questions?{urlencode({'ids': ','.join(diagnostic_ids)})}" if diagnostic_ids else "/past-questions?subtopic=propositional-logic"
+
+    mastered_count = sum(1 for m in modules if m["status"] == "mastered")
+    attempted_modules = [m for m in modules if m["attempts"] > 0 and m["accuracy"] is not None]
+    average_mastery = round(sum(m["accuracy"] for m in attempted_modules) / len(attempted_modules), 1) if attempted_modules else 0
+    return {
+        "summary": {
+            "modules_mastered": mastered_count,
+            "total_modules": len(modules),
+            "average_mastery": average_mastery,
+            "next_action": next_module["remediation"],
+            "next_module": next_module,
+        },
+        "diagnostic": {
+            "label": "Diagnose",
+            "message": "Take a mixed Logic diagnostic. Your missed tags will drive the review plan.",
             "question_ids": diagnostic_ids,
             "path": diagnostic_path,
         },

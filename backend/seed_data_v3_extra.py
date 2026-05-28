@@ -1647,6 +1647,745 @@ SUBSETS_POWER_SECTIONS = [
     }
 ]
 
+LOGIC_REASONING_SECTIONS = [
+    {
+        "title": "Logic Module 1: Statements and Truth Values",
+        "intro": "Logic starts with a statement: a sentence that is either true or false, but not both. WAEC often tests whether students can separate mathematical statements from opinions, commands and open sentences.",
+        "diagnostic_checks": [
+            {"question": "Is 'Lagos is in Nigeria' a logical statement?", "answer": "Yes. It has a definite truth value."},
+            {"question": "Is 'x+3=7' a statement before x is known?", "answer": "No. It is an open sentence until x is specified."},
+        ],
+        "key_points": [
+            "A statement has a definite truth value: true or false.",
+            "Questions, commands, wishes and opinions are not logical statements.",
+            "An open sentence contains a variable and becomes a statement only when the variable is given a value.",
+            "A mathematical statement must be precise enough that its truth can be checked.",
+        ],
+        "visual_blocks": [
+            {"type": "logic_flow", "title": "Statement test", "caption": "Sentence -> Can it be judged true or false? -> If yes, it is a statement. If no, it is not yet a statement."},
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Classify sentences",
+                "problem": "Classify each as a statement or not: (a) 2 is an even number. (b) Close the door. (c) x is greater than 5. (d) Accra is in Ghana.",
+                "steps": [
+                    "(a) has a definite truth value, so it is a statement.",
+                    "(b) is a command, so it is not a statement.",
+                    "(c) depends on x, so it is an open sentence, not a statement yet.",
+                    "(d) has a definite truth value, so it is a statement.",
+                ],
+                "answer": "(a) statement; (b) not a statement; (c) open sentence; (d) statement.",
+                "examiner_tip": "WAEC is not asking whether a sentence sounds mathematical. Ask one question: can it be marked true or false right now?"
+            },
+            {
+                "level": "WAEC-style",
+                "title": "Turn an open sentence into a statement",
+                "problem": "Given the open sentence $x^2=9$, form two true statements and one false statement.",
+                "steps": [
+                    "Substitute a value that makes the sentence true: if $x=3$, then $3^2=9$.",
+                    "Another true case is $x=-3$, since $(-3)^2=9$.",
+                    "A false case is $x=2$, since $2^2=4$, not 9.",
+                ],
+                "answer": "True: $x=3$ and $x=-3$. False: $x=2$.",
+                "examiner_tip": "An open sentence is not false just because x is unknown. It is incomplete until x is fixed."
+            },
+        ],
+        "practice": [
+            {"question": "Is 'Every prime number is odd' a statement?", "answer": "Yes, and it is false because 2 is prime and even."},
+            {"question": "Is 'Study hard for WAEC' a statement?", "answer": "No. It is advice or a command."},
+        ],
+        "module_quiz": [
+            {"question": "Which is a statement: 'Is 5 prime?', '5 is prime', 'Find x', 'Beautiful graph'?", "answer": "'5 is prime'."},
+            {"question": "Why is $2x+1=9$ an open sentence?", "answer": "Its truth depends on the value of x."},
+        ],
+        "applications": [
+            {"title": "Programming", "body": "A condition such as `score >= 50` becomes true or false once score has a value."},
+            {"title": "Physics", "body": "A claim like 'the body is in equilibrium' must be testable by checking forces."},
+        ],
+    },
+    {
+        "title": "Logic Module 2: Statement Symbols and Translation",
+        "intro": "Once statements are clear, we represent them by letters such as p, q and r. This makes long English reasoning easier to test.",
+        "key_points": [
+            "Use a single letter for each simple statement.",
+            "Do not use one symbol for two different ideas in the same problem.",
+            "Translate before solving: identify p, q, r, then attach connectives.",
+            "The quality of the translation controls the quality of the answer.",
+        ],
+        "visual_blocks": [
+            {"type": "logic_flow", "title": "English to symbols", "caption": "English sentence -> identify simple statements -> assign p, q, r -> join with connectives."},
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Assign statement letters",
+                "problem": "Let p mean 'A student passes Mathematics' and q mean 'A student passes Physics'. Translate: The student passes Mathematics and Physics.",
+                "steps": [
+                    "The word 'and' means both statements are required.",
+                    "Use the conjunction connective.",
+                    "Write $p\\land q$.",
+                ],
+                "answer": "$p\\land q$.",
+                "examiner_tip": "Do not write $p+q$ for 'and'. Logic uses connectives, not arithmetic signs."
+            },
+            {
+                "level": "intermediate",
+                "title": "Translate a conditional sentence",
+                "problem": "Let p mean 'it rains' and q mean 'the ground is wet'. Translate: If it rains, then the ground is wet.",
+                "steps": [
+                    "The condition is p.",
+                    "The result is q.",
+                    "The form 'if p then q' is $p\\Rightarrow q$.",
+                ],
+                "answer": "$p\\Rightarrow q$.",
+                "examiner_tip": "In an implication, the statement after 'if' is the hypothesis; the statement after 'then' is the conclusion."
+            },
+        ],
+        "practice": [
+            {"question": "If p: 'x is even' and q: 'x is divisible by 2', translate 'x is not even'.", "answer": "$\\neg p$."},
+            {"question": "Translate 'x is even or divisible by 3' using p and r.", "answer": "$p\\lor r$."},
+        ],
+        "module_quiz": [
+            {"question": "What does $p\\land \\neg q$ mean if p: 'I study' and q: 'I sleep'?", "answer": "I study and I do not sleep."},
+            {"question": "What does $\\neg(p\\lor q)$ mean?", "answer": "Neither p nor q is true."},
+        ],
+    },
+    {
+        "title": "Logic Module 3: Negation",
+        "intro": "Negation reverses the truth of a statement. In examinations, the most common mistake is negating only part of a sentence instead of the whole claim.",
+        "formulas": [
+            {"name": "Negation", "expression": "$\\neg p$ is true when p is false, and false when p is true.", "meaning": "Negation means 'not p'."},
+            {"name": "Double negation", "expression": "$\\neg(\\neg p)\\equiv p$", "meaning": "Not-not-p returns to p."},
+        ],
+        "key_points": [
+            "The negation of 'all' is 'at least one not'.",
+            "The negation of 'some' is 'none'.",
+            "The negation of '=' is '$\\neq$'.",
+            "The negation of '$>$' is '$\\leq$', not always '$<$'.",
+        ],
+        "visual_blocks": [
+            {"type": "truth_table", "title": "Negation table", "caption": "p: T, F. $\\neg p$: F, T."},
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Negate an inequality",
+                "problem": "Negate the statement $x>5$.",
+                "steps": [
+                    "$x>5$ means x is strictly greater than 5.",
+                    "The opposite includes values less than 5 and also x equal to 5.",
+                    "Therefore the negation is $x\\leq 5$.",
+                ],
+                "answer": "$x\\leq 5$.",
+                "examiner_tip": "For inequalities, include the boundary when you negate strict signs."
+            },
+            {
+                "level": "WAEC-style",
+                "title": "Negate a universal statement",
+                "problem": "Negate: All students who study hard pass Further Mathematics.",
+                "steps": [
+                    "The statement says every hard-working student passes.",
+                    "To make it false, one counterexample is enough.",
+                    "So the negation is: at least one student studies hard and does not pass Further Mathematics.",
+                ],
+                "answer": "Some student studies hard but does not pass Further Mathematics.",
+                "examiner_tip": "The negation of 'all' is not 'all not'. It is 'at least one not'."
+            },
+        ],
+        "practice": [
+            {"question": "Negate: $x\\leq 7$.", "answer": "$x>7$."},
+            {"question": "Negate: Some candidates passed.", "answer": "No candidate passed."},
+        ],
+        "module_quiz": [
+            {"question": "Negate: All primes are odd.", "answer": "At least one prime is not odd."},
+            {"question": "Simplify $\\neg(\\neg p)$.", "answer": "$p$."},
+        ],
+    },
+    {
+        "title": "Logic Module 4: Conjunction and Disjunction",
+        "intro": "The connectives 'and' and 'or' behave differently. 'And' is strict: both must be true. 'Or' is inclusive in WAEC logic unless the question says exactly one.",
+        "formulas": [
+            {"name": "Conjunction", "expression": "$p\\land q$", "meaning": "True only when p and q are both true."},
+            {"name": "Disjunction", "expression": "$p\\lor q$", "meaning": "True when p is true, q is true, or both are true."},
+        ],
+        "visual_blocks": [
+            {"type": "logic_flow", "title": "And versus or", "caption": "$p\\land q$: both gates must open. $p\\lor q$: at least one gate must open."},
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Evaluate AND and OR",
+                "problem": "If p is true and q is false, find the truth values of $p\\land q$ and $p\\lor q$.",
+                "steps": [
+                    "$p\\land q$ needs both p and q true, but q is false.",
+                    "So $p\\land q$ is false.",
+                    "$p\\lor q$ needs at least one true statement.",
+                    "Since p is true, $p\\lor q$ is true.",
+                ],
+                "answer": "$p\\land q$ is false; $p\\lor q$ is true.",
+                "examiner_tip": "In ordinary English, 'or' can sometimes mean exactly one. In logic, $\\lor$ usually means inclusive or."
+            },
+            {
+                "level": "application",
+                "title": "Engineering safety condition",
+                "problem": "A machine runs only if the power is on (p) and the guard is closed (q). Write the running condition and evaluate it when p is true and q is false.",
+                "steps": [
+                    "The word 'only if both' gives a conjunction.",
+                    "The running condition is $p\\land q$.",
+                    "With p true and q false, the conjunction is false.",
+                    "The machine should not run.",
+                ],
+                "answer": "$p\\land q=F$; the machine should not run.",
+                "examiner_tip": "Logic is the language behind many safety interlocks in engineering."
+            },
+        ],
+        "practice": [
+            {"question": "If p=F and q=F, evaluate $p\\lor q$.", "answer": "False."},
+            {"question": "If p=T and q=T, evaluate $p\\land q$.", "answer": "True."},
+        ],
+        "module_quiz": [
+            {"question": "When is $p\\land q$ true?", "answer": "Only when both p and q are true."},
+            {"question": "When is $p\\lor q$ false?", "answer": "Only when both p and q are false."},
+        ],
+    },
+    {
+        "title": "Logic Module 5: Implication",
+        "intro": "Implication is the heart of mathematical reasoning: if p, then q. WAEC students often lose marks because they treat implication like ordinary cause-and-effect rather than a truth-value rule.",
+        "formulas": [
+            {"name": "Implication", "expression": "$p\\Rightarrow q$", "meaning": "False only when p is true and q is false."},
+            {"name": "Equivalent form", "expression": "$p\\Rightarrow q\\equiv \\neg p\\lor q$", "meaning": "Either p does not happen, or q happens."},
+        ],
+        "visual_blocks": [
+            {"type": "implication_map", "title": "Implication failure", "caption": "$p\\Rightarrow q$ fails only in one case: p happens but q does not."},
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Evaluate implication",
+                "problem": "Find the truth value of $p\\Rightarrow q$ when p is true and q is false.",
+                "steps": [
+                    "Implication means 'if p, then q'.",
+                    "The promise is broken only when p occurs and q does not occur.",
+                    "Here p is true and q is false, so the implication is false.",
+                ],
+                "answer": "False.",
+                "examiner_tip": "There is only one false row for implication: T then F."
+            },
+            {
+                "level": "intermediate",
+                "title": "Use implication in mathematics",
+                "problem": "Let p: 'n is divisible by 4' and q: 'n is even'. Explain why $p\\Rightarrow q$ is true for integers.",
+                "steps": [
+                    "If n is divisible by 4, then $n=4k$ for some integer k.",
+                    "Then $n=2(2k)$, so n is divisible by 2.",
+                    "Therefore n is even.",
+                ],
+                "answer": "The implication is true.",
+                "examiner_tip": "A good implication proof starts from the hypothesis and walks logically to the conclusion."
+            },
+        ],
+        "practice": [
+            {"question": "If p=F and q=F, what is $p\\Rightarrow q$?", "answer": "True."},
+            {"question": "Write $p\\Rightarrow q$ using only $\\neg$ and $\\lor$.", "answer": "$\\neg p\\lor q$."},
+        ],
+        "module_quiz": [
+            {"question": "When is $p\\Rightarrow q$ false?", "answer": "When p is true and q is false."},
+            {"question": "What is the hypothesis in 'If a number is a square, then it is non-negative'?", "answer": "The number is a square."},
+        ],
+    },
+    {
+        "title": "Logic Module 6: Converse, Inverse and Contrapositive",
+        "intro": "From one implication, WAEC can ask for three related statements. Only the contrapositive is logically equivalent to the original implication.",
+        "formulas": [
+            {"name": "Original", "expression": "$p\\Rightarrow q$", "meaning": "If p, then q."},
+            {"name": "Converse", "expression": "$q\\Rightarrow p$", "meaning": "Switch p and q."},
+            {"name": "Inverse", "expression": "$\\neg p\\Rightarrow \\neg q$", "meaning": "Negate both without switching."},
+            {"name": "Contrapositive", "expression": "$\\neg q\\Rightarrow \\neg p$", "meaning": "Switch and negate both; equivalent to the original."},
+        ],
+        "visual_blocks": [
+            {"type": "logic_flow", "title": "Four related conditionals", "caption": "Original -> converse switches; inverse negates; contrapositive switches and negates."},
+        ],
+        "examples": [
+            {
+                "level": "WAEC-style",
+                "title": "Write the related statements",
+                "problem": "For the statement: If a number is divisible by 6, then it is divisible by 3. Write its converse, inverse and contrapositive.",
+                "steps": [
+                    "Let p be 'the number is divisible by 6'.",
+                    "Let q be 'the number is divisible by 3'.",
+                    "Converse: if q, then p.",
+                    "Inverse: if not p, then not q.",
+                    "Contrapositive: if not q, then not p.",
+                ],
+                "answer": "Converse: If a number is divisible by 3, then it is divisible by 6. Inverse: If a number is not divisible by 6, then it is not divisible by 3. Contrapositive: If a number is not divisible by 3, then it is not divisible by 6.",
+                "examiner_tip": "Only the contrapositive must have the same truth value as the original statement."
+            },
+        ],
+        "practice": [
+            {"question": "What is the converse of $p\\Rightarrow q$?", "answer": "$q\\Rightarrow p$."},
+            {"question": "What is the contrapositive of $p\\Rightarrow q$?", "answer": "$\\neg q\\Rightarrow \\neg p$."},
+        ],
+        "module_quiz": [
+            {"question": "Which is equivalent to $p\\Rightarrow q$: converse, inverse or contrapositive?", "answer": "Contrapositive."},
+            {"question": "Give a counterexample to the converse: If n is divisible by 6, then n is even.", "answer": "n=2 is even but not divisible by 6."},
+        ],
+    },
+    {
+        "title": "Logic Module 7: Truth Table Construction",
+        "intro": "Truth tables are systematic machines for checking all possible truth values. The number of rows is $2^n$ where n is the number of statement letters.",
+        "formulas": [
+            {"name": "Rows", "expression": "Number of rows $=2^n$", "meaning": "n is the number of distinct simple statements."},
+            {"name": "Two variables", "expression": "$(p,q)=(T,T),(T,F),(F,T),(F,F)$", "meaning": "Use a fixed order so no row is missed."},
+        ],
+        "visual_blocks": [
+            {"type": "truth_table", "title": "Two-variable skeleton", "caption": "p q: TT, TF, FT, FF. Add one column for each compound part."},
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Count truth-table rows",
+                "problem": "How many rows are needed for a truth table involving p, q and r?",
+                "steps": [
+                    "There are three distinct statement letters.",
+                    "Use $2^n$ rows.",
+                    "$2^3=8$.",
+                ],
+                "answer": "8 rows.",
+                "examiner_tip": "Before building any truth table, count the variables. Many wrong tables start with the wrong number of rows."
+            },
+            {
+                "level": "intermediate",
+                "title": "Build columns in order",
+                "problem": "Construct the truth table columns needed for $(p\\land q)\\Rightarrow r$.",
+                "steps": [
+                    "Start with p, q and r: 8 rows.",
+                    "Create an intermediate column for $p\\land q$.",
+                    "Finally compare $p\\land q$ with r using implication.",
+                ],
+                "answer": "Columns: p, q, r, $p\\land q$, $(p\\land q)\\Rightarrow r$.",
+                "examiner_tip": "For compound expressions, mark intermediate columns. They prevent careless mental jumps."
+            },
+        ],
+        "practice": [
+            {"question": "How many rows are needed for p and q?", "answer": "4."},
+            {"question": "How many rows are needed for p, q, r and s?", "answer": "16."},
+        ],
+        "module_quiz": [
+            {"question": "Why does a 3-variable truth table have 8 rows?", "answer": "Each variable has 2 possible values, so $2^3=8$."},
+            {"question": "What should you do before the final column?", "answer": "Create columns for useful sub-expressions."},
+        ],
+    },
+    {
+        "title": "Logic Module 8: Evaluating Compound Statements",
+        "intro": "Compound statements combine several connectives. Work from inside brackets outward, just as you do in algebra.",
+        "key_points": [
+            "Evaluate bracketed expressions first.",
+            "Then apply negation.",
+            "Then handle conjunction/disjunction.",
+            "Finally handle implication or biconditional if present.",
+        ],
+        "visual_blocks": [
+            {"type": "logic_flow", "title": "Evaluation order", "caption": "Brackets -> negation -> and/or -> implication."},
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Evaluate a compound expression",
+                "problem": "If p=T, q=F and r=T, evaluate $(p\\land \\neg q)\\Rightarrow r$.",
+                "steps": [
+                    "Since q=F, $\\neg q=T$.",
+                    "Then $p\\land \\neg q=T\\land T=T$.",
+                    "Now evaluate $T\\Rightarrow r$.",
+                    "Since r=T, $T\\Rightarrow T=T$.",
+                ],
+                "answer": "True.",
+                "examiner_tip": "Do not evaluate implication before simplifying the left-hand side."
+            },
+            {
+                "level": "intermediate",
+                "title": "Use a truth row",
+                "problem": "For p=F and q=T, evaluate $\\neg(p\\lor q)\\lor p$.",
+                "steps": [
+                    "$p\\lor q=F\\lor T=T$.",
+                    "$\\neg(p\\lor q)=F$.",
+                    "$F\\lor p=F\\lor F=F$.",
+                ],
+                "answer": "False.",
+                "examiner_tip": "A single truth row is enough when the values of p and q are already given."
+            },
+        ],
+        "practice": [
+            {"question": "If p=T, q=F, evaluate $\\neg p\\lor q$.", "answer": "False."},
+            {"question": "If p=F, q=T, evaluate $p\\Rightarrow q$.", "answer": "True."},
+        ],
+        "module_quiz": [
+            {"question": "Evaluate $(p\\lor q)\\land \\neg q$ when p=T, q=F.", "answer": "True."},
+            {"question": "Evaluate $\\neg(p\\land q)$ when p=T, q=F.", "answer": "True."},
+        ],
+    },
+    {
+        "title": "Logic Module 9: Tautology, Contradiction and Contingency",
+        "intro": "A compound statement can be always true, always false, or sometimes true and sometimes false. This is where truth tables become powerful.",
+        "formulas": [
+            {"name": "Tautology", "expression": "Final column all T", "meaning": "The statement is always true."},
+            {"name": "Contradiction", "expression": "Final column all F", "meaning": "The statement is impossible."},
+            {"name": "Contingency", "expression": "Final column has both T and F", "meaning": "Truth depends on the values of the variables."},
+        ],
+        "visual_blocks": [
+            {"type": "truth_table", "title": "Classification by final column", "caption": "All T: tautology. All F: contradiction. Mixed: contingency."},
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Recognise a tautology",
+                "problem": "Explain why $p\\lor \\neg p$ is a tautology.",
+                "steps": [
+                    "If p is true, then $p\\lor \\neg p$ is true.",
+                    "If p is false, then $\\neg p$ is true.",
+                    "In every case, one part of the disjunction is true.",
+                ],
+                "answer": "$p\\lor \\neg p$ is always true, so it is a tautology.",
+                "examiner_tip": "A tautology is not merely 'usually true'. It must be true in every possible row."
+            },
+            {
+                "level": "intermediate",
+                "title": "Recognise a contradiction",
+                "problem": "Classify $p\\land \\neg p$.",
+                "steps": [
+                    "If p is true, then $\\neg p$ is false, so the conjunction is false.",
+                    "If p is false, then p itself is false, so the conjunction is false.",
+                    "Every row gives false.",
+                ],
+                "answer": "$p\\land \\neg p$ is a contradiction.",
+                "examiner_tip": "Contradictions often contain a statement being forced to be true and false at the same time."
+            },
+        ],
+        "practice": [
+            {"question": "Classify $p\\Rightarrow p$.", "answer": "Tautology."},
+            {"question": "Classify $p\\land q$.", "answer": "Contingency."},
+        ],
+        "module_quiz": [
+            {"question": "What final column identifies a contradiction?", "answer": "All false."},
+            {"question": "What final column identifies a contingency?", "answer": "A mixture of true and false."},
+        ],
+    },
+    {
+        "title": "Logic Module 10: Logical Equivalence and Laws",
+        "intro": "Two statements are logically equivalent if they always have the same truth values. These laws help students simplify logic the same way algebraic identities simplify expressions.",
+        "formulas": [
+            {"name": "De Morgan", "expression": "$\\neg(p\\land q)\\equiv \\neg p\\lor \\neg q$", "meaning": "Not both means at least one is not true."},
+            {"name": "De Morgan", "expression": "$\\neg(p\\lor q)\\equiv \\neg p\\land \\neg q$", "meaning": "Neither p nor q."},
+            {"name": "Implication law", "expression": "$p\\Rightarrow q\\equiv \\neg p\\lor q$", "meaning": "The only failure is p true and q false."},
+        ],
+        "visual_blocks": [
+            {"type": "logic_flow", "title": "Equivalence check", "caption": "Build both final columns. If they match row by row, the statements are equivalent."},
+        ],
+        "examples": [
+            {
+                "level": "WAEC-style",
+                "title": "Use De Morgan's law",
+                "problem": "Simplify $\\neg(p\\lor q)$.",
+                "steps": [
+                    "The expression says: it is not true that p or q is true.",
+                    "This means p is false and q is false.",
+                    "Therefore $\\neg(p\\lor q)\\equiv \\neg p\\land \\neg q$.",
+                ],
+                "answer": "$\\neg p\\land \\neg q$.",
+                "examiner_tip": "When a negation crosses a bracket, the connective changes: AND becomes OR, OR becomes AND."
+            },
+            {
+                "level": "advanced",
+                "title": "Prove implication equivalence",
+                "problem": "Show that $p\\Rightarrow q\\equiv \\neg p\\lor q$ using the false case.",
+                "steps": [
+                    "$p\\Rightarrow q$ is false only when p=T and q=F.",
+                    "$\\neg p\\lor q$ is false only when $\\neg p=F$ and q=F.",
+                    "$\\neg p=F$ means p=T.",
+                    "So both expressions are false in exactly the same case and true otherwise.",
+                ],
+                "answer": "$p\\Rightarrow q\\equiv \\neg p\\lor q$.",
+                "examiner_tip": "Equivalence can be proved by matching all truth rows or by showing the failure cases are identical."
+            },
+        ],
+        "practice": [
+            {"question": "Simplify $\\neg(p\\land q)$.", "answer": "$\\neg p\\lor \\neg q$."},
+            {"question": "Rewrite $p\\Rightarrow q$ without $\\Rightarrow$.", "answer": "$\\neg p\\lor q$."},
+        ],
+        "module_quiz": [
+            {"question": "Are $p\\Rightarrow q$ and $q\\Rightarrow p$ equivalent?", "answer": "No."},
+            {"question": "Which connective replaces OR under De Morgan's law?", "answer": "AND."},
+        ],
+    },
+    {
+        "title": "Logic Module 11: Arguments, Premises and Conclusions",
+        "intro": "An argument is a chain of statements: premises are accepted starting points, and the conclusion is what follows from them.",
+        "key_points": [
+            "Premises are the statements given as evidence.",
+            "The conclusion is the statement being claimed.",
+            "Validity asks whether the conclusion must follow if the premises are true.",
+            "Validity is about structure, not whether the real-life content sounds believable.",
+        ],
+        "visual_blocks": [
+            {"type": "argument_flow", "title": "Argument structure", "caption": "Premise 1 + Premise 2 + ... -> conclusion. Validity asks whether the arrow is forced."},
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Identify the conclusion",
+                "problem": "All multiples of 4 are even. 28 is a multiple of 4. Therefore 28 is even. Identify the premises and conclusion.",
+                "steps": [
+                    "Premise 1: All multiples of 4 are even.",
+                    "Premise 2: 28 is a multiple of 4.",
+                    "Conclusion: 28 is even.",
+                ],
+                "answer": "The conclusion is '28 is even'.",
+                "examiner_tip": "Words like 'therefore', 'hence' and 'so' usually introduce the conclusion."
+            },
+            {
+                "level": "WAEC-style",
+                "title": "Check validity",
+                "problem": "If a candidate practises past questions, then the candidate improves. Ama practises past questions. What conclusion follows?",
+                "steps": [
+                    "Let p be 'Ama practises past questions'.",
+                    "Let q be 'Ama improves'.",
+                    "The premises are $p\\Rightarrow q$ and p.",
+                    "By modus ponens, q follows.",
+                ],
+                "answer": "Ama improves.",
+                "examiner_tip": "This pattern is called modus ponens: if p implies q, and p is true, then q must be true."
+            },
+        ],
+        "practice": [
+            {"question": "In 'p, therefore q', which part is the conclusion?", "answer": "q."},
+            {"question": "What does validity mean?", "answer": "If the premises are true, the conclusion must be true."},
+        ],
+        "module_quiz": [
+            {"question": "Identify the conclusion: 'Since all squares are rectangles and ABCD is a square, ABCD is a rectangle.'", "answer": "ABCD is a rectangle."},
+            {"question": "Does validity depend on the beauty of the wording?", "answer": "No. It depends on logical structure."},
+        ],
+    },
+    {
+        "title": "Logic Module 12: Valid Deduction Patterns",
+        "intro": "WAEC reasoning questions often hide standard valid patterns. Learn the structure and you can solve them even when the English changes.",
+        "formulas": [
+            {"name": "Modus ponens", "expression": "$p\\Rightarrow q,\\ p\\ \\therefore q$", "meaning": "Affirm the hypothesis."},
+            {"name": "Modus tollens", "expression": "$p\\Rightarrow q,\\ \\neg q\\ \\therefore \\neg p$", "meaning": "Deny the conclusion."},
+            {"name": "Hypothetical syllogism", "expression": "$p\\Rightarrow q,\\ q\\Rightarrow r\\ \\therefore p\\Rightarrow r$", "meaning": "Link conditionals in a chain."},
+        ],
+        "visual_blocks": [
+            {"type": "argument_flow", "title": "Deduction chain", "caption": "$p\\Rightarrow q$ and $q\\Rightarrow r$ create the chain $p\\Rightarrow r$."},
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Use modus tollens",
+                "problem": "If a number is divisible by 4, then it is even. A number is not even. What follows?",
+                "steps": [
+                    "Let p: the number is divisible by 4.",
+                    "Let q: the number is even.",
+                    "Given $p\\Rightarrow q$ and $\\neg q$.",
+                    "By modus tollens, $\\neg p$.",
+                ],
+                "answer": "The number is not divisible by 4.",
+                "examiner_tip": "Denying the conclusion is valid; denying the hypothesis is not valid."
+            },
+            {
+                "level": "intermediate",
+                "title": "Use a chain of implications",
+                "problem": "If a switch is closed, current flows. If current flows, the bulb lights. What follows if the switch is closed?",
+                "steps": [
+                    "Let p: switch is closed.",
+                    "Let q: current flows.",
+                    "Let r: bulb lights.",
+                    "The chain is $p\\Rightarrow q$ and $q\\Rightarrow r$.",
+                    "So $p\\Rightarrow r$; if the switch is closed, the bulb lights.",
+                ],
+                "answer": "The bulb lights.",
+                "examiner_tip": "This is how logic appears in electrical circuits and control systems."
+            },
+        ],
+        "practice": [
+            {"question": "Name the pattern: $p\\Rightarrow q$, p, therefore q.", "answer": "Modus ponens."},
+            {"question": "Name the pattern: $p\\Rightarrow q$, $\\neg q$, therefore $\\neg p$.", "answer": "Modus tollens."},
+        ],
+        "module_quiz": [
+            {"question": "From $p\\Rightarrow q$ and q, can you conclude p?", "answer": "No. That is affirming the consequent."},
+            {"question": "From $p\\Rightarrow q$ and $\\neg p$, can you conclude $\\neg q$?", "answer": "No. That is denying the antecedent."},
+        ],
+    },
+    {
+        "title": "Logic Module 13: Invalid Arguments and Fallacies",
+        "intro": "A wrong argument may sound convincing. WAEC can test whether students can identify conclusions that do not follow.",
+        "key_points": [
+            "Affirming the consequent is invalid: $p\\Rightarrow q, q, therefore p$.",
+            "Denying the antecedent is invalid: $p\\Rightarrow q, \\neg p, therefore \\neg q$.",
+            "A counterexample is enough to disprove an invalid argument.",
+            "Do not confuse a true conclusion with a valid argument.",
+        ],
+        "visual_blocks": [
+            {"type": "argument_flow", "title": "Invalid reasoning trap", "caption": "$p\\Rightarrow q$ allows p to lead to q. It does not say q can only happen because of p."},
+        ],
+        "examples": [
+            {
+                "level": "WAEC-style",
+                "title": "Spot affirming the consequent",
+                "problem": "If a number is divisible by 6, then it is divisible by 3. A number is divisible by 3. Therefore it is divisible by 6. Is the argument valid?",
+                "steps": [
+                    "Let p: divisible by 6.",
+                    "Let q: divisible by 3.",
+                    "The argument form is $p\\Rightarrow q, q, therefore p$.",
+                    "This is affirming the consequent, which is invalid.",
+                    "Counterexample: 9 is divisible by 3 but not by 6.",
+                ],
+                "answer": "Invalid.",
+                "examiner_tip": "A single counterexample can destroy an invalid universal conclusion."
+            },
+        ],
+        "practice": [
+            {"question": "Give a counterexample: If n is divisible by 4, then n is even. n is even, so n is divisible by 4.", "answer": "n=2 is even but not divisible by 4."},
+            {"question": "What fallacy is $p\\Rightarrow q, \\neg p, therefore \\neg q$?", "answer": "Denying the antecedent."},
+        ],
+        "module_quiz": [
+            {"question": "Is $p\\Rightarrow q, q, therefore p$ valid?", "answer": "No."},
+            {"question": "What should you look for to disprove a claimed implication?", "answer": "A case where the hypothesis is true and the conclusion is false."},
+        ],
+    },
+    {
+        "title": "Logic Module 14: Applications of Logic",
+        "intro": "Logic is not isolated from mathematics. It appears in sets, circuits, programming, proof, physics assumptions and engineering safety rules.",
+        "track": "challenge",
+        "visual_blocks": [
+            {"type": "implication_map", "title": "Logic across fields", "caption": "Sets: membership regions. Circuits: gates. Programming: conditions. Proof: implication chains."},
+        ],
+        "examples": [
+            {
+                "level": "application",
+                "title": "Logic and set membership",
+                "problem": "Interpret $x\\in A\\cap B'$ in words.",
+                "steps": [
+                    "$x\\in A$ means x belongs to A.",
+                    "$x\\in B'$ means x does not belong to B.",
+                    "The intersection means both conditions hold.",
+                ],
+                "answer": "x is in A but not in B.",
+                "examiner_tip": "Set notation is logic in geometric form: intersection behaves like AND, union behaves like OR, complement behaves like NOT."
+            },
+            {
+                "level": "application",
+                "title": "Logic and circuit gates",
+                "problem": "A lamp lights if switch A is on and either switch B or C is on. Write the logical condition.",
+                "steps": [
+                    "A must be on, so A is joined by AND.",
+                    "Either B or C is on, so use OR inside brackets.",
+                    "The condition is $A\\land(B\\lor C)$.",
+                ],
+                "answer": "$A\\land(B\\lor C)$.",
+                "examiner_tip": "Brackets matter in logic just as they matter in algebra."
+            },
+        ],
+        "practice": [
+            {"question": "What set operation corresponds to logical OR?", "answer": "Union."},
+            {"question": "What logic operation corresponds to set complement?", "answer": "Negation."},
+        ],
+        "module_quiz": [
+            {"question": "Translate: x is outside A but inside B.", "answer": "$x\\in A'\\cap B$."},
+            {"question": "Translate a programming condition: score at least 50 and attendance at least 75%.", "answer": "$(score\\geq 50)\\land(attendance\\geq 75)$."},
+        ],
+    },
+    {
+        "title": "Logic Module 15: WAEC Mixed Strategy and Challenge Track",
+        "intro": "This final module trains students to combine translation, truth tables, equivalence and valid deduction under examination pressure.",
+        "track": "challenge",
+        "practice_ladder": [
+            {
+                "level": "Core WAEC",
+                "description": "Use these to secure ordinary examination marks.",
+                "items": [
+                    {"question": "Construct the truth table for $p\\Rightarrow q$.", "answer": "TT:T, TF:F, FT:T, FF:T."},
+                    {"question": "Write the contrapositive of: If a shape is a square, then it is a rectangle.", "answer": "If a shape is not a rectangle, then it is not a square."},
+                ],
+            },
+            {
+                "level": "Higher WAEC",
+                "description": "These require careful structure rather than memorisation.",
+                "items": [
+                    {"question": "Show that $\\neg(p\\Rightarrow q)\\equiv p\\land \\neg q$.", "answer": "$p\\Rightarrow q\\equiv \\neg p\\lor q$, so its negation is $\\neg(\\neg p\\lor q)\\equiv p\\land \\neg q$."},
+                    {"question": "Use a counterexample to disprove: If a number is divisible by 2, then it is divisible by 8.", "answer": "2 is divisible by 2 but not by 8."},
+                ],
+            },
+            {
+                "level": "WAEC+ Examiner Challenge",
+                "description": "For students who want to go beyond the printed textbook.",
+                "items": [
+                    {"question": "Prove using truth values that $p\\Rightarrow q$ and $\\neg q\\Rightarrow \\neg p$ are equivalent.", "answer": "Their truth tables match row by row; both are false only when p=T and q=F."},
+                    {"question": "Explain why $p\\Rightarrow q$ corresponds to the set expression $P'\\cup Q$.", "answer": "The only excluded region is $P\\cap Q'$, so the allowed region is $(P\\cap Q')'=P'\\cup Q$."},
+                ],
+            },
+        ],
+        "examples": [
+            {
+                "level": "complex",
+                "title": "Full WAEC reasoning solution",
+                "problem": "Given: If a candidate practises, then the candidate improves. If the candidate improves, then the candidate passes. Kofi practises. What conclusion follows?",
+                "steps": [
+                    "Let p: Kofi practises.",
+                    "Let q: Kofi improves.",
+                    "Let r: Kofi passes.",
+                    "The premises give $p\\Rightarrow q$ and $q\\Rightarrow r$.",
+                    "By hypothetical syllogism, $p\\Rightarrow r$.",
+                    "Since p is true, by modus ponens r is true.",
+                ],
+                "answer": "Kofi passes.",
+                "examiner_tip": "When two implications form a chain, write the symbols first. The conclusion becomes much easier to see."
+            },
+        ],
+        "module_quiz": [
+            {"question": "What is the fastest way to test a claimed equivalence?", "answer": "Compare the final columns of their truth tables."},
+            {"question": "What is the fastest way to disprove an implication?", "answer": "Find a counterexample where the hypothesis is true and the conclusion is false."},
+        ],
+        "examiner_notes": [
+            "Write p, q and r definitions before symbolic work.",
+            "Do not assume the converse of a true implication is true.",
+            "Use truth tables for equivalence and tautology questions.",
+            "Use counterexamples when asked whether a general claim is valid.",
+        ],
+    },
+]
+
+TRUTH_TABLE_FOCUS_SECTIONS = [
+    LOGIC_REASONING_SECTIONS[6],
+    LOGIC_REASONING_SECTIONS[7],
+    LOGIC_REASONING_SECTIONS[8],
+    LOGIC_REASONING_SECTIONS[9],
+    {
+        "title": "Truth Table Module 5: WAEC Mixed Truth Tables",
+        "intro": "This module gathers the truth-table skills WAEC is most likely to combine: row count, intermediate columns, implication, equivalence and classification.",
+        "examples": [
+            {
+                "level": "WAEC-style",
+                "title": "Classify a compound statement",
+                "problem": "Classify $(p\\land q)\\Rightarrow p$.",
+                "steps": [
+                    "If $p\\land q$ is true, then p is certainly true.",
+                    "If $p\\land q$ is false, the implication is automatically true.",
+                    "No row makes the expression false.",
+                ],
+                "answer": "It is a tautology.",
+                "examiner_tip": "Many implication tautologies are easier to reason about before drawing the full table."
+            },
+        ],
+        "practice": [
+            {"question": "Classify $p\\lor q$.", "answer": "Contingency."},
+            {"question": "Classify $\\neg(p\\lor \\neg p)$.", "answer": "Contradiction."},
+        ],
+        "module_quiz": [
+            {"question": "How many rows does a truth table for $p,q,r$ have?", "answer": "8."},
+            {"question": "When is $p\\Rightarrow q$ false?", "answer": "Only when p is true and q is false."},
+        ],
+    },
+]
+
 EXTRA_LESSONS = {
     # ---- SETS & LOGIC ----
     "set-operations": {"title": "Sets", "topic": "sets-logic",
@@ -2079,6 +2818,95 @@ EXTRA_LESSONS = {
         ]},
 }
 
+EXTRA_LESSONS["propositional-logic"] = {
+    "title": "Logical Reasoning",
+    "topic": "sets-logic",
+    "summary": "A complete self-paced WAEC Further Mathematics Logic course: statements, connectives, negation, truth tables, implication, equivalence, valid arguments, fallacies and applications.",
+    "standard": "waec-rich-v1",
+    "objectives": [
+        "Decide whether a sentence is a logical statement, open sentence or non-statement.",
+        "Translate English statements into symbolic logic using $\\neg$, $\\land$, $\\lor$ and $\\Rightarrow$.",
+        "Construct and interpret truth tables for simple and compound statements.",
+        "Recognise tautologies, contradictions, contingencies and logical equivalences.",
+        "Use implication, converse, inverse and contrapositive correctly.",
+        "Judge whether a WAEC-style argument is valid or invalid and explain why.",
+        "Apply logical reasoning to sets, proof, circuits, computer science and physics-style assumptions.",
+    ],
+    "prerequisites": [
+        "Know the meaning of a set, element and complement.",
+        "Be comfortable with true and false mathematical statements.",
+        "Be able to read simple algebraic inequalities such as $x>5$ and $x\\leq 5$.",
+    ],
+    "visual_blocks": [
+        {"type": "logic_flow", "title": "Logic learning path", "caption": "Statements -> connectives -> truth tables -> implication -> argument validity -> WAEC mixed reasoning."},
+        {"type": "truth_table", "title": "Core truth values", "caption": "AND requires both true. OR needs at least one true. Implication fails only at T -> F."},
+    ],
+    "lesson_sections": LOGIC_REASONING_SECTIONS,
+    "notes": [
+        {"heading": "Core Idea", "body": "Logic studies statements that are true or false and the rules for combining them. In WAEC Further Mathematics, it supports proof, set reasoning, truth tables and deduction."},
+        {"heading": "Why It Matters", "body": "The same logic behind $p\\Rightarrow q$ appears in set relations, electrical circuits, computer programs, engineering safety rules and mathematical proofs."},
+    ],
+    "applications": [
+        {"title": "Sets", "body": "Intersection behaves like AND, union behaves like OR and complement behaves like NOT."},
+        {"title": "Electrical circuits", "body": "Switching systems use AND, OR and NOT logic to decide when current flows."},
+        {"title": "Programming", "body": "Every `if` statement evaluates a logical condition before an action runs."},
+        {"title": "Proof", "body": "Many mathematical proofs are chains of valid implications."},
+    ],
+    "common_mistakes": [
+        "Treating every sentence as a logical statement.",
+        "Forgetting that $p\\Rightarrow q$ is false only when p is true and q is false.",
+        "Assuming the converse of a true implication is automatically true.",
+        "Negating $x>5$ as $x<5$ instead of $x\\leq 5$.",
+        "Using too few rows in truth tables.",
+        "Calling an argument valid because the conclusion sounds true.",
+    ],
+    "quick_checks": [
+        {"question": "How many rows are needed for three statement letters?", "answer": "$2^3=8$."},
+        {"question": "What is the contrapositive of $p\\Rightarrow q$?", "answer": "$\\neg q\\Rightarrow \\neg p$."},
+        {"question": "When is $p\\Rightarrow q$ false?", "answer": "Only when p is true and q is false."},
+    ],
+}
+
+EXTRA_LESSONS["truth-tables"] = {
+    "title": "Truth Tables",
+    "topic": "sets-logic",
+    "summary": "A focused self-paced module on constructing, evaluating and classifying truth tables for WAEC Further Mathematics Logic.",
+    "standard": "waec-rich-v1",
+    "objectives": [
+        "Find the correct number of rows for any truth table.",
+        "Construct intermediate columns for compound logical expressions.",
+        "Evaluate $\\neg$, $\\land$, $\\lor$, $\\Rightarrow$ and $\\Leftrightarrow$.",
+        "Classify statements as tautology, contradiction or contingency.",
+        "Use truth tables to test logical equivalence.",
+    ],
+    "prerequisites": [
+        "Know the meanings of true and false.",
+        "Know the basic connectives $\\neg$, $\\land$, $\\lor$ and $\\Rightarrow$.",
+    ],
+    "visual_blocks": [
+        {"type": "truth_table", "title": "Truth-table workflow", "caption": "Count variables -> write rows -> add intermediate columns -> classify the final column."},
+    ],
+    "lesson_sections": TRUTH_TABLE_FOCUS_SECTIONS,
+    "notes": [
+        {"heading": "Standard Tables", "body": "For $p, q$: 4 rows (TT, TF, FT, FF). $p\\land q$ is true only when both are true. $p\\lor q$ is false only when both are false. $p\\Rightarrow q$ is false only when p is true and q is false."},
+        {"heading": "Worked Example", "body": "Truth table of $p\\Rightarrow q$: TT gives T, TF gives F, FT gives T, FF gives T."},
+    ],
+    "applications": [
+        {"title": "Circuit design", "body": "Truth tables describe when a digital circuit output should be on or off."},
+        {"title": "Computer programs", "body": "Compound conditions in code are evaluated by the same truth-table rules."},
+    ],
+    "common_mistakes": [
+        "Using 4 rows for three variables instead of 8.",
+        "Forgetting intermediate columns.",
+        "Marking $F\\Rightarrow F$ as false.",
+        "Confusing tautology with a statement that is merely often true.",
+    ],
+    "quick_checks": [
+        {"question": "How many rows are needed for p and q?", "answer": "4."},
+        {"question": "What final column means tautology?", "answer": "All true."},
+    ],
+}
+
 EXTRA_QUESTIONS = []
 
 def Q(topic, subtopic, year, difficulty, question, options, answer, steps, question_type="objective", feedback_tags=None, recommendation=None):
@@ -2168,6 +2996,47 @@ for yr, diff, q, opts, ans, st in [
     (2020, "easy", "Truth value of $T\\land F$:", ["T","F","Either","Undefined"], "F", ["AND with F is F."]),
 ]:
     Q("sets-logic", "truth-tables", yr, diff, q, opts, ans, st)
+
+LOGIC_OBJECTIVE_EXPANSION = [
+    ("propositional-logic", 2026, "easy", "Which of the following is a logical statement?", ["Close the book", "Is 7 prime?", "7 is a prime number", "Beautiful triangle"], "7 is a prime number", ["A logical statement must be true or false.", "'7 is a prime number' has a definite truth value."], ["statement classification"], "Review Logic Module 1: Statements and Truth Values."),
+    ("propositional-logic", 2026, "easy", "Which is an open sentence?", ["$2+3=5$", "$x+4=10$", "Accra is in Ghana", "Every square has four sides"], "$x+4=10$", ["It contains x, so its truth depends on the value of x."], ["open sentence"], "Review Logic Module 1: Statements and Truth Values."),
+    ("propositional-logic", 2026, "medium", "The negation of $x>8$ is:", ["$x<8$", "$x\\leq 8$", "$x\\geq 8$", "$x=8$"], "$x\\leq 8$", ["Not greater than 8 includes equality and values below 8."], ["negating inequalities"], "Review Logic Module 3: Negation."),
+    ("propositional-logic", 2026, "medium", "The negation of 'All candidates passed' is:", ["All candidates failed", "No candidate passed", "At least one candidate did not pass", "Some candidates passed"], "At least one candidate did not pass", ["The negation of 'all' is 'at least one not'."], ["quantifier negation"], "Review Logic Module 3: Negation."),
+    ("propositional-logic", 2026, "easy", "If p=T and q=F, then $p\\land q$ is:", ["T", "F", "p", "q"], "F", ["AND is true only when both statements are true."], ["conjunction"], "Review Logic Module 4: Conjunction and Disjunction."),
+    ("propositional-logic", 2026, "easy", "If p=F and q=T, then $p\\lor q$ is:", ["T", "F", "$\\neg p$", "$\\neg q$"], "T", ["OR is true when at least one statement is true."], ["disjunction"], "Review Logic Module 4: Conjunction and Disjunction."),
+    ("propositional-logic", 2026, "medium", "$p\\Rightarrow q$ is false only when:", ["p=T, q=T", "p=T, q=F", "p=F, q=T", "p=F, q=F"], "p=T, q=F", ["An implication fails only when the hypothesis holds and the conclusion fails."], ["implication false case"], "Review Logic Module 5: Implication."),
+    ("propositional-logic", 2026, "medium", "Which is equivalent to $p\\Rightarrow q$?", ["$p\\land q$", "$\\neg p\\lor q$", "$q\\Rightarrow p$", "$\\neg p\\Rightarrow \\neg q$"], "$\\neg p\\lor q$", ["Implication is false only when p is true and q is false; $\\neg p\\lor q$ has the same false case."], ["implication equivalence"], "Review Logic Module 5 and Module 10."),
+    ("propositional-logic", 2026, "medium", "The converse of $p\\Rightarrow q$ is:", ["$q\\Rightarrow p$", "$\\neg p\\Rightarrow \\neg q$", "$\\neg q\\Rightarrow \\neg p$", "$p\\land q$"], "$q\\Rightarrow p$", ["The converse switches hypothesis and conclusion."], ["converse"], "Review Logic Module 6: Converse, Inverse and Contrapositive."),
+    ("propositional-logic", 2026, "medium", "The contrapositive of $p\\Rightarrow q$ is:", ["$q\\Rightarrow p$", "$\\neg p\\Rightarrow \\neg q$", "$\\neg q\\Rightarrow \\neg p$", "$p\\lor q$"], "$\\neg q\\Rightarrow \\neg p$", ["The contrapositive switches and negates both statements."], ["contrapositive"], "Review Logic Module 6: Converse, Inverse and Contrapositive."),
+    ("truth-tables", 2026, "easy", "A truth table with 4 distinct statement letters has how many rows?", ["4", "8", "12", "16"], "16", ["Use $2^n$ rows. Here $n=4$, so $2^4=16$."], ["truth-table row count"], "Review Logic Module 7: Truth Table Construction."),
+    ("truth-tables", 2026, "medium", "Evaluate $(p\\land \\neg q)$ when p=T and q=F.", ["T", "F", "$p$", "$q$"], "T", ["Since q=F, $\\neg q=T$.", "Then $p\\land\\neg q=T\\land T=T$."], ["compound evaluation"], "Review Logic Module 8: Evaluating Compound Statements."),
+    ("truth-tables", 2026, "medium", "Evaluate $\\neg(p\\lor q)$ when p=F and q=F.", ["T", "F", "$p$", "$q$"], "T", ["$p\\lor q=F\\lor F=F$.", "Negating false gives true."], ["compound evaluation", "de morgan"], "Review Logic Module 8 and Module 10."),
+    ("truth-tables", 2026, "hard", "Classify $p\\lor\\neg p$.", ["Tautology", "Contradiction", "Contingency", "Invalid argument"], "Tautology", ["Either p is true or not p is true in every row."], ["tautology"], "Review Logic Module 9: Tautology, Contradiction and Contingency."),
+    ("truth-tables", 2026, "hard", "Classify $p\\land\\neg p$.", ["Tautology", "Contradiction", "Contingency", "Valid argument"], "Contradiction", ["A statement and its negation cannot both be true."], ["contradiction"], "Review Logic Module 9: Tautology, Contradiction and Contingency."),
+    ("propositional-logic", 2026, "hard", "Simplify $\\neg(p\\land q)$.", ["$\\neg p\\land\\neg q$", "$\\neg p\\lor\\neg q$", "$p\\lor q$", "$p\\land q$"], "$\\neg p\\lor\\neg q$", ["By De Morgan's law, negation changes AND to OR and negates both parts."], ["logical equivalence", "de morgan"], "Review Logic Module 10: Logical Equivalence and Laws."),
+    ("propositional-logic", 2026, "hard", "Simplify $\\neg(p\\lor q)$.", ["$\\neg p\\land\\neg q$", "$\\neg p\\lor\\neg q$", "$p\\land q$", "$p\\Rightarrow q$"], "$\\neg p\\land\\neg q$", ["By De Morgan's law, negation changes OR to AND and negates both parts."], ["logical equivalence", "de morgan"], "Review Logic Module 10: Logical Equivalence and Laws."),
+    ("propositional-logic", 2026, "medium", "In an argument, the statements given as evidence are called:", ["Conclusions", "Premises", "Variables", "Contradictions"], "Premises", ["Premises are starting statements used to support a conclusion."], ["premises conclusions"], "Review Logic Module 11: Arguments, Premises and Conclusions."),
+    ("propositional-logic", 2026, "medium", "Which rule is represented by $p\\Rightarrow q$, p, therefore q?", ["Modus ponens", "Modus tollens", "Converse error", "Denying antecedent"], "Modus ponens", ["The hypothesis p is affirmed, so q follows."], ["modus ponens"], "Review Logic Module 12: Valid Deduction Patterns."),
+    ("propositional-logic", 2026, "medium", "Which rule is represented by $p\\Rightarrow q$, $\\neg q$, therefore $\\neg p$?", ["Modus ponens", "Modus tollens", "Affirming consequent", "Conjunction"], "Modus tollens", ["Denying the conclusion allows us to deny the hypothesis."], ["modus tollens"], "Review Logic Module 12: Valid Deduction Patterns."),
+    ("propositional-logic", 2026, "hard", "The argument $p\\Rightarrow q$, q, therefore p is:", ["Valid", "Invalid: affirming the consequent", "Invalid: denying the antecedent", "A tautology"], "Invalid: affirming the consequent", ["q may happen for another reason, so p does not necessarily follow."], ["fallacy", "affirming consequent"], "Review Logic Module 13: Invalid Arguments and Fallacies."),
+    ("propositional-logic", 2026, "hard", "The argument $p\\Rightarrow q$, $\\neg p$, therefore $\\neg q$ is:", ["Valid", "Invalid: affirming the consequent", "Invalid: denying the antecedent", "Modus tollens"], "Invalid: denying the antecedent", ["q may still be true even if p is false."], ["fallacy", "denying antecedent"], "Review Logic Module 13: Invalid Arguments and Fallacies."),
+    ("propositional-logic", 2026, "medium", "In set logic, $x\\in A\\cap B'$ means:", ["x is in both A and B", "x is in A but not in B", "x is in B but not in A", "x is outside both"], "x is in A but not in B", ["Intersection means both conditions; $B'$ means not in B."], ["logic and sets"], "Review Logic Module 14: Applications of Logic."),
+    ("propositional-logic", 2026, "hard", "A lamp lights if A is on and either B or C is on. The condition is:", ["$A\\lor(B\\land C)$", "$A\\land(B\\lor C)$", "$(A\\land B)\\lor C'$", "$A'\\land B\\land C$"], "$A\\land(B\\lor C)$", ["A must be on, and at least one of B or C must be on."], ["logic applications", "circuits"], "Review Logic Module 14: Applications of Logic."),
+    ("propositional-logic", 2026, "hard", "Which disproves the claim: If a number is even, then it is divisible by 4?", ["2", "4", "8", "12"], "2", ["2 is even but not divisible by 4, so it is a counterexample."], ["counterexample"], "Review Logic Module 15: WAEC Mixed Strategy and Challenge Track."),
+]
+
+for subtopic, yr, diff, q, opts, ans, st, tags, rec in LOGIC_OBJECTIVE_EXPANSION:
+    Q("sets-logic", subtopic, yr, diff, q, opts, ans, st, feedback_tags=tags, recommendation=rec)
+
+for yr, diff, q, ans, st in [
+    (2026, "medium", "Explain why 'x+5=9' is not a logical statement until x is given.", "It is an open sentence because its truth depends on x.", ["A logical statement must be true or false now.", "$x+5=9$ contains an unknown x.", "If x=4 it is true, but if x=1 it is false.", "Therefore it is an open sentence until x is specified."]),
+    (2026, "medium", "Construct the truth table for $p\\Rightarrow q$.", "TT:T, TF:F, FT:T, FF:T.", ["List the four rows for p and q: TT, TF, FT, FF.", "Implication is false only when p is true and q is false.", "Mark the other three rows true."]),
+    (2026, "hard", "Prove that $p\\Rightarrow q\\equiv\\neg p\\lor q$.", "The two statements are logically equivalent.", ["$p\\Rightarrow q$ is false only when p=T and q=F.", "$\\neg p\\lor q$ is false only when $\\neg p=F$ and q=F.", "$\\neg p=F$ means p=T.", "So both are false in the same row and true in all other rows."]),
+    (2026, "hard", "Show that the contrapositive of $p\\Rightarrow q$ is equivalent to the original implication.", "$p\\Rightarrow q\\equiv\\neg q\\Rightarrow\\neg p$.", ["$p\\Rightarrow q$ is false only when p=T and q=F.", "$\\neg q\\Rightarrow\\neg p$ is false only when $\\neg q=T$ and $\\neg p=F$.", "That means q=F and p=T.", "Both statements fail in exactly the same row."]),
+    (2026, "hard", "Decide whether this argument is valid: If a number is divisible by 6, then it is divisible by 3. The number is divisible by 3. Therefore it is divisible by 6.", "Invalid.", ["The form is $p\\Rightarrow q$, q, therefore p.", "This is affirming the consequent.", "Counterexample: 9 is divisible by 3 but not by 6.", "Therefore the conclusion does not necessarily follow."]),
+    (2026, "hard", "Use logic to explain why $x\\in(A\\cap B')\\cup(A'\\cap B)$ means x belongs to exactly one of A and B.", "x is in A or B, but not both.", ["$A\\cap B'$ means x is in A and not in B.", "$A'\\cap B$ means x is in B and not in A.", "The union allows either case.", "So x belongs to exactly one of the two sets."]),
+]:
+    TQ("sets-logic", "propositional-logic", yr, diff, q, ans, st)
 
 for yr, diff, q, ans, st in [
     (2026, "hard", "Show that $(A\\Rightarrow B)\\equiv(A'\\cup B)$, where implication is interpreted in set logic.", "$(A\\Rightarrow B)\\equiv A'\\cup B$.", ["The implication $A\\Rightarrow B$ fails only when an element is in A but not in B.", "The failure region is $A\\cap B'$.", "Therefore the truth region is $(A\\cap B')'$.", "By De Morgan's Law, $(A\\cap B')'=A'\\cup(B')'=A'\\cup B$."]),

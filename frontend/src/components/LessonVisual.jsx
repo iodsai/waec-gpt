@@ -22,6 +22,93 @@ const VisualCaption = ({ title, caption }) => (
   ) : null
 );
 
+const LogicFlow = ({ title, caption }) => (
+  <div className="rounded-xl border border-edge bg-surface p-4">
+    <svg viewBox="0 0 440 180" className="w-full h-auto" role="img" aria-label={title || "Logic flow"}>
+      <rect x="12" y="16" width="416" height="146" rx="16" fill="#F9F7F1" stroke="#E2DCD0" />
+      {[
+        ["Statement", 82],
+        ["Connective", 220],
+        ["Conclusion", 358],
+      ].map(([label, x], i) => (
+        <g key={label}>
+          <rect x={x - 55} y="64" width="110" height="48" rx="12" fill={i === 1 ? "#E8B253" : "#FFFFFF"} fillOpacity={i === 1 ? "0.72" : "1"} stroke="#1A1C1A" strokeWidth="1.8" />
+          <text x={x} y="94" textAnchor="middle" fontSize="15" fontWeight="800" fill="#1A1C1A">{label}</text>
+        </g>
+      ))}
+      <path d="M140 88 H162" stroke="#1A1C1A" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M162 88 l-8 -6 M162 88 l-8 6" stroke="#1A1C1A" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M278 88 H300" stroke="#1A1C1A" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M300 88 l-8 -6 M300 88 l-8 6" stroke="#1A1C1A" strokeWidth="2.2" strokeLinecap="round" />
+      <text x="220" y="44" textAnchor="middle" fontSize="17" fontWeight="800" fill="#1A1C1A">Logic is structured reasoning</text>
+    </svg>
+    <VisualCaption title={title} caption={caption} />
+  </div>
+);
+
+const TruthTableVisual = ({ title, caption }) => (
+  <div className="rounded-xl border border-edge bg-surface p-4">
+    <svg viewBox="0 0 440 240" className="w-full h-auto" role="img" aria-label={title || "Truth table"}>
+      <rect x="12" y="14" width="416" height="210" rx="16" fill="#F9F7F1" stroke="#E2DCD0" />
+      <text x="220" y="44" textAnchor="middle" fontSize="17" fontWeight="800" fill="#1A1C1A">Core truth-table rules</text>
+      <g transform="translate(48 66)">
+        {["p", "q", "p AND q", "p OR q", "p => q"].map((h, i) => (
+          <text key={h} x={i * 76} y="0" fontSize="13" fontWeight="800" fill="#1A1C1A">{h}</text>
+        ))}
+        {[
+          ["T", "T", "T", "T", "T"],
+          ["T", "F", "F", "T", "F"],
+          ["F", "T", "F", "T", "T"],
+          ["F", "F", "F", "F", "T"],
+        ].map((row, r) => (
+          <g key={r} transform={`translate(0 ${28 + r * 30})`}>
+            <rect x="-12" y="-18" width="348" height="25" rx="7" fill={r === 1 ? "#E8B253" : "#FFFFFF"} fillOpacity={r === 1 ? "0.42" : "0.86"} stroke="#E2DCD0" />
+            {row.map((cell, c) => (
+              <text key={`${r}-${c}`} x={c * 76 + 8} y="0" fontSize="15" fontWeight="800" fill="#1A1C1A">{cell}</text>
+            ))}
+          </g>
+        ))}
+      </g>
+    </svg>
+    <VisualCaption title={title} caption={caption} />
+  </div>
+);
+
+const ImplicationMap = ({ title, caption }) => (
+  <div className="rounded-xl border border-edge bg-surface p-4">
+    <svg viewBox="0 0 440 190" className="w-full h-auto" role="img" aria-label={title || "Implication map"}>
+      <rect x="12" y="16" width="416" height="150" rx="16" fill="#F9F7F1" stroke="#E2DCD0" />
+      <circle cx="132" cy="94" r="50" fill="#E8B253" fillOpacity="0.62" stroke="#1A1C1A" strokeWidth="2" />
+      <circle cx="308" cy="94" r="50" fill="#FFFFFF" stroke="#1A1C1A" strokeWidth="2" />
+      <text x="132" y="99" textAnchor="middle" fontSize="24" fontWeight="800" fill="#1A1C1A">p</text>
+      <text x="308" y="99" textAnchor="middle" fontSize="24" fontWeight="800" fill="#1A1C1A">q</text>
+      <path d="M184 94 H250" stroke="#1A1C1A" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M250 94 l-10 -8 M250 94 l-10 8" stroke="#1A1C1A" strokeWidth="2.6" strokeLinecap="round" />
+      <text x="220" y="63" textAnchor="middle" fontSize="15" fontWeight="800" fill="#1A1C1A">if p, then q</text>
+      <text x="220" y="142" textAnchor="middle" fontSize="13" fill="#6E675C">Only false when p happens and q does not.</text>
+    </svg>
+    <VisualCaption title={title} caption={caption} />
+  </div>
+);
+
+const ArgumentFlow = ({ title, caption }) => (
+  <div className="rounded-xl border border-edge bg-surface p-4">
+    <svg viewBox="0 0 440 210" className="w-full h-auto" role="img" aria-label={title || "Argument flow"}>
+      <rect x="12" y="16" width="416" height="170" rx="16" fill="#F9F7F1" stroke="#E2DCD0" />
+      <rect x="44" y="54" width="124" height="44" rx="12" fill="#FFFFFF" stroke="#1A1C1A" strokeWidth="1.8" />
+      <rect x="44" y="116" width="124" height="44" rx="12" fill="#FFFFFF" stroke="#1A1C1A" strokeWidth="1.8" />
+      <rect x="272" y="84" width="124" height="54" rx="12" fill="#E8B253" fillOpacity="0.72" stroke="#1A1C1A" strokeWidth="1.8" />
+      <text x="106" y="82" textAnchor="middle" fontSize="15" fontWeight="800" fill="#1A1C1A">Premise 1</text>
+      <text x="106" y="144" textAnchor="middle" fontSize="15" fontWeight="800" fill="#1A1C1A">Premise 2</text>
+      <text x="334" y="116" textAnchor="middle" fontSize="15" fontWeight="800" fill="#1A1C1A">Conclusion</text>
+      <path d="M174 76 C220 76 220 104 266 104" stroke="#1A1C1A" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      <path d="M174 138 C220 138 220 118 266 118" stroke="#1A1C1A" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      <path d="M266 104 l-9 -6 M266 104 l-9 6" stroke="#1A1C1A" strokeWidth="2.2" strokeLinecap="round" />
+    </svg>
+    <VisualCaption title={title} caption={caption} />
+  </div>
+);
+
 const RegionLabel = ({ x, y, children }) => (
   <text x={x} y={y} textAnchor="middle" dominantBaseline="middle" fontSize="18" fontWeight="800" fill="#1A1C1A">
     {children}
@@ -300,6 +387,18 @@ const LessonVisual = ({ block }) => {
   }
   if (block.type === "venn3_variables") {
     return <ThreeSetVariables title={block.title} caption={block.caption} labels={block.labels || {}} />;
+  }
+  if (block.type === "logic_flow") {
+    return <LogicFlow title={block.title} caption={block.caption} />;
+  }
+  if (block.type === "truth_table") {
+    return <TruthTableVisual title={block.title} caption={block.caption} />;
+  }
+  if (block.type === "implication_map") {
+    return <ImplicationMap title={block.title} caption={block.caption} />;
+  }
+  if (block.type === "argument_flow") {
+    return <ArgumentFlow title={block.title} caption={block.caption} />;
   }
   return (
     <div className="rounded-xl border border-edge bg-sand/50 p-4">

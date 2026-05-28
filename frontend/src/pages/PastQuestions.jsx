@@ -29,6 +29,7 @@ const PastQuestions = () => {
 
   const topic = params.get("topic") || "";
   const subtopic = params.get("subtopic") || "";
+  const ids = params.get("ids") || "";
   const year = params.get("year") || "";
   const difficulty = params.get("difficulty") || "";
 
@@ -45,6 +46,7 @@ const PastQuestions = () => {
   useEffect(() => {
     setLoading(true);
     const q = {};
+    if (ids) q.ids = ids;
     if (topic) q.topic = topic;
     if (subtopic) q.subtopic = subtopic;
     if (year) q.year = year;
@@ -52,7 +54,7 @@ const PastQuestions = () => {
     http.get("/questions", { params: q })
       .then((r) => setQuestions(r.data))
       .finally(() => setLoading(false));
-  }, [topic, subtopic, year, difficulty]);
+  }, [topic, subtopic, ids, year, difficulty]);
 
   const updateFilters = (updates) => {
     const next = new URLSearchParams(params);

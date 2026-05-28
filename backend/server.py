@@ -605,16 +605,22 @@ def _qpublic(d: dict) -> Question:
 async def list_questions(
     topic: Optional[str] = None,
     subtopic: Optional[str] = None,
+    ids: Optional[str] = None,
     year: Optional[int] = None,
     difficulty: Optional[Literal["easy", "medium", "hard"]] = None,
     limit: int = 500,
 ):
     q: dict = {}
+    id_list = [x.strip() for x in ids.split(",") if x.strip()] if ids else []
+    if id_list: q["id"] = {"$in": id_list}
     if topic: q["topic"] = topic
     if subtopic: q["subtopic"] = subtopic
     if year: q["year"] = year
     if difficulty: q["difficulty"] = difficulty
     docs = await db.questions.find(q, {"_id": 0, "answer": 0, "solution_steps": 0}).to_list(limit)
+    if id_list:
+        order = {qid: i for i, qid in enumerate(id_list)}
+        docs.sort(key=lambda d: order.get(d["id"], len(order)))
     return [_qpublic(d) for d in docs]
 
 @api.get("/questions/{qid}", response_model=QuestionDetail)
@@ -639,6 +645,90 @@ async def list_years(topic: Optional[str] = None):
 
 # ============ ATTEMPTS / PROGRESS ============
 SRS_INTERVALS_DAYS = [1, 3, 7, 14, 30]  # level → days until next due
+
+
+SETS_MODULES = [
+    {"module": 1, "title": "Introduction to Sets", "slug": "module-1-introduction-to-sets"},
+    {"module": 2, "title": "Types of Sets", "slug": "module-2-types-of-sets"},
+    {"module": 3, "title": "Subsets and Power Sets", "slug": "module-3-subsets-and-power-sets"},
+    {"module": 4, "title": "Venn Diagrams and Regions", "slug": "module-4-venn-diagrams-and-regions"},
+    {"module": 5, "title": "Set Operations", "slug": "module-5-set-operations"},
+    {"module": 6, "title": "Laws of Sets", "slug": "module-6-laws-of-sets"},
+    {"module": 7, "title": "Cardinality of Sets", "slug": "module-7-cardinality-of-sets"},
+    {"module": 8, "title": "Application of Sets to Word Problems", "slug": "module-8-application-of-sets-to-word-problems"},
+    {"module": 9, "title": "Complement of a Set", "slug": "module-9-complement-of-a-set"},
+    {"module": 10, "title": "Practical WAEC Problem Solving", "slug": "module-10-practical-waec-problem-solving"},
+    {"module": 11, "title": "Advanced Logical and Set Interpretation", "slug": "module-11-advanced-logical-and-set-interpretation"},
+    {"module": 12, "title": "Combinatorial Set Problems", "slug": "module-12-combinatorial-set-problems"},
+]
+SETS_MODULE_BY_NUM = {m["module"]: m for m in SETS_MODULES}
+
+
+def _extract_module_from_text(text: str) -> Optional[int]:
+    marker = "Module "
+    idx = (text or "").find(marker)
+    if idx < 0:
+        return None
+    digits = ""
+    for ch in text[idx + len(marker):]:
+        if ch.isdigit():
+            digits += ch
+        else:
+            break
+    if not digits:
+        return None
+    value = int(digits)
+    return value if value in SETS_MODULE_BY_NUM else None
+
+
+def _sets_module_for_question(qdoc: dict) -> int:
+    module = _extract_module_from_text(qdoc.get("recommendation") or "")
+    if module:
+        return module
+    text = " ".join([
+        qdoc.get("question", ""),
+        qdoc.get("subtopic", ""),
+        " ".join(qdoc.get("feedback_tags", []) or []),
+    ]).lower()
+    module_keywords = [
+        (12, ["combination", "nested subset", "disjoint subset", "ordered pairs", "at most", "at least"]),
+        (11, ["implication", "symmetric", "failure region", "disjoint complement", "set logic"]),
+        (10, ["waec", "three-set none"]),
+        (9, ["complement", "universal set", "neither"]),
+        (8, ["simultaneous", "unknown", "word problem"]),
+        (7, ["cardinality", "inclusion-exclusion", "overlap", "exactly one", "two-set", "three-set", "find overlap"]),
+        (6, ["de morgan", "absorption", "set laws"]),
+        (5, ["intersection", "union", "difference", "set operation"]),
+        (4, ["venn", "region"]),
+        (3, ["subset", "power set", "proper", "fixed element"]),
+        (2, ["equal versus equivalent", "equivalent", "finite", "infinite"]),
+        (1, ["well-defined", "set-builder", "element belongs"]),
+    ]
+    for mod, keywords in module_keywords:
+        if any(keyword in text for keyword in keywords):
+            return mod
+    subtopic = qdoc.get("subtopic")
+    if subtopic == "venn-diagrams":
+        return 7
+    if subtopic == "subsets-power":
+        return 3
+    return 5
+
+
+def _sets_module_path(module: int) -> str:
+    meta = SETS_MODULE_BY_NUM[module]
+    return f"/lessons/set-operations/sections/{meta['slug']}"
+
+
+async def _sets_question_pool() -> list[dict]:
+    docs = await db.questions.find(
+        {"topic": "sets-logic", "question_type": "objective"},
+        {"_id": 0, "id": 1, "topic": 1, "subtopic": 1, "question": 1, "difficulty": 1,
+         "feedback_tags": 1, "recommendation": 1}
+    ).to_list(500)
+    for d in docs:
+        d["sets_module"] = _sets_module_for_question(d)
+    return docs
 
 
 async def _update_srs_card(user_id: str, question_id: str, correct: bool, is_review: bool):
@@ -699,6 +789,10 @@ async def submit_attempt(req: AttemptReq, current=Depends(get_current_user)):
         "id": str(uuid.uuid4()), "user_id": current["id"], "question_id": req.question_id,
         "topic": qdoc.get("topic", topic_of(qdoc["subtopic"])),
         "subtopic": qdoc["subtopic"], "selected": req.selected, "correct": correct,
+        "feedback_tags": qdoc.get("feedback_tags", []) if not correct else [],
+        "recommendation": qdoc.get("recommendation") if not correct else None,
+        "sets_module": _sets_module_for_question(qdoc) if qdoc.get("topic") == "sets-logic" else None,
+        "difficulty": qdoc.get("difficulty"),
         "is_reveal": is_theory,  # theory reveals don't count toward accuracy
         "created_at": datetime.now(timezone.utc).isoformat(),
     })
@@ -901,6 +995,142 @@ async def daily_plan(current=Depends(get_current_user)):
         return {"cards": [], "message": "Practise a few questions and we'll build your daily plan."}
 
     return {"cards": cards, "message": None}
+
+
+def _pick_sets_ids(pool: list[dict], module: Optional[int] = None, limit: int = 8, exclude_ids: Optional[set] = None) -> list[str]:
+    exclude_ids = exclude_ids or set()
+    items = [q for q in pool if q["id"] not in exclude_ids and (module is None or q.get("sets_module") == module)]
+    buckets = {"easy": [], "medium": [], "hard": []}
+    for q in items:
+        buckets.setdefault(q.get("difficulty", "medium"), []).append(q)
+    picked: list[dict] = []
+    pattern = ["easy", "medium", "medium", "hard", "easy", "medium", "hard", "hard"]
+    for difficulty in pattern:
+        if len(picked) >= limit:
+            break
+        bucket = buckets.get(difficulty) or []
+        if bucket:
+            picked.append(bucket.pop(0))
+    if len(picked) < limit:
+        picked_ids = {q["id"] for q in picked}
+        picked.extend([q for q in items if q["id"] not in picked_ids][:limit - len(picked)])
+    return [q["id"] for q in picked[:limit]]
+
+
+@api.get("/sets/mastery")
+async def sets_mastery(current=Depends(get_current_user)):
+    """Teach -> diagnose -> remediate -> retest -> mastery loop for the Sets course."""
+    attempts = await db.attempts.find(
+        {"user_id": current["id"], "topic": "sets-logic", "$or": [{"is_reveal": {"$exists": False}}, {"is_reveal": False}]},
+        {"_id": 0}
+    ).to_list(5000)
+    qids = list({a["question_id"] for a in attempts})
+    qmap: dict = {}
+    if qids:
+        async for qd in db.questions.find(
+            {"id": {"$in": qids}},
+            {"_id": 0, "id": 1, "topic": 1, "subtopic": 1, "question": 1, "difficulty": 1,
+             "feedback_tags": 1, "recommendation": 1}
+        ):
+            qmap[qd["id"]] = qd
+
+    stats = {
+        m["module"]: {"attempts": 0, "correct": 0, "wrong": 0, "weak_tags": {}, "last_attempt_at": None}
+        for m in SETS_MODULES
+    }
+    attempted_ids = set()
+    for attempt in attempts:
+        qdoc = qmap.get(attempt["question_id"], {})
+        module = attempt.get("sets_module") or _sets_module_for_question(qdoc)
+        attempted_ids.add(attempt["question_id"])
+        row = stats[module]
+        row["attempts"] += 1
+        if attempt.get("correct"):
+            row["correct"] += 1
+        else:
+            row["wrong"] += 1
+            tags = attempt.get("feedback_tags") or qdoc.get("feedback_tags") or []
+            for tag in tags:
+                row["weak_tags"][tag] = row["weak_tags"].get(tag, 0) + 1
+        created = attempt.get("created_at")
+        if created and (row["last_attempt_at"] is None or created > row["last_attempt_at"]):
+            row["last_attempt_at"] = created
+
+    pool = await _sets_question_pool()
+    modules = []
+    for meta in SETS_MODULES:
+        module = meta["module"]
+        row = stats[module]
+        attempts_count = row["attempts"]
+        accuracy = round((row["correct"] / attempts_count) * 100, 1) if attempts_count else None
+        if attempts_count >= 4 and accuracy is not None and accuracy >= 80:
+            status = "mastered"
+        elif attempts_count >= 2 and accuracy is not None and accuracy < 60:
+            status = "review"
+        elif attempts_count:
+            status = "developing"
+        else:
+            status = "not_started"
+        weak_tags = sorted(
+            [{"tag": tag, "count": count} for tag, count in row["weak_tags"].items()],
+            key=lambda x: x["count"],
+            reverse=True,
+        )[:4]
+        retest_ids = _pick_sets_ids(pool, module=module, limit=6, exclude_ids=attempted_ids)
+        if len(retest_ids) < 3:
+            retest_ids = _pick_sets_ids(pool, module=module, limit=6)
+        query = urlencode({"ids": ",".join(retest_ids)}) if retest_ids else urlencode({"topic": "sets-logic"})
+        if weak_tags:
+            remediation = f"You missed {weak_tags[0]['tag']}. Review Module {module}, then retest with fresh questions."
+        elif status == "not_started":
+            remediation = f"Start Module {module}, then take the diagnostic questions."
+        elif status == "mastered":
+            remediation = "Mastery shown. Keep it alive with occasional mixed WAEC drills."
+        else:
+            remediation = f"Keep practising Module {module} until you can score at least 80% twice."
+        modules.append({
+            "module": module,
+            "title": meta["title"],
+            "status": status,
+            "attempts": attempts_count,
+            "correct": row["correct"],
+            "accuracy": accuracy,
+            "weak_tags": weak_tags,
+            "lesson_path": _sets_module_path(module),
+            "diagnostic_path": f"/past-questions?{query}",
+            "retest_path": f"/past-questions?{query}",
+            "retest_question_ids": retest_ids,
+            "remediation": remediation,
+        })
+
+    review_modules = [m for m in modules if m["status"] == "review"]
+    developing_modules = [m for m in modules if m["status"] == "developing"]
+    not_started_modules = [m for m in modules if m["status"] == "not_started"]
+    next_module = (review_modules or developing_modules or not_started_modules or modules)[0]
+    diagnostic_ids = _pick_sets_ids(pool, limit=10, exclude_ids=attempted_ids)
+    if len(diagnostic_ids) < 5:
+        diagnostic_ids = _pick_sets_ids(pool, limit=10)
+    diagnostic_path = f"/past-questions?{urlencode({'ids': ','.join(diagnostic_ids)})}" if diagnostic_ids else "/past-questions?topic=sets-logic"
+
+    mastered_count = sum(1 for m in modules if m["status"] == "mastered")
+    attempted_modules = [m for m in modules if m["attempts"] > 0 and m["accuracy"] is not None]
+    average_mastery = round(sum(m["accuracy"] for m in attempted_modules) / len(attempted_modules), 1) if attempted_modules else 0
+    return {
+        "summary": {
+            "modules_mastered": mastered_count,
+            "total_modules": len(modules),
+            "average_mastery": average_mastery,
+            "next_action": next_module["remediation"],
+            "next_module": next_module,
+        },
+        "diagnostic": {
+            "label": "Diagnose",
+            "message": "Take a mixed Sets diagnostic. Your missed tags will drive the review plan.",
+            "question_ids": diagnostic_ids,
+            "path": diagnostic_path,
+        },
+        "modules": modules,
+    }
 
 # ============ BOOKMARKS ============
 @api.get("/predictions")

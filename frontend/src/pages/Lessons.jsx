@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import http from "@/lib/api";
 import MathText from "@/components/MathText";
 import LessonVisual from "@/components/LessonVisual";
-import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Lightbulb, ListChecks, TriangleAlert } from "lucide-react";
+import { ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Lightbulb, ListChecks, Target, TriangleAlert } from "lucide-react";
 
 const sectionSlug = (value = "") => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
@@ -105,6 +105,91 @@ const SectionCard = ({ section, index, subtopicId, challenge = false }) => (
     </span>
   </Link>
 );
+
+const statusStyle = {
+  mastered: "!bg-success/10 !text-success",
+  developing: "!bg-terracotta/10 !text-terracotta",
+  review: "!bg-error/10 !text-error",
+  not_started: "",
+};
+
+const SetsLearningEngine = ({ mastery }) => {
+  if (!mastery) {
+    return (
+      <div className="card-surface p-6 flex items-center gap-3 text-muted2" data-testid="sets-engine-loading">
+        <Target size={18} className="text-terracotta" /> Loading Sets mastery engine...
+      </div>
+    );
+  }
+  const next = mastery.summary?.next_module;
+  const modules = mastery.modules || [];
+  return (
+    <div className="card-surface p-6" data-testid="sets-learning-engine">
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5">
+        <div>
+          <span className="overline">Learning engine</span>
+          <h2 className="font-heading text-2xl font-semibold text-ink mt-2">Teach, diagnose, remediate, retest</h2>
+          <p className="text-sm text-muted2 mt-2 max-w-2xl">
+            This panel watches your Sets attempts, finds weak modules and mistake patterns, then sends you back to the right lesson section and a fresh retest.
+          </p>
+        </div>
+        <div className="rounded-xl border border-edge bg-sand/40 p-4 min-w-[220px]">
+          <div className="text-xs uppercase tracking-[0.18em] text-muted2 font-bold">Mastery</div>
+          <div className="font-heading text-3xl font-bold text-ink mt-1">
+            {mastery.summary.modules_mastered}/{mastery.summary.total_modules}
+          </div>
+          <div className="text-sm text-muted2">{mastery.summary.average_mastery}% average attempted accuracy</div>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-4 gap-3 mt-5">
+        <Link to="#guided-sections" className="rounded-xl border border-edge bg-surface p-4 hover:border-terracotta/40">
+          <div className="font-heading font-semibold text-ink">1. Teach</div>
+          <p className="text-sm text-muted2 mt-1">Open the module lesson and examples.</p>
+        </Link>
+        <Link to={mastery.diagnostic.path} className="rounded-xl border border-edge bg-surface p-4 hover:border-terracotta/40">
+          <div className="font-heading font-semibold text-ink">2. Diagnose</div>
+          <p className="text-sm text-muted2 mt-1">Take a mixed Sets diagnostic.</p>
+        </Link>
+        <Link to={next?.lesson_path || "#guided-sections"} className="rounded-xl border border-edge bg-surface p-4 hover:border-terracotta/40">
+          <div className="font-heading font-semibold text-ink">3. Remediate</div>
+          <p className="text-sm text-muted2 mt-1">{mastery.summary.next_action}</p>
+        </Link>
+        <Link to={next?.retest_path || mastery.diagnostic.path} className="rounded-xl border border-edge bg-surface p-4 hover:border-terracotta/40">
+          <div className="font-heading font-semibold text-ink">4. Retest</div>
+          <p className="text-sm text-muted2 mt-1">Try fresh questions for the weak module.</p>
+        </Link>
+      </div>
+
+      <div className="mt-5 grid md:grid-cols-2 gap-3">
+        {modules.map((module) => (
+          <div key={module.module} className="rounded-xl border border-edge bg-surface p-4" data-testid={`sets-module-mastery-${module.module}`}>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="text-xs uppercase tracking-[0.18em] text-terracotta font-bold">Module {module.module}</div>
+                <div className="font-heading font-semibold text-ink mt-1">{module.title}</div>
+              </div>
+              <span className={`tag ${statusStyle[module.status] || ""}`}>{module.status.replace("_", " ")}</span>
+            </div>
+            <div className="text-sm text-muted2 mt-2">
+              {module.attempts ? `${module.correct}/${module.attempts} correct (${module.accuracy}%)` : "No diagnostic attempts yet"}
+            </div>
+            {module.weak_tags?.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {module.weak_tags.map((tag) => <span key={tag.tag} className="tag !text-error">{tag.tag}</span>)}
+              </div>
+            )}
+            <p className="text-sm text-ink/80 mt-3">{module.remediation}</p>
+            <div className="flex flex-wrap gap-2 mt-4">
+              <Link className="btn-ghost text-sm" to={module.lesson_path}>Review</Link>
+              <Link className="btn-secondary text-sm" to={module.retest_path}>Retest</Link>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const LessonSection = ({ section, index }) => (
   <section className="card-surface p-7" data-testid={`lesson-section-${index}`}>
@@ -235,6 +320,7 @@ const Lessons = () => {
   const { subtopicId, sectionSlug: activeSectionSlug } = useParams();
   const [topics, setTopics] = useState(null);
   const [lesson, setLesson] = useState(null);
+  const [setsMastery, setSetsMastery] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -248,6 +334,13 @@ const Lessons = () => {
       .then((r) => setLesson(r.data))
       .catch(() => setLesson(null))
       .finally(() => setLoading(false));
+    if (subtopicId === "set-operations") {
+      http.get("/sets/mastery")
+        .then((r) => setSetsMastery(r.data))
+        .catch(() => setSetsMastery(null));
+    } else {
+      setSetsMastery(null);
+    }
   }, [subtopicId]);
 
   if (!subtopicId) {
@@ -368,6 +461,12 @@ const Lessons = () => {
         </div>
       )}
 
+      {subtopicId === "set-operations" && (
+        <div className="mt-8">
+          <SetsLearningEngine mastery={setsMastery} />
+        </div>
+      )}
+
       {lesson.visual_blocks?.length > 0 && (
         <div className="mt-10">
           <h2 className="font-heading text-2xl font-semibold text-ink">Visual explanation</h2>
@@ -380,7 +479,7 @@ const Lessons = () => {
       )}
 
       {lesson.lesson_sections?.length > 0 && (
-        <div className="mt-10 space-y-6">
+        <div id="guided-sections" className="mt-10 space-y-6">
           <div>
             <span className="overline">Guided sections</span>
             <h2 className="font-heading text-2xl font-semibold text-ink mt-2">Learn this topic step by step</h2>

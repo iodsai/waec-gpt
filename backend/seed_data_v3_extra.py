@@ -617,6 +617,26 @@ SET_OPERATIONS_SECTIONS = [
                 "level": "complex",
                 "title": "Three-club Venn diagram by regions",
                 "problem": "In a school of 100 students, 40 belong to Debate, 36 to Science and 30 to Music. 15 belong to Debate and Science, 12 to Debate and Music, 10 to Science and Music, and 6 belong to all three. Find how many belong to Debate only and how many belong to none.",
+                "visual_blocks": [
+                    {
+                        "type": "venn3_variables",
+                        "title": "Fill the Venn regions from the centre outward",
+                        "caption": "Start with all three = 6. Then subtract 6 from each pair overlap to get the pair-only regions. After that, subtract the known parts inside each club to get each only-region.",
+                        "labels": {
+                            "leftSet": "D",
+                            "rightSet": "S",
+                            "bottomSet": "M",
+                            "leftOnly": "19",
+                            "rightOnly": "17",
+                            "bottomOnly": "8",
+                            "leftRight": "9",
+                            "leftBottom": "6",
+                            "rightBottom": "4",
+                            "allThree": "6",
+                            "outside": "25"
+                        }
+                    }
+                ],
                 "steps": [
                     "Start with the middle: all three = 6.",
                     "Debate and Science only = $15-6=9$.",

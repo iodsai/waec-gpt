@@ -2353,6 +2353,170 @@ LOGIC_REASONING_SECTIONS = [
     },
 ]
 
+LOGIC_REASONING_SECTIONS[0]["key_points"].extend([
+    "A vague sentence is not acceptable until its key words are defined.",
+    "A closed statement has a definite truth value; an open statement still depends on a variable.",
+    "To turn an open sentence into a statement, specify the value of the variable or state a clear domain and condition.",
+])
+LOGIC_REASONING_SECTIONS[0]["examples"].extend([
+    {
+        "level": "WAEC trap",
+        "title": "Vague words are not enough",
+        "problem": "Decide whether this is a logical statement: 'Tall students are smart.'",
+        "steps": [
+            "A logical statement must be clearly true or false.",
+            "The word 'tall' has no fixed height here.",
+            "The word 'smart' is also subjective unless a test or rule is given.",
+            "Because the membership rule is vague, WAEC would not accept it as a proper logical statement.",
+        ],
+        "answer": "It is not a logical statement as written.",
+        "examiner_tip": "When a sentence depends on opinion words such as tall, beautiful, difficult or smart, ask whether the question has defined those words."
+    },
+    {
+        "level": "intermediate",
+        "title": "Open versus closed statements",
+        "problem": "Classify: (a) $x+2=5$ (b) If $x=3$, then $x+2=5$.",
+        "steps": [
+            "(a) contains x without telling us its value, so its truth is not fixed.",
+            "(b) gives the value of x.",
+            "Substitute $x=3$: $3+2=5$, which is true.",
+        ],
+        "answer": "(a) open statement; (b) closed logical statement.",
+        "examiner_tip": "Do not reject every sentence with x. Reject it only when the variable is not fixed or quantified."
+    },
+])
+LOGIC_REASONING_SECTIONS[0]["module_quiz"].extend([
+    {"question": "Why is 'This topic is difficult' not a good logical statement?", "answer": "Difficult is subjective unless a precise rule is supplied."},
+    {"question": "Turn $x^2=16$ into a true closed statement.", "answer": "For example: If $x=4$, then $x^2=16$."},
+])
+
+LOGIC_REASONING_SECTIONS[4]["examples"].extend([
+    {
+        "level": "real-life reasoning",
+        "title": "Implication as a rule being violated",
+        "problem": "A school rule says: If a student registers for an examination, then the student pays the required fee. Which case breaks the rule?",
+        "steps": [
+            "Let p mean the student registers.",
+            "Let q mean the student pays the required fee.",
+            "The rule is $p\\Rightarrow q$.",
+            "The only broken case is p true and q false: the student registers but does not pay.",
+            "If the student does not register, the rule has not been triggered.",
+        ],
+        "answer": "Registers and does not pay.",
+        "examiner_tip": "For implication, search for the forbidden situation: p happens but q fails."
+    },
+    {
+        "level": "WAEC trap",
+        "title": "Owning a car does not imply driving ability",
+        "problem": "Analyze: If a person owns a car, then the person can drive. Is this always true?",
+        "steps": [
+            "Let p be 'the person owns a car'.",
+            "Let q be 'the person can drive'.",
+            "To disprove the implication, find p true and q false.",
+            "A person may own a car but not know how to drive.",
+        ],
+        "answer": "Not always true.",
+        "examiner_tip": "A real-life implication is false if one realistic counterexample makes p true and q false."
+    },
+])
+LOGIC_REASONING_SECTIONS[4]["practice"].extend([
+    {"question": "Which case makes 'If a passenger boards a flight, then they present valid ID' false?", "answer": "The passenger boards but does not present valid ID."},
+    {"question": "Rewrite 'If a driver exceeds the speed limit, then the driver is fined' using OR form.", "answer": "The driver does not exceed the speed limit OR the driver is fined."},
+])
+
+LOGIC_REASONING_SECTIONS[11]["formulas"].append(
+    {"name": "Truth-table validity test", "expression": "Premises all true $\\Rightarrow$ conclusion true", "meaning": "Check only rows where every premise is true. If the conclusion is true in all those rows, the argument is valid."}
+)
+LOGIC_REASONING_SECTIONS[11]["examples"].extend([
+    {
+        "level": "examiner method",
+        "title": "Validate an argument with a truth table",
+        "problem": "Test the validity of: $p\\Rightarrow q$, p, therefore q.",
+        "steps": [
+            "List the four rows for p and q.",
+            "Find rows where both premises are true: $p\\Rightarrow q$ is true and p is true.",
+            "This happens only in the row p=T, q=T.",
+            "In that row the conclusion q is true.",
+            "Therefore the argument is valid.",
+        ],
+        "answer": "Valid.",
+        "examiner_tip": "For validity tables, do not require every row to be true. Check rows where all premises are true."
+    },
+    {
+        "level": "multi-premise",
+        "title": "Two independent rules",
+        "problem": "Given $p\\Rightarrow q$, $r\\Rightarrow s$, p and r. What follows?",
+        "steps": [
+            "From $p\\Rightarrow q$ and p, conclude q by modus ponens.",
+            "From $r\\Rightarrow s$ and r, conclude s by modus ponens.",
+            "Both conclusions are guaranteed.",
+        ],
+        "answer": "$q\\land s$ follows.",
+        "examiner_tip": "When a question has two separate triggered rules, solve each rule and then combine the guaranteed conclusions."
+    },
+    {
+        "level": "argument completion",
+        "title": "Complete the conclusion",
+        "problem": "Complete the argument: $p\\Rightarrow q$, $\\neg q$, therefore ____.",
+        "steps": [
+            "This matches modus tollens.",
+            "If q failed, then p could not have happened.",
+        ],
+        "answer": "$\\neg p$.",
+        "examiner_tip": "Argument-completion questions are often pattern-recognition questions in disguise."
+    },
+])
+LOGIC_REASONING_SECTIONS[11]["module_quiz"].extend([
+    {"question": "If $p\\Rightarrow q$, $q\\Rightarrow r$ and $\\neg r$, what can you conclude?", "answer": "$\\neg q$ and then $\\neg p$."},
+    {"question": "If $p\\Rightarrow q$, $r\\Rightarrow q$ and q is true, what can you conclude about p or r?", "answer": "Nothing definite. q could have happened for another reason."},
+])
+
+LOGIC_REASONING_SECTIONS[12]["key_points"].extend([
+    "Circular reasoning repeats the conclusion as if it were evidence.",
+    "An irrelevant conclusion may be true, but it does not follow from the premises.",
+    "A false assumption weakens the argument before the logic even starts.",
+])
+LOGIC_REASONING_SECTIONS[12]["examples"].extend([
+    {
+        "level": "fallacy",
+        "title": "Circular reasoning",
+        "problem": "A student says: 'This method is correct because it is the right method.' What is wrong?",
+        "steps": [
+            "The reason repeats the claim instead of supporting it.",
+            "No independent evidence is given.",
+            "This is circular reasoning.",
+        ],
+        "answer": "Invalid reasoning: circular reasoning.",
+        "examiner_tip": "A conclusion cannot prove itself."
+    },
+    {
+        "level": "fallacy",
+        "title": "Irrelevant conclusion",
+        "problem": "A candidate argues: 'The diagram is neat, therefore the proof is correct.' Identify the error.",
+        "steps": [
+            "A neat diagram may help communication.",
+            "But neatness does not guarantee that the logical steps are valid.",
+            "The conclusion does not follow from the premise.",
+        ],
+        "answer": "Irrelevant conclusion.",
+        "examiner_tip": "WAEC marks the reasoning, not the confidence of the wording."
+    },
+])
+LOGIC_REASONING_SECTIONS[12]["module_quiz"].extend([
+    {"question": "What fallacy occurs when a conclusion simply repeats a premise?", "answer": "Circular reasoning."},
+    {"question": "Why is 'sounds true' not enough to prove validity?", "answer": "Validity requires the conclusion to be forced by the premises."},
+])
+
+LOGIC_REASONING_SECTIONS[14]["practice_ladder"].append({
+    "level": "Mock Exam Readiness",
+    "description": "A final sweep matching the structure of the uploaded Logic lesson document.",
+    "items": [
+        {"question": "State whether each is a statement: 7 is prime; Solve x; Ghana is in West Africa; Close the door.", "answer": "Statement, not a statement, statement, not a statement."},
+        {"question": "If $p$: a number is divisible by 4 and $q$: the number is even, write $p\\land q$, $p\\lor q$, $p\\Rightarrow q$ and $\\neg p$ in words.", "answer": "Divisible by 4 and even; divisible by 4 or even; if divisible by 4 then even; not divisible by 4."},
+        {"question": "Given $p\\Rightarrow q$, $q\\Rightarrow r$ and p, state the final conclusion.", "answer": "r."},
+    ],
+})
+
 TRUTH_TABLE_FOCUS_SECTIONS = [
     LOGIC_REASONING_SECTIONS[6],
     LOGIC_REASONING_SECTIONS[7],
@@ -3028,6 +3192,22 @@ LOGIC_OBJECTIVE_EXPANSION = [
 for subtopic, yr, diff, q, opts, ans, st, tags, rec in LOGIC_OBJECTIVE_EXPANSION:
     Q("sets-logic", subtopic, yr, diff, q, opts, ans, st, feedback_tags=tags, recommendation=rec)
 
+LOGIC_DOC_OBJECTIVE_EXPANSION = [
+    ("propositional-logic", 2026, "easy", "Which of the following is NOT a logical statement?", ["$5+3=8$", "What is your age?", "12 is divisible by 4", "7 is greater than 2"], "What is your age?", ["A question is not true or false.", "The other options have definite truth values."], ["statement classification", "question trap"], "Review Logic Module 1: Statements and Truth Values."),
+    ("propositional-logic", 2026, "easy", "Which sentence is rejected because it is subjective?", ["8 is even", "She is very beautiful", "11 is prime", "Ghana is in West Africa"], "She is very beautiful", ["Beauty is opinion-based unless a precise rule is supplied."], ["subjective statement"], "Review Logic Module 1: Statements and Truth Values."),
+    ("propositional-logic", 2026, "medium", "If p: a farmer grows maize and q: a farmer grows rice, then $p\\land q$ means:", ["The farmer grows maize only", "The farmer grows rice only", "The farmer grows maize and rice", "The farmer grows neither"], "The farmer grows maize and rice", ["Conjunction means both p and q are true."], ["conjunction translation"], "Review Logic Module 4: Conjunction and Disjunction."),
+    ("propositional-logic", 2026, "medium", "In mathematics, $p\\lor q$ usually means:", ["p only", "q only", "p or q or both", "neither p nor q"], "p or q or both", ["Mathematical OR is inclusive unless 'exactly one' is stated."], ["inclusive or"], "Review Logic Module 4: Conjunction and Disjunction."),
+    ("propositional-logic", 2026, "medium", "Which situation makes 'If a person uses electricity, then the person pays utility bills' false?", ["Uses electricity and pays", "Uses electricity and does not pay", "Does not use electricity and pays", "Does not use electricity and does not pay"], "Uses electricity and does not pay", ["Implication fails only when p is true and q is false."], ["implication false case"], "Review Logic Module 5: Implication."),
+    ("propositional-logic", 2026, "medium", "If $p\\Rightarrow q$ and $\\neg q$ are true, the valid conclusion is:", ["p", "q", "$\\neg p$", "$\\neg q\\Rightarrow p$"], "$\\neg p$", ["This is modus tollens."], ["modus tollens", "argument completion"], "Review Logic Module 12: Valid Deduction Patterns."),
+    ("propositional-logic", 2026, "hard", "If $p\\Rightarrow q$, $q\\Rightarrow r$ and $\\neg r$, what conclusion is guaranteed?", ["p", "$\\neg q$ only", "$\\neg p$ only", "$\\neg q$ and $\\neg p$"], "$\\neg q$ and $\\neg p$", ["From $q\\Rightarrow r$ and $\\neg r$, conclude $\\neg q$.", "From $p\\Rightarrow q$ and $\\neg q$, conclude $\\neg p$."], ["multi-step deduction"], "Review Logic Module 12: Valid Deduction Patterns."),
+    ("propositional-logic", 2026, "hard", "If $p\\Rightarrow q$, $r\\Rightarrow q$ and q is true, what can be concluded about p and r?", ["p must be true", "r must be true", "both p and r must be true", "nothing definite"], "nothing definite", ["This affirms the consequent.", "q may be true for a reason other than p or r."], ["affirming consequent", "hidden trap"], "Review Logic Module 13: Invalid Arguments and Fallacies."),
+    ("propositional-logic", 2026, "hard", "Which is an example of circular reasoning?", ["p implies q; p; therefore q", "This proof is correct because it is correct", "p implies q; not q; therefore not p", "p implies q; q implies r; p; therefore r"], "This proof is correct because it is correct", ["The reason merely repeats the conclusion."], ["circular reasoning"], "Review Logic Module 13: Invalid Arguments and Fallacies."),
+    ("truth-tables", 2026, "hard", "When testing argument validity by truth table, which rows matter most?", ["Rows where all premises are true", "Rows where all premises are false", "Only the first row", "Only rows where the conclusion is false"], "Rows where all premises are true", ["An argument is valid if the conclusion is true in every row where the premises are all true."], ["truth-table validity"], "Review Logic Module 12: Valid Deduction Patterns."),
+]
+
+for subtopic, yr, diff, q, opts, ans, st, tags, rec in LOGIC_DOC_OBJECTIVE_EXPANSION:
+    Q("sets-logic", subtopic, yr, diff, q, opts, ans, st, feedback_tags=tags, recommendation=rec)
+
 for yr, diff, q, ans, st in [
     (2026, "medium", "Explain why 'x+5=9' is not a logical statement until x is given.", "It is an open sentence because its truth depends on x.", ["A logical statement must be true or false now.", "$x+5=9$ contains an unknown x.", "If x=4 it is true, but if x=1 it is false.", "Therefore it is an open sentence until x is specified."]),
     (2026, "medium", "Construct the truth table for $p\\Rightarrow q$.", "TT:T, TF:F, FT:T, FF:T.", ["List the four rows for p and q: TT, TF, FT, FF.", "Implication is false only when p is true and q is false.", "Mark the other three rows true."]),
@@ -3035,6 +3215,18 @@ for yr, diff, q, ans, st in [
     (2026, "hard", "Show that the contrapositive of $p\\Rightarrow q$ is equivalent to the original implication.", "$p\\Rightarrow q\\equiv\\neg q\\Rightarrow\\neg p$.", ["$p\\Rightarrow q$ is false only when p=T and q=F.", "$\\neg q\\Rightarrow\\neg p$ is false only when $\\neg q=T$ and $\\neg p=F$.", "That means q=F and p=T.", "Both statements fail in exactly the same row."]),
     (2026, "hard", "Decide whether this argument is valid: If a number is divisible by 6, then it is divisible by 3. The number is divisible by 3. Therefore it is divisible by 6.", "Invalid.", ["The form is $p\\Rightarrow q$, q, therefore p.", "This is affirming the consequent.", "Counterexample: 9 is divisible by 3 but not by 6.", "Therefore the conclusion does not necessarily follow."]),
     (2026, "hard", "Use logic to explain why $x\\in(A\\cap B')\\cup(A'\\cap B)$ means x belongs to exactly one of A and B.", "x is in A or B, but not both.", ["$A\\cap B'$ means x is in A and not in B.", "$A'\\cap B$ means x is in B and not in A.", "The union allows either case.", "So x belongs to exactly one of the two sets."]),
+]:
+    TQ("sets-logic", "propositional-logic", yr, diff, q, ans, st)
+
+for yr, diff, q, ans, st in [
+    (2026, "medium", "A statement says: 'Tall students are smart.' Explain why this is not a proper logical statement as written.", "It is vague and subjective, so it has no definite truth value.", ["A logical statement must be clearly true or false.", "'Tall' is not defined by a height or rule.", "'Smart' is not defined by a measurable condition.", "Therefore the sentence is too vague to be accepted as a logical statement."]),
+    (2026, "medium", "Let p mean 'a number is divisible by 4' and q mean 'the number is even'. Write in words: (a) $p\\land q$ (b) $p\\lor q$ (c) $p\\Rightarrow q$ (d) $\\neg p$.", "(a) Divisible by 4 and even. (b) Divisible by 4 or even. (c) If divisible by 4, then even. (d) Not divisible by 4.", ["Translate each connective separately.", "$\\land$ means and.", "$\\lor$ means inclusive or.", "$\\Rightarrow$ means if...then.", "$\\neg$ means not."]),
+    (2026, "hard", "Use a truth-table validity method to test: $p\\Rightarrow q$, p, therefore q.", "The argument is valid.", ["Make columns for p, q and $p\\Rightarrow q$.", "Look only at rows where all premises are true.", "The premises $p\\Rightarrow q$ and p are both true only when p=T and q=T.", "In that row, the conclusion q is true.", "Therefore the argument is valid."]),
+    (2026, "hard", "Given $p\\Rightarrow q$, $q\\Rightarrow r$ and $\\neg r$, deduce all conclusions that follow.", "$\\neg q$ and $\\neg p$ follow.", ["From $q\\Rightarrow r$ and $\\neg r$, use modus tollens to get $\\neg q$.", "From $p\\Rightarrow q$ and $\\neg q$, use modus tollens again to get $\\neg p$.", "This is backward chain reasoning."]),
+    (2026, "hard", "Analyze the argument: If a building is modern, then it uses electricity. This building uses electricity. Therefore it is modern.", "Invalid: affirming the consequent.", ["Let p be 'building is modern' and q be 'building uses electricity'.", "The form is $p\\Rightarrow q$, q, therefore p.", "This is affirming the consequent.", "A non-modern building may also use electricity."]),
+    (2026, "hard", "A trader did not pay customs duty. Given: If goods are imported, then customs duty is paid. What valid conclusion follows?", "The trader did not import goods, assuming the given rule is true.", ["Let p be 'goods are imported'.", "Let q be 'customs duty is paid'.", "Given $p\\Rightarrow q$ and $\\neg q$.", "By modus tollens, conclude $\\neg p$.", "So the goods were not imported under the stated rule."]),
+    (2026, "hard", "Explain why $p\\Rightarrow q$, $r\\Rightarrow q$, q does not allow us to conclude p or r.", "It is invalid to conclude p or r.", ["Both p and r are possible ways q could happen, but they are not the only possible ways.", "The form affirms the consequent.", "q being true does not prove which condition caused it.", "So nothing definite follows about p or r."]),
+    (2026, "hard", "Design a short WAEC-style solution for: If a student attends classes, they understand the subject. If they understand the subject, they pass. The student attends classes.", "The student passes.", ["Let p: attends classes.", "Let q: understands the subject.", "Let r: passes.", "Given $p\\Rightarrow q$, $q\\Rightarrow r$ and p.", "By chain reasoning, $p\\Rightarrow r$.", "Since p is true, r follows."]),
 ]:
     TQ("sets-logic", "propositional-logic", yr, diff, q, ans, st)
 

@@ -10,7 +10,7 @@ Adds 250 questions (50 each) across:
 
 EXTRA_SUBTOPICS = {
     "sets-logic": [
-        {"id": "set-operations", "name": "Set Operations"},
+        {"id": "set-operations", "name": "Sets"},
         {"id": "venn-diagrams", "name": "Venn Diagrams"},
         {"id": "subsets-power", "name": "Subsets & Power Sets"},
         {"id": "binary-operations", "name": "Binary Operations"},
@@ -671,6 +671,244 @@ SET_OPERATIONS_SECTIONS = [
     }
 ]
 
+def _sets_section(title):
+    return next(section for section in SET_OPERATIONS_SECTIONS if section["title"] == title)
+
+_two_set_cardinality = _sets_section("The Two-Set Counting Formula")
+_three_set_cardinality = _sets_section("The Three-Set Counting Formula")
+_laws_of_sets = _sets_section("De Morgan's Laws for Two and Three Sets")
+_advanced_word_problems = _sets_section("Advanced Word Problems and Simultaneous Equations")
+_waec_strategy = _sets_section("Problem-Solving Strategy for WAEC Set Questions")
+
+SET_OPERATIONS_SECTIONS = [
+    {
+        "title": "Module 1: Introduction to Sets",
+        "intro": "A set is a well-defined collection of objects. In WAEC questions, students must be able to recognise a valid set and write it clearly using roster notation or set-builder notation.",
+        "key_points": [
+            "A set must be well-defined, meaning there should be no argument about whether an object belongs to it.",
+            "Roster notation lists members inside braces, for example $A=\\{2,4,6,8\\}$.",
+            "Set-builder notation describes members by a property, for example $A=\\{x:x\\text{ is an even number less than }10\\}$.",
+            "The objects in a set are called elements or members.",
+            "$x\\in A$ means x belongs to A; $x\\notin A$ means x does not belong to A.",
+        ],
+        "examples": [
+            {
+                "level": "foundation",
+                "title": "Writing sets correctly",
+                "problem": "Write the set of vowels in the English alphabet and the set of prime numbers less than 20.",
+                "steps": [
+                    "The vowels are clearly known: a, e, i, o and u.",
+                    "The prime numbers less than 20 are numbers greater than 1 whose only factors are 1 and themselves.",
+                    "List each element once inside braces.",
+                ],
+                "answer": "$V=\\{a,e,i,o,u\\}$ and $P=\\{2,3,5,7,11,13,17,19\\}$."
+            }
+        ],
+        "practice": [
+            {"question": "Is 'the set of tall students in a class' well-defined without giving a height limit?", "answer": "No. 'Tall' is subjective unless a height rule is stated."},
+            {"question": "Write the set of odd numbers less than 10 in roster notation.", "answer": "$\\{1,3,5,7,9\\}$"},
+        ],
+    },
+    {
+        "title": "Module 2: Types of Sets",
+        "intro": "WAEC expects students to distinguish common set types, especially equal and equivalent sets, empty sets and universal sets.",
+        "key_points": [
+            "A finite set has a countable limited number of elements.",
+            "An infinite set continues without end, for example the set of natural numbers.",
+            "Equal sets have exactly the same elements.",
+            "Equivalent sets have the same number of elements, even if the elements are different.",
+            "The empty set, written $\\emptyset$ or $\\{\\}$, has no elements.",
+            "The universal set $U$ is the complete set being considered in a question.",
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Equal versus equivalent",
+                "problem": "Let $A=\\{1,2,3\\}$, $B=\\{3,2,1\\}$ and $C=\\{a,b,c\\}$. Compare A, B and C.",
+                "steps": [
+                    "A and B contain the same elements, even though the order is different.",
+                    "So A and B are equal sets.",
+                    "C has three elements, just like A and B.",
+                    "So C is equivalent to A and B, but not equal to them.",
+                ],
+                "answer": "$A=B$ and $A$ is equivalent to $C$."
+            }
+        ],
+        "practice": [
+            {"question": "Give an example of an empty set from ordinary school life.", "answer": "For example, the set of months with 32 days is $\\emptyset$."},
+            {"question": "If $A=\\{p,q\\}$ and $B=\\{1,2\\}$, are A and B equal or equivalent?", "answer": "Equivalent, because both have 2 elements; not equal because the elements differ."},
+        ],
+    },
+    {
+        "title": "Module 3: Subsets and Power Sets",
+        "intro": "A subset relationship means every member of one set is also found in another set. WAEC frequently tests subset notation and counting subsets.",
+        "formulas": [
+            {"name": "Number of subsets", "expression": "$2^n$", "meaning": "A set with n elements has $2^n$ subsets."},
+            {"name": "Number of proper subsets", "expression": "$2^n-1$", "meaning": "Exclude the whole set itself."},
+            {"name": "Non-empty proper subsets", "expression": "$2^n-2$", "meaning": "Exclude both the empty set and the whole set."},
+        ],
+        "key_points": [
+            "$A\\subseteq B$ means every element of A is in B.",
+            "$A\\subset B$ usually means A is a proper subset of B.",
+            "$\\emptyset$ is a subset of every set.",
+            "Every set is a subset of itself, but not a proper subset of itself.",
+            "The power set $\\mathcal{P}(A)$ is the set of all subsets of A.",
+        ],
+        "visual_blocks": [
+            {"type": "venn", "variant": "subset", "title": "Subset idea", "caption": "Every element of B is inside A, so B is a subset of A."},
+        ],
+        "examples": [
+            {
+                "level": "WAEC-style",
+                "title": "Counting subsets",
+                "problem": "How many subsets and proper subsets does $A=\\{a,b,c,d\\}$ have?",
+                "steps": [
+                    "The set has 4 elements, so $n=4$.",
+                    "Number of subsets is $2^4=16$.",
+                    "Number of proper subsets is $2^4-1=15$.",
+                ],
+                "answer": "16 subsets and 15 proper subsets."
+            }
+        ],
+        "practice": [
+            {"question": "How many subsets does a 5-element set have?", "answer": "$2^5=32$"},
+            {"question": "How many non-empty proper subsets does a 3-element set have?", "answer": "$2^3-2=6$"},
+        ],
+    },
+    {
+        "title": "Module 4: Venn Diagrams and Regions",
+        "intro": "Venn diagrams turn set language into regions. This module trains students to interpret shaded regions before attempting word problems.",
+        "key_points": [
+            "The rectangle represents the universal set $U$.",
+            "Each circle represents a set.",
+            "Overlapping regions show common elements.",
+            "A two-set Venn diagram has four regions: A only, B only, both, and neither.",
+            "A three-set Venn diagram has seven inside regions plus the outside region.",
+        ],
+        "visual_blocks": [
+            {"type": "venn", "variant": "union", "title": "$A\\cup B$", "caption": "Everything in A, B or both."},
+            {"type": "venn", "variant": "intersection", "title": "$A\\cap B$", "caption": "Only the overlap belongs to both sets."},
+            {"type": "venn3", "variant": "exactly_one_all", "title": "Exactly one of three sets", "caption": "Only the three single-set regions are included."},
+            {"type": "venn3", "variant": "at_least_two", "title": "At least two of three sets", "caption": "The pair overlaps and the centre are included."},
+        ],
+        "examples": [
+            {
+                "level": "visual",
+                "title": "Reading a shaded region",
+                "problem": "Describe the region $A'\\cap(B\\cup C)$ in words.",
+                "steps": [
+                    "$B\\cup C$ means in B or in C.",
+                    "$A'$ means outside A.",
+                    "So keep the parts of B or C that are outside A.",
+                ],
+                "answer": "The region in B or C, but not in A."
+            }
+        ],
+    },
+    {
+        "title": "Module 5: Set Operations",
+        "intro": "Set operations tell us how sets are combined, compared or separated. WAEC tests both computation from listed sets and interpretation from diagrams.",
+        "key_points": [
+            "$A\\cup B$ means elements in A or B or both.",
+            "$A\\cap B$ means elements common to A and B.",
+            "$A'$ means elements in U that are not in A.",
+            "$A-B$ means elements in A after removing elements that are also in B.",
+            "Do not repeat elements when writing a set.",
+        ],
+        "visual_blocks": [
+            {"type": "venn", "variant": "union", "title": "Union", "caption": "$A\\cup B$: all parts inside A or B."},
+            {"type": "venn", "variant": "intersection", "title": "Intersection", "caption": "$A\\cap B$: only the common part."},
+            {"type": "venn", "variant": "difference", "title": "Difference", "caption": "$A-B$: A only, after removing overlap with B."},
+            {"type": "venn", "variant": "complement_a", "title": "Complement", "caption": "$A'$: all parts of U outside A."},
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Compute operations from listed sets",
+                "problem": "Let $U=\\{1,2,3,4,5,6,7\\}$, $A=\\{1,3,5,7\\}$ and $B=\\{2,3,5,6\\}$. Find $A\\cup B$, $A\\cap B$, $A'$ and $A-B$.",
+                "steps": [
+                    "$A\\cup B=\\{1,2,3,5,6,7\\}$.",
+                    "$A\\cap B=\\{3,5\\}$.",
+                    "$A'=\\{2,4,6\\}$.",
+                    "$A-B=\\{1,7\\}$.",
+                ],
+                "answer": "$A\\cup B=\\{1,2,3,5,6,7\\}$, $A\\cap B=\\{3,5\\}$, $A'=\\{2,4,6\\}$, $A-B=\\{1,7\\}$."
+            }
+        ],
+    },
+    {
+        **_laws_of_sets,
+        "title": "Module 6: Laws of Sets",
+        "intro": "The laws of sets help students simplify set expressions. WAEC emphasis is practical simplification, not abstract proof.",
+        "formulas": [
+            {"name": "Commutative laws", "expression": "$A\\cup B=B\\cup A$ and $A\\cap B=B\\cap A$", "meaning": "Order does not change union or intersection."},
+            {"name": "Associative laws", "expression": "$(A\\cup B)\\cup C=A\\cup(B\\cup C)$ and $(A\\cap B)\\cap C=A\\cap(B\\cap C)$", "meaning": "Grouping does not change repeated union or intersection."},
+            {"name": "Distributive laws", "expression": "$A\\cap(B\\cup C)=(A\\cap B)\\cup(A\\cap C)$ and $A\\cup(B\\cap C)=(A\\cup B)\\cap(A\\cup C)$", "meaning": "Intersection and union distribute over each other."},
+            {"name": "Identity laws", "expression": "$A\\cup\\emptyset=A$, $A\\cap U=A$, $A\\cup U=U$, $A\\cap\\emptyset=\\emptyset$", "meaning": "Special sets simplify expressions."},
+        ] + _laws_of_sets.get("formulas", []),
+    },
+    {
+        "title": "Module 7: Cardinality of Sets",
+        "intro": "Cardinality means the number of elements in a set. This is a highly tested WAEC area because it leads directly to survey word problems.",
+        "key_points": _two_set_cardinality.get("key_points", []) + _three_set_cardinality.get("key_points", []),
+        "visual_blocks": _two_set_cardinality.get("visual_blocks", []) + _three_set_cardinality.get("visual_blocks", []),
+        "formulas": _two_set_cardinality.get("formulas", []) + _three_set_cardinality.get("formulas", []),
+        "examples": _two_set_cardinality.get("examples", []) + _three_set_cardinality.get("examples", []),
+        "practice": _three_set_cardinality.get("practice", []),
+        "applications": _two_set_cardinality.get("applications", []),
+    },
+    {
+        "title": "Module 8: Application of Sets to Word Problems",
+        "intro": "WAEC word problems require translation from text to Venn diagram, then from Venn diagram to equations. This module treats both simple survey problems and advanced simultaneous-equation cases.",
+        "key_points": _advanced_word_problems.get("key_points", []),
+        "examples": _advanced_word_problems.get("examples", []),
+        "practice": _advanced_word_problems.get("practice", []),
+        "applications": _advanced_word_problems.get("applications", []),
+    },
+    {
+        "title": "Module 9: Complement of a Set",
+        "intro": "The complement of a set is always measured relative to the universal set. Students must identify U before finding a complement.",
+        "formulas": [
+            {"name": "Complement count", "expression": "$n(A')=n(U)-n(A)$", "meaning": "Remove the members of A from the universal set."},
+            {"name": "Complement of a union", "expression": "$(A\\cup B)'=A'\\cap B'$", "meaning": "Outside A or B means outside both A and B."},
+            {"name": "Complement of three-set union", "expression": "$(A\\cup B\\cup C)'=A'\\cap B'\\cap C'$", "meaning": "Outside all three circles."},
+        ],
+        "visual_blocks": [
+            {"type": "venn", "variant": "complement_a", "title": "$A'$", "caption": "Everything in U that is not inside A."},
+            {"type": "venn", "variant": "neither", "title": "$(A\\cup B)'$", "caption": "Everything outside A and outside B."},
+            {"type": "venn3", "variant": "neither_all", "title": "$(A\\cup B\\cup C)'$", "caption": "Everything outside A, B and C."},
+        ],
+        "examples": [
+            {
+                "level": "basic",
+                "title": "Find a complement",
+                "problem": "If $U=\\{1,2,3,4,5,6,7,8\\}$ and $A=\\{2,4,6,8\\}$, find $A'$.",
+                "steps": [
+                    "Complement is found inside U.",
+                    "Remove 2, 4, 6 and 8 from U.",
+                    "The remaining elements are 1, 3, 5 and 7.",
+                ],
+                "answer": "$A'=\\{1,3,5,7\\}$."
+            }
+        ],
+        "practice": [
+            {"question": "If $n(U)=80$ and $n(A)=35$, find $n(A')$.", "answer": "$80-35=45$"},
+        ],
+    },
+    {
+        "title": "Module 10: Practical WAEC Problem Solving",
+        "intro": "This final module mixes notation, diagrams, cardinality and word problems in the way WAEC questions are usually presented.",
+        "key_points": _waec_strategy.get("key_points", []) + [
+            "Objective questions usually test definitions, operations and quick diagram interpretation.",
+            "Theory questions usually test Venn diagrams, cardinality calculations and clear working.",
+            "Common traps are double-counting, misplacing overlap regions and forgetting the universal set.",
+            "Topics outside WAEC scope include axiomatic set theory, advanced infinite set theory and formal proof systems.",
+        ],
+        "examples": _waec_strategy.get("examples", []),
+        "practice": _waec_strategy.get("practice", []),
+    },
+]
+
 SUBSETS_POWER_SECTIONS = [
     {
         "title": "Subset Meaning, Notation and Equality",
@@ -896,14 +1134,14 @@ SUBSETS_POWER_SECTIONS = [
 
 EXTRA_LESSONS = {
     # ---- SETS & LOGIC ----
-    "set-operations": {"title": "Set Operations", "topic": "sets-logic",
-        "summary": "Learn how to describe, combine and compare groups of objects using union, intersection, complement and difference.",
+    "set-operations": {"title": "Sets", "topic": "sets-logic",
+        "summary": "A WAEC-aligned Sets course covering notation, types of sets, subsets, Venn diagrams, operations, laws, cardinality, complements and word problems.",
         "standard": "full",
         "objectives": [
             "Explain what a set, element, universal set and empty set mean in plain English.",
             "Use symbols such as $\\in$, $\\notin$, $\\cup$, $\\cap$, $A'$ and $A-B$ correctly.",
-            "Find union, intersection, complement and difference from listed sets.",
-            "Translate simple word problems into set notation and solve them step by step.",
+            "Find union, intersection, complement and difference from listed sets and Venn diagrams.",
+            "Translate WAEC-style word problems into Venn diagrams, equations and clear solutions.",
             "Recognise how set operations appear in engineering, physics, computing and probability.",
         ],
         "prerequisites": [

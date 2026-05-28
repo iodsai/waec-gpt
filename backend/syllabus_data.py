@@ -63,6 +63,8 @@ SYLLABUS_SECTIONS = [
                     "Module 8: Application to word problems, surveys, diagrams and equations.",
                     "Module 9: Complement relative to a universal set and $n(A')=n(U)-n(A)$.",
                     "Module 10: Mixed WAEC-style problem solving and past-question practice.",
+                    "Examiner extension: logical set interpretation, including $(A\\Rightarrow B)\\equiv A'\\cup B$.",
+                    "Examiner extension: combinatorial set problems, including exact-size subsets and pairs of subsets.",
                     "WAEC examiner expectations: correct notation, quick Venn interpretation, clear working and accurate formulas.",
                     "Excluded from WAEC scope: axiomatic set theory, advanced infinite set theory and formal logic systems.",
                 ],

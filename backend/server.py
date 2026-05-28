@@ -278,7 +278,7 @@ async def lifespan(app: FastAPI):
             "year": q["year"], "difficulty": q["difficulty"],
             "question": q["question"], "options": q["options"],
             "answer": q["answer"], "solution_steps": q["solution_steps"],
-            "question_type": "objective", "source": "seed",
+            "question_type": q.get("question_type", "objective"), "source": "seed",
             "created_at": datetime.now(timezone.utc).isoformat(),
         } for q in QUESTIONS_V3]
         if docs:
@@ -296,7 +296,7 @@ async def lifespan(app: FastAPI):
                     "year": q["year"], "difficulty": q["difficulty"],
                     "question": q["question"], "options": q["options"],
                     "answer": q["answer"], "solution_steps": q["solution_steps"],
-                    "question_type": "objective", "source": "seed",
+                    "question_type": q.get("question_type", "objective"), "source": "seed",
                     "created_at": datetime.now(timezone.utc).isoformat(),
                 } for q in topic_qs])
                 logging.info(f"Top-up seeded {len(topic_qs)} questions for topic '{_tid}'")

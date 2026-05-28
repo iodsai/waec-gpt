@@ -909,6 +909,143 @@ SET_OPERATIONS_SECTIONS = [
     },
 ]
 
+SET_OPERATIONS_SECTIONS.extend([
+    {
+        "title": "Module 11: Advanced Logical and Set Interpretation",
+        "intro": "This examiner-extension module uses set regions to explain implication, exclusive membership and disjointness. These questions are beyond ordinary textbook drills but useful for top WAEC Further Mathematics candidates.",
+        "key_points": [
+            "In set logic, an implication $A\\Rightarrow B$ means every element in A must also be in B.",
+            "The statement $A\\Rightarrow B$ fails only in the region $A\\cap B'$: in A but not in B.",
+            "Therefore $A\\Rightarrow B$ is represented by the complement of $A\\cap B'$, which simplifies to $A'\\cup B$.",
+            "$(A\\cap B')\\cup(A'\\cap B)$ means elements that belong to exactly one of A and B.",
+            "$A\\cap B=\\emptyset$ means A and B are disjoint, so every element of A lies outside B; hence $A\\subseteq B'$.",
+        ],
+        "visual_blocks": [
+            {"type": "venn", "variant": "difference", "title": "Failure of implication: $A\\cap B'$", "caption": "This is the only region where an element is in A but not in B. Implication excludes this region."},
+            {"type": "venn", "variant": "exactly_one", "title": "$(A\\cap B')\\cup(A'\\cap B)$", "caption": "Exactly one of A or B: A only plus B only."},
+            {"type": "venn", "variant": "disjoint", "title": "$A\\cap B=\\emptyset$", "caption": "No overlap means every element of A is outside B."},
+        ],
+        "formulas": [
+            {"name": "Implication as a set statement", "expression": "$(A\\Rightarrow B)\\equiv A'\\cup B$", "meaning": "Either the element is not in A, or it is safely inside B."},
+            {"name": "Exclusive membership", "expression": "$(A\\cap B')\\cup(A'\\cap B)$", "meaning": "The element belongs to exactly one of A and B."},
+            {"name": "Disjointness and complement", "expression": "$A\\cap B=\\emptyset\\iff A\\subseteq B'$", "meaning": "A has no common member with B exactly when A lies inside the complement of B."},
+        ],
+        "examples": [
+            {
+                "level": "advanced logic",
+                "title": "Show that implication is $A'\\cup B$",
+                "problem": "Show that $(A\\Rightarrow B)\\equiv(A'\\cup B)$ when implication is interpreted in set logic.",
+                "steps": [
+                    "An implication $A\\Rightarrow B$ means: if an element is in A, then it must be in B.",
+                    "The only way this can fail is for an element to be in A and not in B.",
+                    "The failure region is $A\\cap B'$.",
+                    "So the truth region is $(A\\cap B')'$.",
+                    "By De Morgan's Law, $(A\\cap B')'=A'\\cup(B')'=A'\\cup B$.",
+                ],
+                "answer": "$(A\\Rightarrow B)\\equiv A'\\cup B$."
+            },
+            {
+                "level": "advanced interpretation",
+                "title": "Interpret exactly-one membership",
+                "problem": "If $x\\in(A\\cap B')\\cup(A'\\cap B)$, explain the relationship between A and B for x.",
+                "steps": [
+                    "$x\\in A\\cap B'$ means x is in A but not in B.",
+                    "$x\\in A'\\cap B$ means x is in B but not in A.",
+                    "The union of these two regions means either one may happen.",
+                    "So x belongs to exactly one of A and B, but not both.",
+                ],
+                "answer": "x is in exactly one of the two sets A and B."
+            },
+            {
+                "level": "proof",
+                "title": "Disjointness and complement proof",
+                "problem": "Prove that $(A\\cap B)=\\emptyset\\iff A\\subseteq B'$.",
+                "steps": [
+                    "First assume $A\\cap B=\\emptyset$.",
+                    "Take any $x\\in A$. Since there is no common element of A and B, x cannot be in B.",
+                    "Therefore $x\\in B'$, so every element of A is in $B'$. Hence $A\\subseteq B'$.",
+                    "Conversely, assume $A\\subseteq B'$.",
+                    "Then every element of A is outside B, so no element can belong to both A and B.",
+                    "Therefore $A\\cap B=\\emptyset$.",
+                ],
+                "answer": "$(A\\cap B)=\\emptyset$ if and only if $A\\subseteq B'$."
+            },
+        ],
+        "practice": [
+            {"question": "Explain why $A\\Rightarrow B$ fails in the region $A\\cap B'$.", "answer": "Because an element there is in A but not in B, contradicting 'if A then B'."},
+            {"question": "Describe $(A\\cup B) - (A\\cap B)$ in words.", "answer": "Elements in exactly one of A and B."},
+        ],
+        "applications": [
+            {"title": "Logic gates and rules", "body": "Implication and complement rules are used in digital logic, database filters and rule-based expert systems."},
+            {"title": "Classification systems", "body": "Exactly-one membership helps classify objects that satisfy one condition but not both, such as materials that are conductive or magnetic, but not both."},
+        ],
+    },
+    {
+        "title": "Module 12: Combinatorial Set Problems",
+        "intro": "This examiner-extension module treats counting subsets and pairs of subsets. It turns set theory into combinatorics, helping strong students handle questions they rarely see in ordinary textbooks.",
+        "key_points": [
+            "To count subsets with exactly r elements from an n-element set, use $\\binom{n}{r}$.",
+            "At most 3 elements means 0, 1, 2 or 3 elements.",
+            "At least 6 elements from an 8-element set means 6, 7 or 8 elements.",
+            "For $B\\subseteq C\\subseteq A$, each element of A has three choices: outside C, inside C but not B, or inside B.",
+            "For disjoint subset pairs $(B,C)$, each element has three choices: in B, in C, or in neither.",
+        ],
+        "formulas": [
+            {"name": "Exactly r elements", "expression": "$\\binom{n}{r}$", "meaning": "Choose r members from n without order."},
+            {"name": "Nested subset pairs", "expression": "$B\\subseteq C\\subseteq A\\Rightarrow 3^{|A|}$ ordered pairs", "meaning": "Each element chooses one of three membership levels."},
+            {"name": "Disjoint subset pairs", "expression": "$B\\cap C=\\emptyset\\Rightarrow 3^{|A|}$ ordered pairs", "meaning": "Each element can enter B, enter C, or enter neither."},
+        ],
+        "examples": [
+            {
+                "level": "combinatorial",
+                "title": "Subsets of an 8-element set",
+                "problem": "How many subsets of a set with 8 elements contain (a) exactly 3 elements, (b) at most 3 elements, (c) at least 6 elements?",
+                "steps": [
+                    "Exactly 3 elements: choose 3 from 8, so $\\binom{8}{3}=56$.",
+                    "At most 3 means 0, 1, 2 or 3 elements.",
+                    "$\\binom{8}{0}+\\binom{8}{1}+\\binom{8}{2}+\\binom{8}{3}=1+8+28+56=93$.",
+                    "At least 6 means 6, 7 or 8 elements.",
+                    "$\\binom{8}{6}+\\binom{8}{7}+\\binom{8}{8}=28+8+1=37$.",
+                ],
+                "answer": "(a) 56, (b) 93, (c) 37."
+            },
+            {
+                "level": "combinatorial",
+                "title": "Counting nested subset pairs",
+                "problem": "Let A be a set with 6 elements. Find the number of ordered pairs $(B,C)$ such that $B\\subseteq C\\subseteq A$.",
+                "steps": [
+                    "For each element of A, there are three possible statuses.",
+                    "Status 1: the element is not in C, hence not in B.",
+                    "Status 2: the element is in C but not in B.",
+                    "Status 3: the element is in B, hence also in C.",
+                    "Since A has 6 elements, the number of ordered pairs is $3^6$.",
+                ],
+                "answer": "$3^6=729$ ordered pairs."
+            },
+            {
+                "level": "combinatorial",
+                "title": "Counting disjoint subset pairs",
+                "problem": "Let A be a set with 10 elements. Find the number of pairs of subsets $(B,C)$ such that $B\\cap C=\\emptyset$.",
+                "steps": [
+                    "For each element of A, decide where it goes.",
+                    "It may go into B, into C, or into neither set.",
+                    "It cannot go into both because B and C must be disjoint.",
+                    "So each of the 10 elements has 3 choices.",
+                ],
+                "answer": "$3^{10}=59049$ pairs."
+            },
+        ],
+        "practice": [
+            {"question": "How many subsets of a 7-element set contain exactly 2 elements?", "answer": "$\\binom{7}{2}=21$"},
+            {"question": "How many ordered pairs $(B,C)$ satisfy $B\\subseteq C\\subseteq A$ if $|A|=4$?", "answer": "$3^4=81$"},
+        ],
+        "applications": [
+            {"title": "Feature selection", "body": "Choosing subsets of variables is central in computing and data science. Restrictions such as nested or disjoint choices lead to combinatorial counts."},
+            {"title": "Experiment design", "body": "A physics investigation may choose which variables are controlled, measured or ignored. Each variable can fall into a different set category."},
+        ],
+    },
+])
+
 SUBSETS_POWER_SECTIONS = [
     {
         "title": "Subset Meaning, Notation and Equality",
@@ -1566,11 +1703,15 @@ EXTRA_LESSONS = {
 
 EXTRA_QUESTIONS = []
 
-def Q(topic, subtopic, year, difficulty, question, options, answer, steps):
+def Q(topic, subtopic, year, difficulty, question, options, answer, steps, question_type="objective"):
     EXTRA_QUESTIONS.append({
         "topic": topic, "subtopic": subtopic, "year": year, "difficulty": difficulty,
         "question": question, "options": options, "answer": answer, "solution_steps": steps,
+        "question_type": question_type,
     })
+
+def TQ(topic, subtopic, year, difficulty, question, answer, steps):
+    Q(topic, subtopic, year, difficulty, question, [], answer, steps, "theory")
 
 # ============ SETS & LOGIC — 50 Q ============
 # Set Operations (10)
@@ -1647,6 +1788,20 @@ for yr, diff, q, opts, ans, st in [
     (2020, "easy", "Truth value of $T\\land F$:", ["T","F","Either","Undefined"], "F", ["AND with F is F."]),
 ]:
     Q("sets-logic", "truth-tables", yr, diff, q, opts, ans, st)
+
+for yr, diff, q, ans, st in [
+    (2026, "hard", "Show that $(A\\Rightarrow B)\\equiv(A'\\cup B)$, where implication is interpreted in set logic.", "$(A\\Rightarrow B)\\equiv A'\\cup B$.", ["The implication $A\\Rightarrow B$ fails only when an element is in A but not in B.", "The failure region is $A\\cap B'$.", "Therefore the truth region is $(A\\cap B')'$.", "By De Morgan's Law, $(A\\cap B')'=A'\\cup(B')'=A'\\cup B$."]),
+    (2026, "hard", "If $x\\in(A\\cap B')\\cup(A'\\cap B)$, explain the relationship between A and B for x.", "x belongs to exactly one of A and B.", ["$A\\cap B'$ means in A but not in B.", "$A'\\cap B$ means in B but not in A.", "The union of the two regions means either case may occur.", "Hence x is in exactly one of A and B, not both."]),
+    (2026, "hard", "Prove that $(A\\cap B)=\\emptyset\\iff A\\subseteq B'$.", "$(A\\cap B)=\\emptyset$ if and only if $A\\subseteq B'$.", ["Assume $A\\cap B=\\emptyset$ and take any $x\\in A$.", "Since A and B have no common element, $x\\notin B$, so $x\\in B'$.", "Thus every element of A is in $B'$, hence $A\\subseteq B'$.", "Conversely, if $A\\subseteq B'$, then every element of A is outside B.", "So no element belongs to both A and B, and $A\\cap B=\\emptyset$."]),
+]:
+    TQ("sets-logic", "set-operations", yr, diff, q, ans, st)
+
+for yr, diff, q, ans, st in [
+    (2026, "hard", "How many subsets of a set with 8 elements contain (a) exactly 3 elements, (b) at most 3 elements, (c) at least 6 elements?", "(a) 56, (b) 93, (c) 37.", ["Exactly 3: $\\binom{8}{3}=56$.", "At most 3: $\\binom{8}{0}+\\binom{8}{1}+\\binom{8}{2}+\\binom{8}{3}=1+8+28+56=93$.", "At least 6: $\\binom{8}{6}+\\binom{8}{7}+\\binom{8}{8}=28+8+1=37$."]),
+    (2026, "hard", "Let A be a set with 6 elements. Find the number of ordered pairs $(B,C)$ such that $B\\subseteq C\\subseteq A$.", "$3^6=729$ ordered pairs.", ["For each element of A, there are three possible membership levels.", "It may be outside C, inside C but outside B, or inside B.", "If it is inside B, it is automatically inside C because $B\\subseteq C$.", "With 6 independent elements, the count is $3^6=729$."]),
+    (2026, "hard", "Let A be a set with 10 elements. Find the number of pairs of subsets $(B,C)$ such that $B\\cap C=\\emptyset$.", "$3^{10}=59049$ pairs.", ["Each element of A has three choices: enter B, enter C, or enter neither.", "It cannot enter both because $B\\cap C=\\emptyset$.", "The choices are independent for all 10 elements.", "Therefore the number of pairs is $3^{10}=59049$."]),
+]:
+    TQ("sets-logic", "subsets-power", yr, diff, q, ans, st)
 
 # ============ SURDS & POLYNOMIALS — 50 Q ============
 for yr, diff, q, opts, ans, st in [

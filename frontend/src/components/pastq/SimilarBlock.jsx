@@ -9,7 +9,7 @@ const SimilarBlock = ({ items, onClose }) => {
   return (
     <div className="mt-6 border-t border-edge pt-5" data-testid="similar-block">
       <div className="flex items-center justify-between">
-        <h3 className="font-heading text-lg font-semibold text-ink">AI-generated practice (similar)</h3>
+        <h3 className="font-heading text-lg font-semibold text-ink">Same-lesson practice (similar)</h3>
         <button onClick={onClose} className="p-1 rounded hover:bg-sand" aria-label="close"><X size={16} /></button>
       </div>
       <div className="space-y-4 mt-3">

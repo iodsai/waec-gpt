@@ -738,6 +738,117 @@ async def _sets_question_pool() -> list[dict]:
     return docs
 
 
+def _similar_skill(qdoc: dict) -> str:
+    text = " ".join([
+        qdoc.get("question", ""),
+        qdoc.get("answer", ""),
+        " ".join(qdoc.get("solution_steps", []) or []),
+        " ".join(qdoc.get("feedback_tags", []) or []),
+    ]).lower()
+    if qdoc.get("topic") == "sets-logic":
+        if "\\cap" in text or "intersection" in text or "common" in text or "both" in text:
+            return "set intersection"
+        if "\\cup" in text or "union" in text or "at least one" in text:
+            return "set union"
+        if "complement" in text or "a'" in text or "neither" in text:
+            return "set complement"
+        if "subset" in text or "power set" in text or "proper" in text:
+            return "subsets and power sets"
+        if "de morgan" in text or "absorption" in text:
+            return "laws of sets"
+        if "venn" in text or "n(" in text or "cardinality" in text or "overlap" in text:
+            return "venn cardinality"
+    return qdoc.get("subtopic_name") or qdoc.get("subtopic") or "same concept"
+
+
+def _similar_matches_source(source: dict, item: dict) -> bool:
+    source_topic = source.get("topic")
+    skill = source.get("skill", "").lower()
+    text = " ".join([
+        item.get("question", ""),
+        item.get("answer", ""),
+        " ".join(item.get("solution_steps", []) or []),
+        item.get("skill", ""),
+    ]).lower()
+    if source_topic == "sets-logic":
+        forbidden = ["mean", "median", "mode", "range", "standard deviation", "probability", "histogram"]
+        if any(word in text for word in forbidden):
+            return False
+        if "set" not in text and "\\{" not in text and "\\cap" not in text and "\\cup" not in text and "venn" not in text and "subset" not in text:
+            return False
+        if skill == "set intersection":
+            return "\\cap" in text or "intersection" in text or "common" in text or "both" in text
+        if skill == "set union":
+            return "\\cup" in text or "union" in text or "at least one" in text
+        if skill == "set complement":
+            return "complement" in text or "'" in text or "neither" in text
+        if skill == "subsets and power sets":
+            return "subset" in text or "power set" in text or "proper" in text or "2^" in text
+        if skill == "laws of sets":
+            return "de morgan" in text or "absorption" in text or "simplify" in text
+        if skill == "venn cardinality":
+            return "n(" in text or "venn" in text or "students" in text or "survey" in text
+    return True
+
+
+def _fallback_similar_for_source(source: dict, n: int) -> list[dict]:
+    skill = source.get("skill", "")
+    if source.get("topic") == "sets-logic" and skill == "set intersection":
+        templates = [
+            (
+                "$A=\\{2,4,6,8\\}$, $B=\\{1,2,3,4\\}$. Find $A\\cap B$.",
+                ["$\\{2,4\\}$", "$\\{6,8\\}$", "$\\{1,3\\}$", "$\\emptyset$"],
+                "$\\{2,4\\}$",
+                ["The intersection contains elements common to A and B.", "2 and 4 appear in both sets."],
+            ),
+            (
+                "$P=\\{a,b,c,d\\}$, $Q=\\{c,d,e,f\\}$. Find $P\\cap Q$.",
+                ["$\\{a,b\\}$", "$\\{c,d\\}$", "$\\{e,f\\}$", "$\\{a,b,c,d,e,f\\}$"],
+                "$\\{c,d\\}$",
+                ["List the members that occur in both P and Q.", "The common members are c and d."],
+            ),
+            (
+                "$M=\\{3,6,9,12\\}$, $N=\\{2,3,5,9\\}$. Find $M\\cap N$.",
+                ["$\\{3,9\\}$", "$\\{6,12\\}$", "$\\{2,5\\}$", "$\\emptyset$"],
+                "$\\{3,9\\}$",
+                ["Intersection means common elements.", "3 and 9 are in both M and N."],
+            ),
+        ]
+        return [
+            {"question": q, "options": opts, "answer": ans, "solution_steps": steps, "skill": skill}
+            for q, opts, ans, steps in templates[:n]
+        ]
+    return []
+
+
+async def _same_lesson_bank_fallback(source: dict, n: int) -> list[dict]:
+    docs = await db.questions.find(
+        {
+            "id": {"$ne": source["id"]},
+            "topic": source.get("topic"),
+            "subtopic": source.get("subtopic"),
+            "difficulty": source.get("difficulty"),
+            "$or": [{"question_type": {"$exists": False}}, {"question_type": "objective"}],
+        },
+        {"_id": 0},
+    ).to_list(30)
+    skill = source.get("skill", "")
+    items = []
+    for d in docs:
+        candidate = {
+            "question": d["question"],
+            "options": d.get("options", []),
+            "answer": d.get("answer", ""),
+            "solution_steps": d.get("solution_steps", []),
+            "skill": skill,
+        }
+        if _similar_matches_source(source, candidate):
+            items.append(candidate)
+        if len(items) >= n:
+            break
+    return items
+
+
 async def _update_srs_card(user_id: str, question_id: str, correct: bool, is_review: bool):
     """Insert/update an SRS card based on the latest attempt outcome."""
     now = datetime.now(timezone.utc)
@@ -1469,19 +1580,42 @@ async def similar_questions(qid: str, req: SimilarReq, current=Depends(get_curre
     q = await db.questions.find_one({"id": qid}, {"_id": 0})
     if not q:
         raise HTTPException(status_code=404, detail="Question not found")
+    topic = q.get("topic", topic_of(q["subtopic"]))
+    skill = _similar_skill({**q, "topic": topic, "subtopic_name": SUBTOPIC_NAME.get(q["subtopic"], q["subtopic"])})
     src = {
-        "id": q["id"], "question": q["question"], "options": q.get("options", []),
-        "answer": q["answer"],
+        "id": q["id"],
+        "topic": topic,
+        "topic_name": TOPIC_NAME.get(topic, topic),
+        "subtopic": q["subtopic"],
         "subtopic_name": SUBTOPIC_NAME.get(q["subtopic"], q["subtopic"]),
+        "lesson_title": LESSONS_V2.get(q["subtopic"], {}).get("title", SUBTOPIC_NAME.get(q["subtopic"], q["subtopic"])),
+        "skill": skill,
+        "question": q["question"], "options": q.get("options", []),
+        "answer": q["answer"],
+        "solution_steps": q.get("solution_steps", []),
         "difficulty": q["difficulty"],
     }
     n = max(1, min(req.n, 5))
+    items: list[dict] = []
     try:
-        items = await generate_similar_questions(EMERGENT_LLM_KEY, src, n=n)
+        generated = await generate_similar_questions(EMERGENT_LLM_KEY, src, n=n)
+        items = [item for item in generated if _similar_matches_source(src, item)]
     except Exception as e:
         logging.exception("similar generation failed")
-        raise HTTPException(status_code=500, detail="Could not generate similar questions") from e
-    return {"items": items, "count": len(items)}
+        items = []
+    if len(items) < n:
+        for item in await _same_lesson_bank_fallback(src, n - len(items)):
+            if len(items) >= n:
+                break
+            items.append(item)
+    if len(items) < n:
+        for item in _fallback_similar_for_source(src, n - len(items)):
+            if len(items) >= n:
+                break
+            items.append(item)
+    if not items:
+        raise HTTPException(status_code=500, detail="Could not generate same-lesson similar questions")
+    return {"items": items[:n], "count": len(items[:n]), "skill": skill, "subtopic": src["subtopic"]}
 
 # ============ EXAM MODE ============
 EXAM_CONFIG = {

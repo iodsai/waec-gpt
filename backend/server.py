@@ -871,6 +871,18 @@ def _similar_skill(qdoc: dict) -> str:
             return "laws of sets"
         if "venn" in text or "n(" in text or "cardinality" in text or "overlap" in text:
             return "venn cardinality"
+    if qdoc.get("subtopic") == "functions-mappings":
+        if "inverse" in text or "f^{-1}" in text:
+            return "inverse functions"
+        if "\\circ" in text or "composite" in text or "f(g" in text or "g(f" in text:
+            return "composite functions"
+        if "domain" in text or "range" in text or "excluded" in text:
+            return "domain and range"
+        if "one-to-one" in text or "onto" in text or "constant function" in text or "identity" in text:
+            return "types of functions"
+        if "cost" in text or "charges" in text or "per page" in text:
+            return "function word problems"
+        return "function evaluation"
     return qdoc.get("subtopic_name") or qdoc.get("subtopic") or "same concept"
 
 
@@ -931,6 +943,24 @@ def _similar_matches_source(source: dict, item: dict) -> bool:
             return "de morgan" in text or "absorption" in text or "simplify" in text
         if skill == "venn cardinality":
             return "n(" in text or "venn" in text or "students" in text or "survey" in text
+    if source.get("subtopic") == "functions-mappings":
+        forbidden = ["mean", "median", "mode", "probability", "venn", "matrix", "determinant", "force", "velocity"]
+        if any(word in text for word in forbidden):
+            return False
+        if "function" not in text and "f(" not in text and "g(" not in text and "domain" not in text and "range" not in text and "\\circ" not in text:
+            return False
+        if skill == "inverse functions":
+            return "inverse" in text or "f^{-1}" in text
+        if skill == "composite functions":
+            return "\\circ" in text or "composite" in text or "f(g" in text or "g(f" in text
+        if skill == "domain and range":
+            return "domain" in text or "range" in text or "excluded" in text
+        if skill == "types of functions":
+            return "one-to-one" in text or "onto" in text or "constant" in text or "identity" in text
+        if skill == "function word problems":
+            return "cost" in text or "charges" in text or "function" in text
+        if skill == "function evaluation":
+            return "f(" in text or "find" in text
     return True
 
 
@@ -965,6 +995,30 @@ def _fallback_similar_for_source(source: dict, n: int) -> list[dict]:
             ],
         }
         templates = logic_templates.get(skill) or logic_templates.get("logical implication", [])
+        return [
+            {"question": q, "options": opts, "answer": ans, "solution_steps": steps, "skill": skill}
+            for q, opts, ans, steps in templates[:n]
+        ]
+    if source.get("subtopic") == "functions-mappings":
+        function_templates = {
+            "function evaluation": [
+                ("If $f(x)=3x-2$, find $f(5)$.", ["10", "11", "13", "15"], "13", ["Substitute $x=5$.", "$f(5)=3(5)-2=13$."]),
+                ("If $f(x)=x^2+4$, find $f(-2)$.", ["0", "4", "8", "12"], "8", ["Substitute $x=-2$.", "$(-2)^2+4=8$."]),
+            ],
+            "domain and range": [
+                ("For $f(x)=\\frac{2}{x+1}$, which value is excluded from the domain?", ["-1", "0", "1", "2"], "-1", ["The denominator cannot be zero.", "$x+1=0$, so $x=-1$."]),
+                ("If $f(x)=x^2$ on domain $\\{-1,0,1\\}$, find the range.", ["$\\{-1,0,1\\}$", "$\\{0,1\\}$", "$\\{1\\}$", "$\\{0\\}$"], "$\\{0,1\\}$", ["Outputs are 1, 0 and 1.", "The distinct outputs are $\\{0,1\\}$."]),
+            ],
+            "composite functions": [
+                ("If $f(x)=2x+1$ and $g(x)=x-3$, find $(f\\circ g)(x)$.", ["$2x-5$", "$2x+4$", "$2x-2$", "$x-5$"], "$2x-5$", ["$(f\\circ g)(x)=f(g(x))$.", "$f(x-3)=2(x-3)+1=2x-5$."]),
+                ("If $f(x)=x^2$ and $g(x)=x+4$, find $(g\\circ f)(x)$.", ["$x^2+4$", "$(x+4)^2$", "$x^2-4$", "$4x^2$"], "$x^2+4$", ["Apply f first, then g.", "$g(f(x))=g(x^2)=x^2+4$."]),
+            ],
+            "inverse functions": [
+                ("Find the inverse of $f(x)=2x-7$.", ["$\\frac{x+7}{2}$", "$\\frac{x-7}{2}$", "$2x+7$", "$\\frac{2}{x-7}$"], "$\\frac{x+7}{2}$", ["Let $y=2x-7$.", "$x=\\frac{y+7}{2}$.", "So $f^{-1}(x)=\\frac{x+7}{2}$."]),
+                ("Find $f^{-1}(x)$ if $f(x)=x+6$.", ["$x+6$", "$x-6$", "$6-x$", "$\\frac{1}{x+6}$"], "$x-6$", ["Reverse adding 6 by subtracting 6."]),
+            ],
+        }
+        templates = function_templates.get(skill) or function_templates["function evaluation"]
         return [
             {"question": q, "options": opts, "answer": ans, "solution_steps": steps, "skill": skill}
             for q, opts, ans, steps in templates[:n]

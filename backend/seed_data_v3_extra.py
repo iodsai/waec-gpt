@@ -20,7 +20,7 @@ EXTRA_SUBTOPICS = {
     "surds-polynomials": [
         {"id": "surd-simplification", "name": "Surd Simplification"},
         {"id": "indices-logs-fm", "name": "Indices & Logarithms"},
-        {"id": "functions-mappings", "name": "Functions & Mappings"},
+        {"id": "functions-mappings", "name": "Functions"},
         {"id": "polynomial-division", "name": "Polynomial Division"},
         {"id": "remainder-theorem", "name": "Remainder Theorem"},
         {"id": "partial-fractions", "name": "Partial Fractions"},
@@ -2550,6 +2550,283 @@ TRUTH_TABLE_FOCUS_SECTIONS = [
     },
 ]
 
+FUNCTIONS_SECTIONS = [
+    {
+        "title": "Functions Module 1: Meaning, Domain and Range",
+        "intro": "A function is a rule that gives exactly one output for each allowed input. WAEC expects students to identify the domain, co-domain, image and range before doing algebra.",
+        "diagnostic_checks": [
+            {"question": "If $f(x)=2x+1$, what is $f(3)$?", "answer": "$f(3)=2(3)+1=7$."},
+            {"question": "Can one input of a function have two different outputs?", "answer": "No. Each input must have exactly one output."},
+        ],
+        "key_points": [
+            "The domain is the set of allowed inputs.",
+            "The co-domain is the set into which outputs are expected to fall.",
+            "The range is the set of outputs actually produced.",
+            "$f(a)$ means substitute $a$ into the rule for f.",
+            "A relation is not a function if one input is matched to two different outputs.",
+        ],
+        "examples": [
+            {
+                "level": "foundation",
+                "title": "Find images and range",
+                "problem": "Let $f(x)=x^2+1$ with domain $\\{-2,-1,0,1,2\\}$. Find the range.",
+                "steps": [
+                    "Evaluate each input.",
+                    "$f(-2)=5$, $f(-1)=2$, $f(0)=1$, $f(1)=2$, $f(2)=5$.",
+                    "The range lists distinct output values only.",
+                ],
+                "answer": "$\\{1,2,5\\}$.",
+                "examiner_tip": "Do not repeat range values. A set lists each output once."
+            },
+        ],
+        "practice": [
+            {"question": "If $f(x)=3x-4$, find $f(5)$.", "answer": "$11$."},
+            {"question": "For $f(x)=\\frac{1}{x-2}$, which value must be excluded from the domain?", "answer": "$x=2$."},
+        ],
+        "module_quiz": [
+            {"question": "What is the domain of a function?", "answer": "The set of allowed input values."},
+            {"question": "If $f(x)=x+7$, find $f(-2)$.", "answer": "$5$."},
+        ],
+    },
+    {
+        "title": "Functions Module 2: Function Notation and Evaluation",
+        "intro": "Function notation is compact substitution. Students must be fluent with $f(a)$, $f(x+h)$ and values found from tables or graphs.",
+        "key_points": [
+            "$f(2)$ means replace every x in the formula by 2.",
+            "$f(a+b)$ means replace x by the whole expression $a+b$.",
+            "If a function is given by a table, match the input row to the output row.",
+            "If a function is given by a graph, read the y-value at the required x-value.",
+        ],
+        "examples": [
+            {
+                "level": "WAEC-style",
+                "title": "Evaluate an expression input",
+                "problem": "If $f(x)=x^2-3x$, find $f(a+1)$.",
+                "steps": [
+                    "Replace x by $a+1$ everywhere.",
+                    "$f(a+1)=(a+1)^2-3(a+1)$.",
+                    "Expand: $a^2+2a+1-3a-3$.",
+                    "Simplify.",
+                ],
+                "answer": "$a^2-a-2$.",
+                "examiner_tip": "Put brackets around the substituted expression before expanding."
+            },
+        ],
+        "practice": [
+            {"question": "If $f(x)=2x^2+1$, find $f(-3)$.", "answer": "$19$."},
+            {"question": "If $f(x)=5-x$, find $f(t)$.", "answer": "$5-t$."},
+        ],
+        "module_quiz": [
+            {"question": "If $f(x)=x^2+2x$, find $f(3)$.", "answer": "$15$."},
+            {"question": "If $g(x)=4x-1$, find $g(a)$.", "answer": "$4a-1$."},
+        ],
+    },
+    {
+        "title": "Functions Module 3: Types of Functions",
+        "intro": "WAEC can ask whether a mapping is one-to-one, many-to-one, onto, identity or constant. The safest method is to inspect how inputs and outputs are paired.",
+        "key_points": [
+            "One-to-one means different inputs give different outputs.",
+            "Many-to-one means two or more inputs share the same output.",
+            "Onto means every member of the co-domain is used as an output.",
+            "Identity function maps every input to itself: $f(x)=x$.",
+            "Constant function maps every input to the same output.",
+        ],
+        "examples": [
+            {
+                "level": "concept",
+                "title": "Recognise many-to-one",
+                "problem": "Let $f(x)=x^2$ on domain $\\{-2,-1,0,1,2\\}$. Is f one-to-one?",
+                "steps": [
+                    "$f(-2)=4$ and $f(2)=4$.",
+                    "Two different inputs give the same output.",
+                    "Therefore the function is many-to-one, not one-to-one.",
+                ],
+                "answer": "Not one-to-one.",
+                "examiner_tip": "One counterexample is enough to disprove one-to-one."
+            },
+        ],
+        "practice": [
+            {"question": "Is $f(x)=3x+1$ one-to-one on the real numbers?", "answer": "Yes. Different inputs give different outputs."},
+            {"question": "What type is $f(x)=7$?", "answer": "Constant function."},
+        ],
+        "module_quiz": [
+            {"question": "What does onto mean?", "answer": "Every element of the co-domain is reached."},
+            {"question": "What is the identity function?", "answer": "$f(x)=x$."},
+        ],
+    },
+    {
+        "title": "Functions Module 4: Composite Functions",
+        "intro": "Composite functions are functions performed in sequence. $(f\\circ g)(x)$ means apply g first, then apply f.",
+        "formulas": [
+            {"name": "Composite function", "expression": "$(f\\circ g)(x)=f(g(x))$", "meaning": "g works first, f works second."},
+            {"name": "Order matters", "expression": "$f\\circ g$ is usually not the same as $g\\circ f$.", "meaning": "Do not swap the order unless you have checked."},
+        ],
+        "examples": [
+            {
+                "level": "WAEC-style",
+                "title": "Find a composite function",
+                "problem": "If $f(x)=2x+3$ and $g(x)=x^2-1$, find $(f\\circ g)(x)$.",
+                "steps": [
+                    "$(f\\circ g)(x)=f(g(x))$.",
+                    "Replace x in f by $g(x)=x^2-1$.",
+                    "$f(g(x))=2(x^2-1)+3$.",
+                    "Simplify.",
+                ],
+                "answer": "$2x^2+1$.",
+                "examiner_tip": "The function nearest x acts first: in $f(g(x))$, g acts first."
+            },
+            {
+                "level": "comparison",
+                "title": "Show order matters",
+                "problem": "For $f(x)=2x+3$ and $g(x)=x^2-1$, find $(g\\circ f)(x)$.",
+                "steps": [
+                    "$(g\\circ f)(x)=g(f(x))$.",
+                    "Replace x in g by $2x+3$.",
+                    "$g(f(x))=(2x+3)^2-1$.",
+                    "Expand if required.",
+                ],
+                "answer": "$4x^2+12x+8$.",
+                "examiner_tip": "$f\\circ g$ and $g\\circ f$ are different here. WAEC often tests this trap."
+            },
+        ],
+        "practice": [
+            {"question": "If $f(x)=x+4$ and $g(x)=3x$, find $(f\\circ g)(x)$.", "answer": "$3x+4$."},
+            {"question": "If $f(x)=x^2$ and $g(x)=x-1$, find $(g\\circ f)(x)$.", "answer": "$x^2-1$."},
+        ],
+        "module_quiz": [
+            {"question": "In $(f\\circ g)(x)$, which function is applied first?", "answer": "g."},
+            {"question": "If $f(x)=2x$ and $g(x)=x+5$, find $f(g(x))$.", "answer": "$2x+10$."},
+        ],
+    },
+    {
+        "title": "Functions Module 5: Inverse Functions",
+        "intro": "An inverse function reverses the action of the original function. WAEC commonly asks students to find $f^{-1}(x)$ and verify by composition.",
+        "formulas": [
+            {"name": "Inverse test", "expression": "$f(f^{-1}(x))=x$ and $f^{-1}(f(x))=x$", "meaning": "A function and its inverse undo each other."},
+        ],
+        "key_points": [
+            "An inverse exists as a function only when the original function is one-to-one on the stated domain.",
+            "To find the inverse, write $y=f(x)$.",
+            "Make x the subject.",
+            "Swap x and y or write the result as $f^{-1}(x)$.",
+        ],
+        "examples": [
+            {
+                "level": "WAEC-style",
+                "title": "Find an inverse",
+                "problem": "Find the inverse of $f(x)=3x-5$.",
+                "steps": [
+                    "Write $y=3x-5$.",
+                    "Make x the subject: $y+5=3x$.",
+                    "$x=\\frac{y+5}{3}$.",
+                    "Replace y by x in the inverse notation.",
+                ],
+                "answer": "$f^{-1}(x)=\\frac{x+5}{3}$.",
+                "examiner_tip": "The inverse is not $1/f(x)$. It is the reverse rule."
+            },
+        ],
+        "practice": [
+            {"question": "Find the inverse of $f(x)=2x+7$.", "answer": "$f^{-1}(x)=\\frac{x-7}{2}$."},
+            {"question": "Why does $f(x)=x^2$ not have an inverse function on all real numbers?", "answer": "It is not one-to-one on all real numbers."},
+        ],
+        "module_quiz": [
+            {"question": "What is the first algebraic step for finding an inverse?", "answer": "Write $y=f(x)$."},
+            {"question": "Find $f^{-1}(x)$ if $f(x)=x-9$.", "answer": "$x+9$."},
+        ],
+    },
+    {
+        "title": "Functions Module 6: Graphs of Functions",
+        "intro": "Graphs help students see domain, range, intercepts, turning points and whether a relation is a function.",
+        "key_points": [
+            "The x-values covered by the graph show the domain.",
+            "The y-values reached by the graph show the range.",
+            "The vertical line test checks whether a graph represents a function.",
+            "Intercepts are where the graph crosses the axes.",
+            "Quadratic graphs may have a maximum or minimum turning point.",
+        ],
+        "examples": [
+            {
+                "level": "visual reasoning",
+                "title": "Use the vertical line test",
+                "problem": "Explain why a circle is not the graph of y as a function of x.",
+                "steps": [
+                    "A function must give one y-value for each x-value.",
+                    "A vertical line through many points of a circle cuts it twice.",
+                    "That means one x-value can have two y-values.",
+                ],
+                "answer": "A circle fails the vertical line test.",
+                "examiner_tip": "The vertical line test is a quick way to identify relations that are not functions."
+            },
+        ],
+        "practice": [
+            {"question": "What is the y-intercept of $f(x)=2x-3$?", "answer": "$-3$."},
+            {"question": "What is the shape of $f(x)=x^2$?", "answer": "A parabola."},
+        ],
+        "module_quiz": [
+            {"question": "What does the vertical line test check?", "answer": "Whether each x-value has at most one y-value."},
+            {"question": "What is the range of $f(x)=x^2$ for real x?", "answer": "$y\\geq 0$."},
+        ],
+    },
+    {
+        "title": "Functions Module 7: Function Word Problems",
+        "intro": "Functions model rules in real situations: cost, distance, temperature, machine output and input-output systems.",
+        "examples": [
+            {
+                "level": "application",
+                "title": "Cost function",
+                "problem": "A printing shop charges GHc 5 fixed fee plus GHc 2 per page. Write the cost function and find the cost of 12 pages.",
+                "steps": [
+                    "Let x be the number of pages.",
+                    "Fixed fee is 5.",
+                    "Variable cost is $2x$.",
+                    "So $C(x)=2x+5$.",
+                    "$C(12)=2(12)+5=29$.",
+                ],
+                "answer": "$C(x)=2x+5$; 12 pages cost GHc 29.",
+                "examiner_tip": "In word problems, define the input variable before writing the function."
+            },
+        ],
+        "practice": [
+            {"question": "A taxi charges 10 plus 3 per km. Write $C(x)$.", "answer": "$C(x)=3x+10$."},
+            {"question": "If $C(x)=4x+20$, find $C(15)$.", "answer": "$80$."},
+        ],
+        "module_quiz": [
+            {"question": "What does the input variable represent in a cost function?", "answer": "The quantity being changed, such as pages, km or units."},
+            {"question": "If $P(t)=50+8t$, find $P(5)$.", "answer": "$90$."},
+        ],
+    },
+    {
+        "title": "Functions Module 8: WAEC Mixed Practice",
+        "intro": "This module combines notation, domain, range, types, composite functions, inverse functions and graph reasoning.",
+        "practice_ladder": [
+            {
+                "level": "Core WAEC",
+                "items": [
+                    {"question": "If $f(x)=x^2-1$, find $f(4)$.", "answer": "$15$."},
+                    {"question": "Find the domain restriction for $f(x)=\\frac{2}{x+3}$.", "answer": "$x\\neq -3$."},
+                ],
+            },
+            {
+                "level": "Higher WAEC",
+                "items": [
+                    {"question": "If $f(x)=2x-1$ and $g(x)=x+4$, find $f(g(x))$.", "answer": "$2x+7$."},
+                    {"question": "Find the inverse of $f(x)=\\frac{x-2}{3}$.", "answer": "$f^{-1}(x)=3x+2$."},
+                ],
+            },
+        ],
+        "module_quiz": [
+            {"question": "If $f(x)=3x+2$, find $f^{-1}(x)$.", "answer": "$\\frac{x-2}{3}$."},
+            {"question": "If $f(x)=x^2$ and $g(x)=x+1$, find $(f\\circ g)(x)$.", "answer": "$(x+1)^2$."},
+        ],
+        "examiner_notes": [
+            "Always state excluded values when a denominator contains a variable.",
+            "Use brackets when substituting expressions into functions.",
+            "Do not confuse inverse functions with reciprocals.",
+            "Check composition order carefully.",
+        ],
+    },
+]
+
 EXTRA_LESSONS = {
     # ---- SETS & LOGIC ----
     "set-operations": {"title": "Sets", "topic": "sets-logic",
@@ -3071,6 +3348,51 @@ EXTRA_LESSONS["truth-tables"] = {
     ],
 }
 
+EXTRA_LESSONS["functions-mappings"] = {
+    "title": "Functions",
+    "topic": "surds-polynomials",
+    "summary": "A WAEC-aligned self-paced course on functions, mappings, domain, range, types of functions, composite functions, inverse functions, graphs and word problems.",
+    "standard": "waec-rich-v1",
+    "objectives": [
+        "Explain a function as a rule that maps each input to exactly one output.",
+        "Identify domain, co-domain, image and range from rules, tables and diagrams.",
+        "Evaluate functions using notation such as $f(3)$ and $f(a+1)$.",
+        "Distinguish one-to-one, many-to-one, onto, identity and constant functions.",
+        "Find composite functions and understand why order matters.",
+        "Find inverse functions and verify them by composition.",
+        "Use functions to solve WAEC-style word problems and graph questions.",
+    ],
+    "prerequisites": [
+        "Be comfortable substituting values into algebraic expressions.",
+        "Know how to solve simple linear equations.",
+        "Know basic graph language: x-axis, y-axis and intercepts.",
+    ],
+    "lesson_sections": FUNCTIONS_SECTIONS,
+    "notes": [
+        {"heading": "Meaning of a Function", "body": "A function maps each element in its domain to exactly one element in its co-domain. If one input has two outputs, the relation is not a function."},
+        {"heading": "Domain and Range", "body": "The domain is the set of allowed inputs. The range is the set of outputs actually produced."},
+        {"heading": "Composite and Inverse Functions", "body": "$(f\\circ g)(x)=f(g(x))$ means g acts first. An inverse function reverses the original rule and is written $f^{-1}(x)$."},
+    ],
+    "applications": [
+        {"title": "Engineering systems", "body": "A machine can be modelled as a function: input material or signal goes in, output response comes out."},
+        {"title": "Physics", "body": "Motion rules such as $s(t)$ and $v(t)$ are functions of time."},
+        {"title": "Computing", "body": "Programs and formulas often behave like functions: inputs are processed into outputs."},
+        {"title": "Economics", "body": "Cost, revenue and profit can be written as functions of quantity."},
+    ],
+    "common_mistakes": [
+        "Confusing range with co-domain.",
+        "Forgetting excluded values in rational functions.",
+        "Swapping the order in composite functions.",
+        "Thinking $f^{-1}(x)$ means $1/f(x)$.",
+        "Forgetting to use brackets when substituting expressions.",
+    ],
+    "quick_checks": [
+        {"question": "If $f(x)=2x+1$, find $f(4)$.", "answer": "$9$."},
+        {"question": "What value is excluded from the domain of $f(x)=\\frac{1}{x-5}$?", "answer": "$x=5$."},
+        {"question": "In $(f\\circ g)(x)$, which function acts first?", "answer": "g."},
+    ],
+}
+
 EXTRA_QUESTIONS = []
 
 def Q(topic, subtopic, year, difficulty, question, options, answer, steps, question_type="objective", feedback_tags=None, recommendation=None):
@@ -3340,6 +3662,31 @@ for _question in EXTRA_QUESTIONS:
             _question["feedback_tags"] = _tags
             _question["recommendation"] = _recommendation
             break
+
+# Functions: WAEC-style question bank for the Functions lesson.
+for yr, diff, q, opts, ans, st in [
+    (2026, "easy", "If $f(x)=2x+1$, find $f(4)$.", ["7", "8", "9", "10"], "9", ["Substitute $x=4$.", "$f(4)=2(4)+1=9$."]),
+    (2026, "easy", "The domain of a function is the set of:", ["outputs actually produced", "allowed inputs", "turning points", "excluded answers"], "allowed inputs", ["The domain is the set of possible input values."]),
+    (2026, "medium", "For $f(x)=\\frac{1}{x-3}$, which value is excluded from the domain?", ["0", "1", "3", "-3"], "3", ["The denominator cannot be zero.", "$x-3=0$ gives $x=3$."]),
+    (2026, "medium", "If $f(x)=x^2+1$ and the domain is $\\{-1,0,1\\}$, find the range.", ["$\\{0,1\\}$", "$\\{1,2\\}$", "$\\{-1,0,1\\}$", "$\\{2\\}$"], "$\\{1,2\\}$", ["$f(-1)=2$, $f(0)=1$, $f(1)=2$.", "Distinct outputs are $\\{1,2\\}$."]),
+    (2026, "medium", "If $f(x)=3x-2$, find $f(a+1)$.", ["$3a+1$", "$3a-1$", "$a+1$", "$3a+5$"], "$3a+1$", ["$f(a+1)=3(a+1)-2=3a+1$."]),
+    (2026, "medium", "Which rule represents a constant function?", ["$f(x)=x$", "$f(x)=2x+1$", "$f(x)=7$", "$f(x)=x^2$"], "$f(x)=7$", ["A constant function gives the same output for every input."]),
+    (2026, "medium", "If $f(x)=2x+3$ and $g(x)=x-1$, find $(f\\circ g)(x)$.", ["$2x+1$", "$2x+2$", "$2x+5$", "$2x-1$"], "$2x+1$", ["$(f\\circ g)(x)=f(g(x))$.", "$f(x-1)=2(x-1)+3=2x+1$."]),
+    (2026, "medium", "If $f(x)=x^2$ and $g(x)=x+2$, find $(g\\circ f)(x)$.", ["$x^2+2$", "$(x+2)^2$", "$x^2-2$", "$2x^2$"], "$x^2+2$", ["$(g\\circ f)(x)=g(f(x))$.", "Replace x in g by $x^2$: $x^2+2$."]),
+    (2026, "hard", "Find the inverse of $f(x)=3x-5$.", ["$\\frac{x-5}{3}$", "$\\frac{x+5}{3}$", "$3x+5$", "$\\frac{3}{x-5}$"], "$\\frac{x+5}{3}$", ["Let $y=3x-5$.", "$y+5=3x$.", "$x=\\frac{y+5}{3}$.", "So $f^{-1}(x)=\\frac{x+5}{3}."]),
+    (2026, "hard", "If $f(x)=\\frac{x-2}{4}$, find $f^{-1}(x)$.", ["$4x+2$", "$4x-2$", "$\\frac{x+2}{4}$", "$\\frac{4}{x-2}$"], "$4x+2$", ["Let $y=\\frac{x-2}{4}$.", "$4y=x-2$.", "$x=4y+2$.", "So $f^{-1}(x)=4x+2$."]),
+    (2026, "hard", "If $f(x)=x^2$ on the real numbers, why does it not have an inverse function?", ["It is constant", "It is not one-to-one", "It has no range", "It has no domain"], "It is not one-to-one", ["For example, $f(-2)=4$ and $f(2)=4$.", "Two different inputs give the same output."]),
+    (2026, "hard", "A printing shop charges 5 plus 2 per page. Which function gives the cost for x pages?", ["$C(x)=5x+2$", "$C(x)=2x+5$", "$C(x)=7x$", "$C(x)=x+7$"], "$C(x)=2x+5$", ["The fixed charge is 5.", "The variable charge is $2x$.", "Total cost is $2x+5$."]),
+]:
+    Q("surds-polynomials", "functions-mappings", yr, diff, q, opts, ans, st,
+      feedback_tags=["functions"], recommendation="Review Functions lesson.")
+
+for yr, diff, q, ans, st in [
+    (2026, "medium", "Let $f(x)=x^2-3x$. Find $f(a+1)$.", "$a^2-a-2$.", ["Substitute $a+1$ for x.", "$f(a+1)=(a+1)^2-3(a+1)$.", "Expand: $a^2+2a+1-3a-3$.", "Simplify to $a^2-a-2$."]),
+    (2026, "medium", "If $f(x)=2x+3$ and $g(x)=x^2-1$, find $f(g(x))$ and $g(f(x))$.", "$f(g(x))=2x^2+1$ and $g(f(x))=4x^2+12x+8$.", ["$f(g(x))=2(x^2-1)+3=2x^2+1$.", "$g(f(x))=(2x+3)^2-1$.", "Expand to get $4x^2+12x+8$.", "This shows composition order matters."]),
+    (2026, "hard", "Find the inverse of $f(x)=\\frac{2x-1}{5}$ and verify your answer.", "$f^{-1}(x)=\\frac{5x+1}{2}$.", ["Let $y=\\frac{2x-1}{5}$.", "$5y=2x-1$.", "$2x=5y+1$.", "$x=\\frac{5y+1}{2}$.", "So $f^{-1}(x)=\\frac{5x+1}{2}$.", "Verification: $f(f^{-1}(x))=x$."]),
+]:
+    TQ("surds-polynomials", "functions-mappings", yr, diff, q, ans, st)
 
 # ============ SURDS & POLYNOMIALS — 50 Q ============
 for yr, diff, q, opts, ans, st in [

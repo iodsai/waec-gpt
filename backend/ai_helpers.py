@@ -35,6 +35,8 @@ Rules:
 - If the source question is on set union, complement, subsets, Venn cardinality, De Morgan's Laws or combinatorial sets, stay within that exact skill.
 - If the source question is on Logic, every generated question must stay inside Logic.
 - If the source question is on implication, truth tables, negation, connectives, converse/contrapositive, equivalence, argument validity or fallacies, stay within that exact skill.
+- If the source question is on Functions, every generated question must stay inside Functions.
+- If the source question is on function evaluation, domain/range, composite functions, inverse functions, types of functions or function word problems, stay within that exact skill.
 - Never generate statistics questions such as mean, median, mode, range or probability unless the source question itself is statistics.
 - Include 4 plausible options and full step-by-step solutions.
 
